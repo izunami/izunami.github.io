@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html dir='ltr' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+    <head>
+        <link href='//cdn.jsdelivr.net/gh/hung1001/font-awesome-pro/css/all.min.css' rel='stylesheet' type='text/css'/>
+        <link href='//cdn.jsdelivr.net/npm/codemirror@5/lib/codemirror.min.css' rel='stylesheet' type='text/css'/>
+        <script src='//cdn.jsdelivr.net/npm/codemirror@5/lib/codemirror.min.js' type='text/javascript'></script>
+        <script src='//cdn.jsdelivr.net/npm/codemirror@5/mode/htmlmixed/htmlmixed.min.js' type='text/javascript'></script>
+        <script src='//cdn.jsdelivr.net/npm/codemirror@5/mode/xml/xml.min.js' type='text/javascript'></script>
+        <script src='//cdn.jsdelivr.net/npm/codemirror@5/mode/javascript/javascript.min.js' type='text/javascript'></script>
+        <script src='//cdn.jsdelivr.net/npm/codemirror@5/mode/css/css.min.js' type='text/javascript'></script>
+        <meta content='width=device-width, initial-scale=1' name='viewport'/>
+        <meta content='https://lh4.googleusercontent.com/-keqVlJeDxRA/Vupbj8ebLMI/AAAAAAAADXg/jEq7fAGhLyEO13ayr69hPg_c-m5yK1-Mw/h0/imac-605421_960_720.jpg' property='og:image'/>
+        <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+        <meta content='#4caf50' name='theme-color'/>
+        <meta content='#4caf50' name='msapplication-navbutton-color'/>
+        <meta content='blogger' name='generator'/>
+        <link href='https://#/favicon.ico' rel='icon' type='image/x-icon'/>
+        <link href='https://www.dientuvnbit.com/' rel='canonical'/>
+        <link rel="alternate" type="application/atom+xml" title="Try it yourself editor - Atom" href="https://demo.hung1001.com/feeds/posts/default"/>
+        <link rel="alternate" type="application/rss+xml" title="Try it yourself editor - RSS" href="https://demo.hung1001.com/feeds/posts/default?alt=rss"/>
+        <link rel="service.post" type="application/atom+xml" title="Try it yourself editor - Atom" href="https://www.blogger.com/feeds/2583950128860177923/posts/default"/>
+        <meta content='https://demo.hung1001.com/' property='og:url'/>
+        <meta content='Try it yourself editor' property='og:title'/>
+        <meta content='Try it yourself editor' property='og:description'/>
+        <title>Try it yourself editor</title>
+        <style id='page-skin-1' type='text/css'>
+            <!-- #container,#shield,.trytopnav {
+                width: 100%;
+                position: absolute
+            }
+
+            #container,#dragbar,#shield,.trytopnav {
+                position: absolute
+            }
+
+            #iframewrapper,#textareawrapper {
+                box-shadow: 0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);
+                background-color: #fff
+            }
+
+            * {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box
+            }
+
+            body {
+                color: #000;
+                margin: 0
+            }
+
+            body,html {
+                font-family: Verdana,sans-serif;
+                font-size: 15px;
+                line-height: 1.5
+            }
+
+            .trytopnav {
+                height: 40px;
+                overflow: hidden;
+                min-width: 380px;
+                top: 0
+            }
+
+            #dragbar {
+                cursor: col-resize;
+                z-index: 3;
+                padding: 5px
+            }
+
+            #shield {
+                display: none;
+                top: 0;
+                left: 0;
+                height: 100%;
+                z-index: 4
+            }
+
+            #framesize span {
+                font-family: Consolas,monospace
+            }
+
+            #container {
+                background-color: #f1f1f1;
+                overflow: auto;
+                top: 40px;
+                bottom: 0;
+                height: auto
+            }
+
+            #iframecontainer,#textareacontainer {
+                float: left;
+                height: 100%;
+                width: 50%
+            }
+
+            #iframe,#textarea {
+                height: 100%;
+                width: 100%;
+                padding-bottom: 10px;
+                padding-top: 1px
+            }
+
+            #textarea {
+                padding-left: 0;
+                padding-right: 5px
+            }
+
+            #iframe {
+                padding-left: 5px;
+                padding-right: 0
+            }
+
+            #textareawrapper {
+                width: 100%;
+                height: 100%;
+                position: relative
+            }
+
+            #iframewrapper {
+                width: 100%;
+                height: 100%;
+                -webkit-overflow-scrolling: touch
+            }
+
+            #textareaCode {
+                background-color: #fff;
+                font-family: consolas,"courier new",monospace;
+                font-size: 15px;
+                height: 100%;
+                width: 100%;
+                padding: 8px;
+                resize: none;
+                border: none;
+                line-height: normal
+            }
+
+            .CodeMirror.cm-s-default {
+                line-height: normal;
+                height: 100%;
+                width: 100%
+            }
+
+            #iframeResult,#iframeSource {
+                background-color: #fff;
+                height: 100%;
+                width: 100%
+            }
+
+            #stackV {
+                background-color: #999
+            }
+
+            #stackV:hover {
+                background-color: #BBB!important
+            }
+
+            #stackV.horizontal {
+                background-color: transparent
+            }
+
+            #stackV.horizontal:hover {
+                background-color: #BBB!important
+            }
+
+            #stackH.horizontal {
+                background-color: #999
+            }
+
+            #stackH.horizontal:hover {
+                background-color: #999!important
+            }
+
+            #iframecontainer.horizontal,#textareacontainer.horizontal {
+                height: 50%;
+                float: none;
+                width: 100%
+            }
+
+            #iframe.horizontal,#textarea.horizontal {
+                height: 100%;
+                padding-right: 10px;
+                padding-left: 10px
+            }
+
+            #iframe.horizontal {
+                padding-bottom: 10px
+            }
+
+            #container.horizontal {
+                min-height: 200px;
+                margin-left: 0
+            }
+
+            @media only screen and (max-device-width: 768px) {
+                #iframewrapper {
+                    overflow:auto
+                }
+
+                #container {
+                    min-width: 320px
+                }
+
+                .stack {
+                    display: none
+                }
+
+                #tryhome {
+                    display: block
+                }
+            }
+
+            #cdn,#reload,#rotate,#tryhome {
+                font-size: 23px;
+                color: #999
+            }
+
+            .hh-bar {
+                border-top: 1px solid #f1f1f1;
+                overflow: auto;
+                width: 100%
+            }
+
+            .hh-btn,.hh-button {
+                border: none;
+                padding: 8px 16px;
+                vertical-align: middle;
+                overflow: hidden;
+                text-decoration: none;
+                color: inherit;
+                background-color: inherit;
+                cursor: pointer;
+                white-space: nowrap;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none
+            }
+
+            .hh-bar .hh-button {
+                white-space: normal
+            }
+
+            .hh-bar .hh-bar-item {
+                padding: 8px 16px;
+                float: left;
+                width: auto;
+                border: none;
+                display: block;
+                outline: 0
+            }
+
+            .hh-bar .hh-bar-item:hover {
+                background-color: #757575!important;
+                color: #fff!important
+            }
+
+            .hh-green {
+                color: #fff!important;
+                background-color: #4CAF50!important;
+                padding: 12px 16px!important
+            }
+
+            .hh-right {
+                float: right!important
+            }
+
+            .hh-hide-medium {
+                padding: 8px;
+                display: block
+            }
+
+            .hh-hide-small {
+                padding: 8px 0;
+                display: block
+            }
+
+            .me {
+                text-align: center;
+                display: inline-block;
+                margin: 2em auto;
+                width: 100%;
+                border-radius: 50%;
+                z-index: 2
+            }
+
+            .me a {
+                position: relative;
+                top: -30px;
+                margin: 0 2px;
+                cursor: pointer;
+                display: inline-block
+            }
+
+            .me img {
+                margin: 0 10px;
+                border-radius: 100%
+            }
+
+            .me svg {
+                height: 30px;
+                width: 30px
+            }
+
+            @media screen and (max-width: 450px) {
+                .me {
+                    text-align:left
+                }
+            }
+
+            --></style>
+    </head>
+    <!--<head>
+<link href='https://www.blogger.com/dyn-css/authorization.css?targetBlogID=2583950128860177923&amp;zx=287ca1fe-eabd-49a0-816c-06f404341233' media='none' onload='if(media!=&#39;all&#39;)media=&#39;all&#39;' rel='stylesheet'/><noscript><link href='https://www.blogger.com/dyn-css/authorization.css?targetBlogID=2583950128860177923&amp;zx=287ca1fe-eabd-49a0-816c-06f404341233' rel='stylesheet'/></noscript>
+<meta name='google-adsense-platform-account' content='ca-host-pub-1556223355139109'/>
+<meta name='google-adsense-platform-domain' content='blogspot.com'/>
+
+</head>-->
+    <body>
+        <div class='trytopnav'>
+            <div class='hh-bar'>
+                <a class='hh-button hh-bar-item fa fa-home' href='/' id='tryhome'></a>
+                <a class='hh-button hh-bar-item fa fa-sync-alt' href='javascript:void(0);' id='reload' onClick='window.location.reload()' title='Reload Page'></a>
+                <a class='hh-button hh-bar-item fa fa-redo-alt' href='javascript:void(0);' id='rotate' onclick='restack(currentStack)' title='Change Orientation'></a>
+                <a class='hh-button hh-bar-item fa fa-cloud-download-alt' href='https://cdnjs.com/' id='cdn' target='blank' title='CDN'></a>
+                <button class='hh-button hh-bar-item hh-green' onclick='submitTryit(1)'>
+                    <i class='fa fa-play'></i>
+                    RUN
+                </button>
+                <span class='hh-right hh-hide-medium'></span>
+                <span class='hh-right hh-hide-small'>
+                    <span id='framesize'></span>
+                </span>
+            </div>
+        </div>
+        <div id='shield'></div>
+        <a href='javascript:void(0)' id='dragbar'></a>
+        <div id='container'>
+            <div id='textareacontainer'>
+                <div id='textarea'>
+                    <div id='textareawrapper'>
+                        <textarea autocomplete='off' id='textareaCode' spellcheck='false' wrap='logical'>
+                            <!DOCTYPE html>
+                            <html>
+                                <head>
+                                    <title>Page Title</title>
+                                    <style type="text/css">
+                                        h1 {
+                                            color: #ff0000
+                                        }
+                                    </style>
+                                </head>
+                                <body>
+                                    <h1>Welcome to my life</h1>
+                                    <h2>This is a Heading 2</h2>
+                                    <h3>This is a Heading 3</h3>
+                                    <h4>This is a Heading 4</h4>
+                                    <h5>This is a Heading 5</h5>
+                                    <h6>This is a Heading 6</h6>
+                                    <p>This is a paragraph.</p>
+                                    <button onclick="btn()">Click Me !</button>
+                                    <p id="demo"></p>
+                                    <script>
+                                        function btn() {
+                                            document.getElementById('demo').innerHTML = "<b>This is javascript</b>";
+                                        }
+                                    </script>
+                                </body>
+                            </html>
+                        </textarea>
+                        <form autocomplete='off' id='codeForm' style='margin:0;display:none;'>
+                            <input id='code' name='code' type='hidden'/>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div id='iframecontainer'>
+                <div id='iframe'>
+                    <div id='iframewrapper'></div>
+                </div>
+            </div>
+            <div class='me'>
+                <a href='https://www.facebook.com/blogvnbit' target='blank'>
+                    <svg height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'>
+                        <path d='M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-3 7h-1.924c-.615 0-1.076.252-1.076.889v1.111h3l-.238 3h-2.762v8h-3v-8h-2v-3h2v-1.923c0-2.022 1.064-3.077 3.461-3.077h2.539v3z' style='fill:#3b5998'></path>
+                    </svg>
+                </a>
+                <a href='https://twitter.com/# target='blank'>
+                    <svg height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'>
+                        <path d='M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-.139 9.237c.209 4.617-3.234 9.765-9.33 9.765-1.854 0-3.579-.543-5.032-1.475 1.742.205 3.48-.278 4.86-1.359-1.437-.027-2.649-.976-3.066-2.28.515.098 1.021.069 1.482-.056-1.579-.317-2.668-1.739-2.633-3.26.442.246.949.394 1.486.411-1.461-.977-1.875-2.907-1.016-4.383 1.619 1.986 4.038 3.293 6.766 3.43-.479-2.053 1.08-4.03 3.199-4.03.943 0 1.797.398 2.395 1.037.748-.147 1.451-.42 2.086-.796-.246.767-.766 1.41-1.443 1.816.664-.08 1.297-.256 1.885-.517-.439.656-.996 1.234-1.639 1.697z' style='fill:#1da1f2'></path>
+                    </svg>
+                </a>
+                <a href='https://github.com/#' target='blank'>
+                    <svg height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'>
+                        <path d='M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-4.466 19.59c-.405.078-.534-.171-.534-.384v-2.195c0-.747-.262-1.233-.55-1.481 1.782-.198 3.654-.875 3.654-3.947 0-.874-.312-1.588-.823-2.147.082-.202.356-1.016-.079-2.117 0 0-.671-.215-2.198.82-.64-.18-1.324-.267-2.004-.271-.68.003-1.364.091-2.003.269-1.528-1.035-2.2-.82-2.2-.82-.434 1.102-.16 1.915-.077 2.118-.512.56-.824 1.273-.824 2.147 0 3.064 1.867 3.751 3.645 3.954-.229.2-.436.552-.508 1.07-.457.204-1.614.557-2.328-.666 0 0-.423-.768-1.227-.825 0 0-.78-.01-.055.487 0 0 .525.246.889 1.17 0 0 .463 1.428 2.688.944v1.489c0 .211-.129.459-.528.385-3.18-1.057-5.472-4.056-5.472-7.59 0-4.419 3.582-8 8-8s8 3.581 8 8c0 3.533-2.289 6.531-5.466 7.59z'></path>
+                    </svg>
+                </a>
+                <a href='skype:info@dientuvnbit.com' target='blank'>
+                    <svg height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'>
+                        <path d='M16.283 13.883c0 2.026-1.615 3.354-4.026 3.354-2.121 0-4.252-.965-4.242-2.627.003-.501.376-.961.872-.961 1.249 0 1.237 1.863 3.225 1.863 1.396 0 1.872-.764 1.872-1.296 0-1.924-6.03-.745-6.03-4.362 0-1.958 1.602-3.309 4.12-3.161 2.401.142 3.809 1.202 3.944 2.193.067.647-.361 1.151-1.105 1.151-1.086 0-1.196-1.454-3.067-1.454-.844 0-1.556.352-1.556 1.116 0 1.597 5.993.67 5.993 4.184zm7.717-8.883v14c0 2.761-2.238 5-5 5h-14c-2.761 0-5-2.239-5-5v-14c0-2.761 2.239-5 5-5h14c2.762 0 5 2.239 5 5zm-4.675 8.311c.904-5.177-3.61-9.608-8.702-8.653-3.881-2.374-8.335 2.151-5.956 6.02-.925 5.165 3.589 9.654 8.722 8.673 3.888 2.357 8.329-2.174 5.936-6.04z' style='fill:#00aff0'></path>
+                    </svg>
+                </a>
+                <img alt='image' class='me-img' src='//dientuvnbit.jpg'/>
+                <a href='https://www.linkedin.com/in/#' target='blank'>
+                    <svg height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'>
+                        <path d='M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z' style='fill:#0077b5'></path>
+                    </svg>
+                </a>
+                <a href='https://www.instagram.com/#/' target='blank'>
+                    <svg height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'>
+                        <path d='M15.233 5.488c-.843-.038-1.097-.046-3.233-.046s-2.389.008-3.232.046c-2.17.099-3.181 1.127-3.279 3.279-.039.844-.048 1.097-.048 3.233s.009 2.389.047 3.233c.099 2.148 1.106 3.18 3.279 3.279.843.038 1.097.047 3.233.047 2.137 0 2.39-.008 3.233-.046 2.17-.099 3.18-1.129 3.279-3.279.038-.844.046-1.097.046-3.233s-.008-2.389-.046-3.232c-.099-2.153-1.111-3.182-3.279-3.281zm-3.233 10.62c-2.269 0-4.108-1.839-4.108-4.108 0-2.269 1.84-4.108 4.108-4.108s4.108 1.839 4.108 4.108c0 2.269-1.839 4.108-4.108 4.108zm4.271-7.418c-.53 0-.96-.43-.96-.96s.43-.96.96-.96.96.43.96.96-.43.96-.96.96zm-1.604 3.31c0 1.473-1.194 2.667-2.667 2.667s-2.667-1.194-2.667-2.667c0-1.473 1.194-2.667 2.667-2.667s2.667 1.194 2.667 2.667zm4.333-12h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm.952 15.298c-.132 2.909-1.751 4.521-4.653 4.654-.854.039-1.126.048-3.299.048s-2.444-.009-3.298-.048c-2.908-.133-4.52-1.748-4.654-4.654-.039-.853-.048-1.125-.048-3.298 0-2.172.009-2.445.048-3.298.134-2.908 1.748-4.521 4.654-4.653.854-.04 1.125-.049 3.298-.049s2.445.009 3.299.048c2.908.133 4.523 1.751 4.653 4.653.039.854.048 1.127.048 3.299 0 2.173-.009 2.445-.048 3.298z' style='fill:#c13584'></path>
+                    </svg>
+                </a>
+                <a href='https://plus.google.com/u/0/101924463168327194333' target='blank'>
+                    <svg height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'>
+                        <path d='M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-10.333 16.667c-2.581 0-4.667-2.087-4.667-4.667s2.086-4.667 4.667-4.667c1.26 0 2.313.46 3.127 1.22l-1.267 1.22c-.347-.333-.954-.72-1.86-.72-1.593 0-2.893 1.32-2.893 2.947s1.3 2.947 2.893 2.947c1.847 0 2.54-1.327 2.647-2.013h-2.647v-1.6h4.406c.041.233.074.467.074.773-.001 2.666-1.787 4.56-4.48 4.56zm11.333-4h-2v2h-1.334v-2h-2v-1.333h2v-2h1.334v2h2v1.333z' style='fill:#ea4335;'></path>
+                    </svg>
+                </a>
+                <a href='https://www.youtube.com/HưngHoàngVăn' target='blank'>
+                    <svg height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'>
+                        <path d='M9.279 13.52h-.939v5.027h-.908v-5.027h-.94v-.854h2.788v.854zm5.395 1.721v2.406c0 .537-.2.954-.736.954-.296 0-.541-.108-.767-.388v.333h-.813v-5.88h.813v1.893c.183-.222.429-.405.718-.405.59 0 .785.499.785 1.087zm-.83.049c0-.146-.027-.257-.086-.333-.098-.129-.279-.143-.42-.071l-.167.132v2.703l.19.153c.132.066.324.071.413-.045.046-.061.069-.161.069-.299v-2.24zm-2.347-5.859c.229 0 .354-.183.354-.431v-2.119c0-.255-.111-.434-.371-.434-.237 0-.353.185-.353.434v2.119c.001.24.137.431.37.431zm-.733 8.07c-.099.123-.317.325-.475.325-.172 0-.215-.118-.215-.292v-3.325h-.805v3.626c0 .88.597.885 1.031.636.16-.092.315-.227.464-.403v.479h.807v-4.338h-.807v3.292zm13.236-12.501v14c0 2.761-2.238 5-5 5h-14c-2.761 0-5-2.239-5-5v-14c0-2.761 2.239-5 5-5h14c2.762 0 5 2.239 5 5zm-10.566 4.427c0 .45.137.813.592.813.256 0 .611-.133.979-.569v.503h.847v-4.554h-.847v3.457c-.104.129-.333.341-.498.341-.182 0-.226-.124-.226-.307v-3.491h-.847v3.807zm-3.177-2.621v2.233c0 .803.419 1.22 1.24 1.22.682 0 1.218-.456 1.218-1.22v-2.233c0-.713-.531-1.224-1.218-1.224-.745 0-1.24.493-1.24 1.224zm-3.155-2.806l1.135 3.67v2.504h.953v-2.504l1.11-3.67h-.969l-.611 2.468-.658-2.468h-.96zm11.564 11.667c-.014-2.978-.232-4.116-2.111-4.245-1.734-.118-7.377-.118-9.109 0-1.876.128-2.098 1.262-2.111 4.245.014 2.978.233 4.117 2.111 4.245 1.732.118 7.375.118 9.109 0 1.877-.129 2.097-1.262 2.111-4.245zm-1.011-.292v1.104h-1.542v.818c0 .325.027.607.352.607.34 0 .36-.229.36-.607v-.301h.83v.326c0 .836-.358 1.342-1.208 1.342-.771 0-1.164-.561-1.164-1.342v-1.947c0-.753.497-1.275 1.225-1.275.773-.001 1.147.491 1.147 1.275zm-.83-.008c0-.293-.062-.508-.353-.508-.299 0-.359.21-.359.508v.439h.712v-.439z' style='fill:#ff0000'></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <script data-cfasync='false' type='text/javascript'>
+            //<![CDATA[
+            eval(function(p, a, c, k, e, r) {
+                e = function(c) {
+                    return (c < a ? '' : e(parseInt(c / a))) + ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36))
+                }
+                ;
+                if (!''.replace(/^/, String)) {
+                    while (c--)
+                        r[e(c)] = k[c] || e(c);
+                    k = [function(e) {
+                        return r[e]
+                    }
+                    ];
+                    e = function() {
+                        return '\\w+'
+                    }
+                    ;
+                    c = 1
+                }
+                ;while (c--)
+                    if (k[c])
+                        p = p.replace(new RegExp('\\b' + e(c) + '\\b','g'), k[c]);
+                return p
+            }('9 1v=[\'1j\',\'41\',\'1G-1M\',\'3Z\',\'1u\',\'3X-1s\',\'3V\',\'3T\',\'3S\',\'3D\',\'3C\',\'3z\',\'3x\',\'3v\',\'3u\',\'3t\',\'3r\\3p\',\'3o\',\'3n\',\'3m\',\'3l\',\'3j\',\'3i\',\'3f\',\'3d\',\'3c\',\'1p\',\'1s\',\'3b\',\'39\',\'38\',\'36\',\'35\',\'34\',\'33\',\'32\',\'q\',\'1S\',\'31\',\'30\',\'1A\',\'2Z\',\'2Y\',\'2X\',\'2W\',\'2\',\'1E\',\'2R\',\'2Q\',\'2P\',\'2O\',\'2N\',\'2M\',\'1r\',\'2L\',\'2K\',\'2J\',\'2I\',\'V\',\'C\',\'23\',\'\\1n\',\'1k\',\'28\',\'r\',\'2e%\',\'X\',\'1D%\',\'2H\',\'2G\',\'2F\\2E:\\1I<1J>\',\'\\2D\\1I\',\'</1J>\',\'1M\',\'1h\',\'2C\',\'1N\',\'1G-1u\',\'2B\',\'2y-1s\'];(8(1l,1V){9 1W=8(1X){2x(--1X){1l[\'2w\'](1l[\'2v\']())}};1W(++1V)}(1v,2u));9 1=8(10,2t){10=10-6;9 2d=1v[10];18 2d};4[1(\'6\')]?4[1(\'6\')](1(\'p\'),1b):4[1(\'L\')]&&4[1(\'L\')](1(\'2s\'),1b);9 o=4[1(\'J\')];8 1b(){9 n=4[1(\'J\')];(o<U&&n>=U||o>=U&&n<U||o<R&&n>=R||o>=R&&n<R||o<11&&n>=11||o>=11&&n<11)&&(o=n),4[1(\'Y\')][1(\'1O\')]<=1P&&15(4[1(\'1m\')]>4[1(\'J\')]),t(),I()}8 1U(2r){4[1(\'P\')]&&4[1(\'P\')][1(\'2q\')]();9 1Y=2[1(\'3\')](1(\'2p\'))[\'2o\'],g=2[\'44\'](1(\'24\'));g[1(\'1w\')](\'2n\',\'0\'),g[1(\'1w\')](\'2l\',1(\'29\')),g[1(\'1w\')](1(\'3a\'),\'1A\'),2[1(\'3\')](1(\'2b\'))[\'2c\']=\'\',2[1(\'3\')](1(\'2b\'))[1(\'2h\')](g);9 m=g[1(\'2f\')]?g[1(\'2f\')]:g[\'1E\'][1(\'s\')]?g[1(\'12\')][1(\'s\')]:g[1(\'12\')];m[1(\'s\')][1(\'2i\')](),m[1(\'s\')][1(\'2j\')](1Y),m[1(\'s\')][1(\'2k\')](),m[1(\'s\')][1(\'W\')]&&!m[1(\'s\')][1(\'W\')][1(\'2m\')]&&(m[\'2\'][1(\'W\')][1(\'27\')]=!6,m[\'2\'][1(\'W\')][1(\'27\')]=!p)}1U();9 1x=!6;8 15(21){9 w,x,z,y,v,h,E;w=2[1(\'3\')](\'1k\'),x=2[1(\'3\')](1(\'B\')),z=2[\'q\'](1(\'16\')),y=2[1(\'3\')](1(\'24\')),v=2[\'q\'](1(\'1c\')),h=2[1(\'3\')](1(\'2z\')),E=2[1(\'3\')](1(\'2A\')),w[1(\'5\')]=w[1(\'5\')][\'C\'](\'23\',\'\'),x[1(\'5\')]=x[1(\'5\')][1(\'c\')](1(\'A\'),\'\'),z[1(\'5\')]=z[1(\'5\')][1(\'c\')](1(\'A\'),\'\'),y[1(\'5\')]=y[1(\'5\')][1(\'c\')](1(\'A\'),\'\'),v[1(\'5\')]=v[\'V\'][\'C\'](1(\'A\'),\'\'),h&&(h[1(\'5\')]=h[\'V\'][\'C\'](1(\'A\'),\'\')),h&&(E[1(\'5\')]=E[1(\'5\')][\'C\'](1(\'A\'),\'\')),H=\'\',21?(w[1(\'5\')]=w[1(\'5\')]+\'\\1n\',x[1(\'5\')]=x[1(\'5\')]+\'\\1n\',z[1(\'5\')]=z[1(\'5\')]+1(\'l\'),y[1(\'5\')]=y[\'V\']+1(\'l\'),v[1(\'5\')]=v[1(\'5\')]+1(\'l\'),h&&(h[1(\'5\')]=h[1(\'5\')]+1(\'l\')),h&&(E[1(\'5\')]=E[1(\'5\')]+1(\'l\')),H=1(\'l\'),2[1(\'3\')](1(\'G\'))[\'r\'][1(\'d\')]=\'2e%\',2[1(\'3\')](\'1r\')[1(\'7\')][1(\'d\')]=1(\'1o\'),2[1(\'3\')](\'1k\')[1(\'7\')][1(\'e\')]=1(\'1q\'),2[1(\'3\')](1(\'B\'))[1(\'7\')][1(\'e\')]=1(\'1q\'),1x=!p):(2[1(\'3\')](1(\'G\'))[1(\'7\')][1(\'d\')]=\'1D%\',2[1(\'3\')](1(\'B\'))[1(\'7\')][1(\'d\')]=1(\'1q\'),2[1(\'3\')](1(\'G\'))[1(\'7\')][1(\'e\')]=1(\'1o\'),2[1(\'3\')](\'1r\')[\'r\'][1(\'e\')]=1(\'1o\'),1x=!6),t(),I()}8 I(){9 1t,1y;1t=f(i(2[1(\'3\')](1(\'29\')),\'X\')[1(\'c\')](\'a\',\'\'))[1(\'1F\')](),1y=f(i(2[1(\'3\')](\'1A\'),1(\'d\'))[1(\'c\')](\'a\',\'\'))[1(\'1F\')](),2[1(\'3\')](1(\'2S\'))[\'2c\']=1(\'2T\')+1t+1(\'2U\')+1y+1(\'2V\')}4[1(\'Y\')][1(\'1O\')]<=1P&&4[1(\'1m\')]>4[1(\'J\')]&&15(!6);9 H,Z=!p;8 t(){9 O,k,D,u,1B=f(i(2[\'q\'](1(\'1c\')),1(\'T\'))[1(\'c\')](\'a\',\'\'));1(\'l\')!=H?(2[1(\'3\')](1(\'b\'))[1(\'7\')][1(\'e\')]=1(\'1z\'),1K=f(i(2[1(\'3\')](1(\'Q\')),\'X\')[\'C\'](\'a\',\'\')),k=f(i(2[1(\'3\')](1(\'16\')),1(\'37\'))[1(\'c\')](\'a\',\'\')),u=f(i(2[1(\'3\')](\'1h\'),1(\'e\'))[1(\'c\')](\'a\',\'\')),S=i(2[1(\'3\')](\'1N\'),1(\'d\')),D=1K+k+k/L-u/L,2[1(\'3\')](1(\'b\'))[1(\'7\')][1(\'T\')]=1B+\'a\',2[1(\'3\')](1(\'b\'))[1(\'7\')][\'1u\']=D+\'a\',2[1(\'3\')](1(\'b\'))[\'r\'][1(\'d\')]=S,2[1(\'3\')](1(\'b\'))[\'r\'][1(\'1C\')]=1(\'2g\')):(2[\'q\'](1(\'b\'))[\'r\'][1(\'d\')]=1(\'1z\'),4[\'1j\']?(O=4[1(\'N\')](2[\'q\'](1(\'Q\')),F)[1(\'K\')](1(\'d\')),S=4[1(\'N\')](2[1(\'3\')](1(\'Q\')),F)[1(\'K\')](1(\'e\')),k=4[1(\'N\')](2[1(\'3\')](1(\'16\')),F)[1(\'K\')](1(\'3e\')),u=4[\'1j\'](2[1(\'3\')](1(\'b\')),F)[1(\'K\')](1(\'d\'))):D=2[1(\'3\')](1(\'Q\'))[1(\'20\')][\'X\'],O=f(O[1(\'c\')](\'a\',\'\')),k=f(k[1(\'c\')](\'a\',\'\')),u=f(u[1(\'c\')](\'a\',\'\')),D=1B+O+k+k/L,2[1(\'3\')](1(\'b\'))[1(\'7\')][1(\'T\')]=D+\'a\',2[1(\'3\')](1(\'b\'))[1(\'7\')][1(\'3g\')]=1(\'1z\'),2[\'q\'](1(\'b\'))[1(\'7\')][1(\'e\')]=S,2[1(\'3\')](1(\'b\'))[1(\'7\')][1(\'1C\')]=1(\'3h\'))}8 1i(1T){1T[1(\'3k\')](),Z=!6;2[1(\'3\')](1(\'B\'))}8 1f(1d){M(Z){M(2[1(\'3\')](1(\'1L\'))[1(\'7\')][1(\'1H\')]=1(\'3q\'),1(\'l\')!=H){M((j=1d[1(\'3s\')]/4[1(\'J\')]*13)>Y&&j<26){9 14=13-j;2[1(\'3\')](1(\'G\'))[\'r\'][1(\'e\')]=j+\'%\',2[1(\'3\')](1(\'B\'))[1(\'7\')][1(\'e\')]=14+\'%\',t()}}3w{9 j,17=f(i(2[1(\'3\')](1(\'1c\')),1(\'T\'))[1(\'c\')](\'a\',\'\'));M((j=(1d[1(\'3y\')]-17+12)/(4[1(\'1m\')]-17+12)*13)>Y&&j<26){14=13-j;2[1(\'3\')](1(\'G\'))[1(\'7\')][1(\'d\')]=j+\'%\',2[1(\'3\')](1(\'B\'))[1(\'7\')][\'28\']=14+\'%\',t()}}I()}}8 19(){2[1(\'3\')](1(\'1L\'))[1(\'7\')][1(\'1H\')]=1(\'3A\'),Z=!p,4[1(\'P\')]&&4[1(\'P\')][1(\'3B\')]()}8 1R(){9 1a=3E[\'3F\'];M(1a&&1a[1(\'3G\')]()[1(\'3H\')](1(\'3I\'))>-p)18!p;4[1(\'P\')]=3J[1(\'3K\')](2[\'q\'](\'1S\'),{\'3L\':1(\'3M\'),\'3N\':!6,\'3O\':!6,\'3P\':!p,\'3Q\':!6,\'3R\':!6})}8 i(1e,1g){18 4[1(\'N\')]?4[1(\'N\')](1e,F)[1(\'K\')](1g):1e[1(\'20\')][1g]}4[\'1p\']&&(2[1(\'3\')](\'1h\')[1(\'6\')](1(\'3U\'),8(2a){1i(2a)}),2[1(\'3\')](1(\'b\'))[1(\'6\')](1(\'3W\'),8(22){1i(22)}),4[1(\'6\')](1(\'3Y\'),8(1Q){1f(1Q)}),4[\'1p\'](1(\'40\'),8(25){1f(25)}),4[1(\'6\')](1(\'42\'),19),4[1(\'6\')](1(\'43\'),19),4[1(\'6\')](1(\'1Z\'),t),4[1(\'6\')](1(\'1Z\'),I)),1R();', 62, 253, '|_0x4b78|document|0xa|window|0x20|0x0|0x26|function|var|px|0x30|0x21|0x25|0x28|Number|_0x5ba192|_0x409ff9|w3_getStyleValue|_0x36d601|_0x190d35|0x23|_0x4aa437|_0x21575f|xbeforeResize|0x1|getElementById|style|0x13|fixDragBtn|_0x5159a9|_0x419432|_0x33b032|_0x4afc7e|_0x2c607a|_0x590156|0x22|0x1b|replace|_0x989957|_0x1ab059|null|0x24|stack|showFrameSize|0x4|0x37|0x2|if|0x36|_0x364c54|0x8|0x32|0x2d8|textareaheight|0x2f|0x3ca|className|0x18|width|0x5|dragging|_0x4236d7|0x1d4|0x14|0x64|_0x4b6b6e|restack|0x1c|_0x368bc7|return|dragend|_0x56050c|browserResize|0x1d|_0x412a16|_0x45a571|dragmove|_0x54fe10|dragbar|dragstart|getComputedStyle|textareacontainer|_0x2f9d5c|0x7|x20horizontal|0x27|addEventListener|0x29|iframecontainer|resize|_0x57497a|left|_0x248b|0xd|currentStack|_0x36bb7a|0x31|iframeResult|_0x5bf19c|0x34|100|contentDocument|0x2a|padding|0x3e|x20|span|textareasize|0x3d|top|textareawrapper|0x6|0x300|_0x407e64|colorcoding|textareaCode|_0x35243b|submitTryit|_0x408934|_0x465576|_0xfdd429|_0x2df633|0x4f|0x39|_0x87b139|_0x146c36|horizontal|0xc|_0x131a81|0x62|0x1a|height|0xe|_0x21db78|0x10|innerHTML|_0x501a89|50|0x12|0x35|0x11|0x15|0x16|0x17|id|0x19|frameborder|value|0xb|0x9|_0x177cbb|0x3|_0x37c458|0x6a|shift|push|while|col|0x1e|0x1f|cursor|5px|x20x|x20Size|Result|framesize|toFixed|stackH|stackV|container|textarea|contentEditable|isContentEditable|body|close|write|open|0x2b|0x2c|0x2d|0x2e|contentWindow|appendChild|iframewrapper|name|setAttribute|iframe|save|editor|innerHeight|availWidth|screen|0x33|innerWidth|onresize|0xf|attachEvent|load|touchend|0x38|mouseup|0x3a|0x3b|touchmove|mousemove|0x3c|touchstart|mousedown|htmlmixed|fromTextArea|x20MINI|0x3f|OPERA|0x40|indexOf|toUpperCase|refresh|else|none|0x41|pageY|0x42|0x43|pageX|block|navigator|userAgent|0x44|0x45|0x46|CodeMirror|0x47|mode|0x48|htmlMode|lineWrapping|smartIndent|addModeClass|lineNumbers|display|shield|0x49|preventDefault|0x4a|row|0x4b|currentStyle|0x4c|getPropertyValue|0x4d|0x4e|createElement'.split('|'), 0, {}))
+            //]]>
+        </script>
+        <!--
+</body>-->
+    </body>
+</html>
