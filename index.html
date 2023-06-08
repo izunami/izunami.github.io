@@ -1,10 +1,63 @@
- __________________
-| \  / |\ |     ===|
-|  \/  | \|     ===|
-|               ===|
-| |""\  ## #### ===|
-| |../  ||  ||  ===|
-| |___) ||  ||  ===|
-|_________♥__♥__===|
-|-DIENTUVNBIT.COM--|
-''''''''''''''''''''
+<!--Scrip xem trước code trong cửa sổ mới (Scrip 1)-->
+<SCRIPT language="JavaScript">
+<!-- 
+window.onerror = null;
+
+// Test to see if Browser is Netscape 3
+
+function DoHTML()
+{
+resultwindow=window.open("","resultwindow",'toolbar=no,scrollbars=1,height=500,status=0,menubar=0');
+resultwindow.focus();
+resultwindow.document.write(document.form1.code.value + '<P>')
+}
+
+{
+
+}
+// -->
+</SCRIPT>
+
+<SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript"><!--
+       document.write("<SCRIPT LANGUAGE='JavaScript' SRC='buttonsnav.js'><\/SCRIPT>");
+ //-->
+</SCRIPT>
+<!--End Scrip xem trước code trong cửa sổ mới-->
+
+</head>
+<body>
+
+<center>
+
+<!--Scrip gõ và xem code trong cùng trang có hai khung (Scrip 2)-->
+<td valign="top" style="padding:10px" background="#eee">
+<span style="color: #3366ff; font:12pt Tahoma;">Khung nhập mã cần thử</span>
+<form name="form1" method="post">
+<textarea name="code" wrap="soft" onclick="focus(this.code)" style=
+"border:solid 1px #b9b8b6;padding:5px;width:580px;height:200px;scroll:auto;">
+</textarea></form></td>
+
+<br/>
+
+<!--Button cho scrip 2-->
+<button onclick=
+"preview.document.write (document.getElementsByTagName ('TEXTAREA')[0].value); preview.document.close(); preview.focus()">Xem trước nhanh</button>
+
+<!--Button cho scrip 1-->
+<INPUT TYPE="button" NAME="do" VALUE="Xem trước trong cửa sổ mới"  ONCLICK="DoHTML()">
+
+<!--Button cho scrip 2-->
+<button onclick=
+"window.document.form1.code.value='';preview.document.write (document.getElementsByTagName ('TEXTAREA')[0].value); preview.document.close(); preview.focus()">Xoá mã</button>
+
+</br>
+</br>
+
+<!--Scrip gõ và xem code trong cùng trang có hai khung (Scrip 2)-->
+<td valign="top" style="padding: 10px" background="#eee">
+<span style="color: #339966; font:12pt Tahoma;">Khung xem trước kết quả</span>
+</br>
+<iframe src="about:blank" name="preview" style=
+"height:250px;width:580px;border:solid 1px #b9b8b6;padding:5px;background:#ffffff"
+frameborder="0"></iframe></td>
+</br>
