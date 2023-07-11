@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      canvas {
+        width: 300px;
+        height: 240px;
+        image-rendering: pixelated;
+      }
+
+      .ctrls > * {
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      Bad Apple (actually any video) player for Xiaomi Mi Band 5. Works better
+      with <a href="stock-braille-patched.ft">patched font</a>. Made by
+      <a href="https://ivanik.ru">Ivanik</a>. This page and fort patcher available on
+      <a href="https://github.com/ivanik7/miband-video">GitHub</a>
+    </div>
+    <video src="badapple.mp4" muted></video>
+    <div class="ctrls"></div>
+    <canvas></canvas>
+    <div class="ctrls">
+      <button id="connect">Connect</button>
+      <input type="file" id="file" />
+      <label
+        ><input
+          type="checkbox"
+          id="debug"
+          tooltip="Play video without BLE connection"
+        />Debug</label
+      >
+      <span>FPS: <span id="fps"></span></span>
+    </div>
+    <pre id="pv"></pre>
+    <pre id="log"></pre>
+  </body>
+  <script src="./miband.js"></script>
+</html>

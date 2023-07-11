@@ -1,0 +1,16 @@
+{
+  "name": "miband",
+  "version": "1.0.0",
+  "main": "genBraille.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bmp-js": "^0.1.0",
+    "canvas": "^2.8.0"
+  }
+}
