@@ -295,12 +295,12 @@
     })();
   </script>
 
-<!-- 🐾 Doro Runner (slow mode + bubble spam) -->
+<!-- 🐾 Doro Runner (slow mode + bubble spam + tail) -->
 <style>
   #doro {
     position: fixed;
     left: 40px; top: 40px;
-    width: 96px; height: 96px;         /* chỉnh size tại đây */
+    width: 96px; height: 96px;
     pointer-events: auto;
     user-select: none;
     will-change: transform;
@@ -314,52 +314,76 @@
   /* Bubble chat */
   #doro-bubble {
     position: fixed;
-    max-width: 240px;
+    max-width: 260px;
     background: #fff;
     color: #333;
     font-size: 14px;
-    padding: 8px 12px;
+    padding: 9px 12px;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,.25);
-    line-height: 1.4;
+    box-shadow: 0 6px 16px rgba(0,0,0,.28);
+    line-height: 1.5;
     z-index: 10000;
     opacity: 0;
     pointer-events: none;
-    transform: translate(-50%, -10px);
     transition: opacity .22s ease, transform .22s ease;
     white-space: normal;
+    transform: translate(0,0);
   }
   html[data-theme="dark"] #doro-bubble { background:#222; color:#eee; }
-  #doro-bubble.show { opacity: 1; transform: translate(-50%, -18px); }
+  #doro-bubble.show { opacity: 1; }
+
+  /* Đuôi tam giác (auto xoay theo class) */
+  #doro-bubble::after {
+    content: "";
+    position: absolute;
+    width: 0; height: 0;
+    border: 8px solid transparent;
+  }
+  /* đuôi nhìn lên (bubble phía dưới đầu Doro) */
+  #doro-bubble.tail-top::after    { top: -16px;    left: 20px; border-bottom-color: #fff; }
+  /* đuôi nhìn xuống (bubble phía trên đầu Doro) */
+  #doro-bubble.tail-bottom::after { bottom: -16px; left: 20px; border-top-color:    #fff; }
+  /* đuôi nhìn trái (bubble bên phải Doro) */
+  #doro-bubble.tail-left::after   { right: -16px;  top: 12px;  border-left-color:  #fff; }
+  /* đuôi nhìn phải (bubble bên trái Doro) */
+  #doro-bubble.tail-right::after  { left: -16px;   top: 12px;  border-right-color: #fff; }
+  html[data-theme="dark"] #doro-bubble.tail-top::after    { border-bottom-color:#222; }
+  html[data-theme="dark"] #doro-bubble.tail-bottom::after { border-top-color:#222; }
+  html[data-theme="dark"] #doro-bubble.tail-left::after   { border-left-color:#222; }
+  html[data-theme="dark"] #doro-bubble.tail-right::after  { border-right-color:#222; }
 </style>
 
-<!-- Đặt file GIF cùng thư mục với trang: đổi src nếu tên khác -->
 <img id="doro" src="doro.gif" alt="pet gif" aria-hidden="true">
 <div id="doro-bubble" role="status" aria-live="polite"></div>
 
 <script>
 (() => {
-  // ====== Config (slow + face=left) ======
+  // ====== Config (slow + readable + tail) ======
   const GIF_SRC = 'doro.gif';   // đổi tên nếu khác (vd: 'doro-no-bg.gif')
   const SIZE = 96;              // px
-  const BASE_SPEED = 0.18;      // tốc độ cơ bản (px/ms)
-  const NOISE = 0.00030;        // lạng lách nhẹ
-  const MAX_SPEED = 0.38;       // trần tốc độ
+  const BASE_SPEED = 0.18;
+  const NOISE = 0.00030;
+  const MAX_SPEED = 0.38;
   const EDGE_PADDING = 8;
-  const REPEL_RADIUS = 150;     // bán kính né chuột
-  const REPEL_FORCE = 0.03;     // lực né (dịu)
-  const HOVER_BOOST = 1.03;     // boost khi hover (rất nhẹ)
-  const HOVER_DURATION = 340;   // ms
+  const REPEL_RADIUS = 150;
+  const REPEL_FORCE = 0.03;
+  const HOVER_BOOST = 1.03;
+  const HOVER_DURATION = 340;
   const FPS_LIMIT = 60;
 
-  // Bubble spam config
-  const BUBBLE_MS = 2500;       // mỗi bubble tồn tại 2.5s
-  const HOVER_INTERVAL = 2500;  // chu kỳ spam khi hover (khớp thời lượng bubble)
-  const TAIL_COUNT = 2;         // khi rời chuột: spam thêm 2 câu
+  // Khi đang nói: giảm tốc để dễ đọc
+  const TALK_SPEED_SCALE = 0.45;   // giảm ~55%
+  const TALK_MAX_SCALE   = 0.60;   // trần tốc độ khi nói
 
-  // GIF mặc định nhìn TRÁI (nếu GIF mặc định nhìn phải => đổi 'right')
-  const DEFAULT_FACE = 'left';  // 'left' | 'right'
-  const FACE_DEADZONE = 0.10;   // ngưỡng đổi hướng để đỡ giật mặt
+  // Bubble
+  const BUBBLE_MS = 2500;          // mỗi bubble tồn tại 2.5s
+  const HOVER_INTERVAL = 2500;     // chu kỳ spam khi hover
+  const TAIL_COUNT = 2;            // khi rời chuột: thêm 2 câu
+  const BUBBLE_OFFSET = 12;        // đệm khỏi đầu Doro
+
+  // GIF mặc định nhìn TRÁI
+  const DEFAULT_FACE = 'left';     // 'left' | 'right'
+  const FACE_DEADZONE = 0.10;
 
   const el = document.getElementById('doro');
   const bubble = document.getElementById('doro-bubble');
@@ -391,12 +415,9 @@
   };
   const groups = Object.keys(lines);
   let lastLine = "";
-
   function randomLine() {
-    // chọn nhóm ngẫu nhiên
     const g = groups[Math.floor(Math.random()*groups.length)];
     const arr = lines[g];
-    // tránh lặp câu trước đó
     let pick = arr[Math.floor(Math.random()*arr.length)];
     if (arr.length > 1) {
       let safe = 6;
@@ -415,45 +436,96 @@
   let hoverBoostUntil = 0;
 
   // scale mapping theo hướng mặc định của GIF
-  const scaleWhenFacingRight = (DEFAULT_FACE === 'right') ? 1 : -1; // GIF trái -> muốn nhìn phải thì lật
-  const scaleWhenFacingLeft  = -scaleWhenFacingRight;                // GIF trái -> nhìn trái giữ nguyên (1)
+  const scaleWhenFacingRight = (DEFAULT_FACE === 'right') ? 1 : -1;
+  const scaleWhenFacingLeft  = -scaleWhenFacingRight;
 
-  // set mặt ban đầu để khỏi chớp ngược
+  // hướng mặt ban đầu
   el.style.transform = `translate(${x}px, ${y}px) scaleX(${DEFAULT_FACE==='left' ? 1 : -1})`;
 
   // ====== Bubble helpers ======
   let bubbleHideTo = null;     // timeout ẩn bubble hiện tại
   let hoverInterval = null;    // setInterval khi hover
-  let tailTimeouts = [];       // các timeout sau khi mouseleave
+  let tailTimeouts = [];       // các timeout sau mouseleave
 
-  function clearTail() {
-    tailTimeouts.forEach(t => clearTimeout(t));
-    tailTimeouts = [];
+  function clearTail(){ tailTimeouts.forEach(t=>clearTimeout(t)); tailTimeouts = []; }
+  function isBubbleVisible(){ return bubble.classList.contains('show'); }
+
+  // Tính vị trí bubble để KHÔNG che đầu + tự đổi vị trí/đuôi theo mép
+  function placeBubble() {
+    const rect = el.getBoundingClientRect();
+    const bw = Math.max(bubble.offsetWidth || 220, 180);
+    const bh = Math.max(bubble.offsetHeight || 60, 40);
+    const centerX = rect.left + rect.width/2;
+    const headX   = rect.left + rect.width*0.5;
+    const headTop = rect.top;
+    const headBot = rect.bottom;
+    const facingRight = getComputedStyle(el).transform.includes('matrix(-1') ? false : true;
+
+    // Candidates: trên, dưới, trái, phải
+    const candidates = [];
+
+    // Trên (ưu tiên) — đặt lệch xíu sang bên phải/trái theo hướng mặt
+    candidates.push({
+      x: centerX + (facingRight ? rect.width*0.25 : -rect.width*0.25),
+      y: headTop - BUBBLE_OFFSET - bh,
+      tail: 'tail-bottom',
+      score: 3
+    });
+
+    // Dưới
+    candidates.push({
+      x: centerX + (facingRight ? rect.width*0.25 : -rect.width*0.25),
+      y: headBot + BUBBLE_OFFSET,
+      tail: 'tail-top',
+      score: 2
+    });
+
+    // Trái
+    candidates.push({
+      x: rect.left - BUBBLE_OFFSET - bw,
+      y: headTop + rect.height*0.15,
+      tail: 'tail-right',
+      score: 2
+    });
+
+    // Phải
+    candidates.push({
+      x: rect.right + BUBBLE_OFFSET,
+      y: headTop + rect.height*0.15,
+      tail: 'tail-left',
+      score: 2
+    });
+
+    // Ưu tiên vị trí không vượt biên
+    let pick = null;
+    for (const c of candidates) {
+      const okX = c.x >= 8 && c.x + bw <= innerWidth - 8;
+      const okY = c.y >= 8 && c.y + bh <= innerHeight - 8;
+      if (okX && okY) { pick = c; break; }
+    }
+    if (!pick) {
+      // nếu tất cả đều chạm biên, clamp theo màn hình cho vị trí "trên" đầu tiên
+      pick = candidates[0];
+      pick.x = Math.min(Math.max(8, pick.x), innerWidth - bw - 8);
+      pick.y = Math.min(Math.max(8, pick.y), innerHeight - bh - 8);
+    }
+
+    bubble.style.left = pick.x + 'px';
+    bubble.style.top  = pick.y + 'px';
+    bubble.classList.remove('tail-top','tail-bottom','tail-left','tail-right');
+    bubble.classList.add(pick.tail);
   }
 
   function showBubble(text = randomLine()) {
-    // đặt nội dung
     bubble.textContent = text;
-    // vị trí theo Doro
-    const rect = el.getBoundingClientRect();
-    bubble.style.top = (rect.top - 10) + 'px';
-    bubble.style.left = (rect.left + rect.width/2) + 'px';
+    placeBubble();
     bubble.classList.add('show');
 
-    // reset ẩn sau 2.5s
     if (bubbleHideTo) clearTimeout(bubbleHideTo);
-    bubbleHideTo = setTimeout(() => {
+    bubbleHideTo = setTimeout(()=> {
       bubble.classList.remove('show');
       bubbleHideTo = null;
     }, BUBBLE_MS);
-  }
-
-  // theo dõi vị trí bubble khi Doro chạy (nếu đang hiển thị)
-  function updateBubblePositionIfVisible() {
-    if (!bubble.classList.contains('show')) return;
-    const rect = el.getBoundingClientRect();
-    bubble.style.top = (rect.top - 10) + 'px';
-    bubble.style.left = (rect.left + rect.width/2) + 'px';
   }
 
   // ====== Events ======
@@ -464,7 +536,6 @@
 
   el.addEventListener('mouseenter', () => {
     hoverBoostUntil = performance.now() + HOVER_DURATION;
-    // bắt đầu spam liên tục
     clearInterval(hoverInterval);
     clearTail();
     showBubble(); // bắn ngay
@@ -472,39 +543,43 @@
   });
 
   el.addEventListener('mouseleave', () => {
-    // dừng spam hover, nhưng giữ bubble hiện tại 2.5s
     clearInterval(hoverInterval);
     hoverInterval = null;
 
-    // xếp hàng thêm 2 câu (mỗi câu 2.5s), không đè bubble hiện tại
+    // giữ bubble hiện tại 2.5s (đã có timeout),
+    // xếp hàng thêm 2 câu: lần lượt sau 2.5s và 5s
     clearTail();
     for (let i = 1; i <= TAIL_COUNT; i++) {
-      tailTimeouts.push(setTimeout(() => {
-        showBubble(); // tự ẩn sau 2.5s
-      }, i * BUBBLE_MS));
+      tailTimeouts.push(setTimeout(() => showBubble(), i * BUBBLE_MS));
     }
-    // Note: bubble hiện tại sẽ tự ẩn theo BUBBLE_MS bởi bubbleHideTo
   });
 
-  // ====== Loop (fps cap) ======
+  // ====== Loop (fps cap + clamp dt + slow while talking) ======
   let acc = 0, frameInterval = 1000 / FPS_LIMIT;
   function tick(now){
-    const dt = now - last; last = now;
+    let dt = now - last; last = now;
+    dt = Math.min(dt, 32); // clamp để tránh nhảy xa khi lag/tab ẩn
+
     acc += dt; if (acc < frameInterval){ requestAnimationFrame(tick); return; }
     acc = 0;
 
     const vw = innerWidth, vh = innerHeight;
 
+    // (A) giảm tốc khi đang nói
+    const talking = bubble.classList.contains('show');
+    const speedScale = talking ? TALK_SPEED_SCALE : 1;
+    const maxScale   = talking ? TALK_MAX_SCALE   : 1;
+
     // (1) noise nhẹ
-    vx += (Math.random()-0.5) * NOISE * dt;
-    vy += (Math.random()-0.5) * NOISE * dt;
+    vx += (Math.random()-0.5) * NOISE * dt * speedScale;
+    vy += (Math.random()-0.5) * NOISE * dt * speedScale;
 
     // (2) né chuột
     const cx = x + SIZE/2, cy = y + SIZE/2;
     const dx = cx - mouse.x, dy = cy - mouse.y;
     const dist = Math.hypot(dx,dy);
     if (dist < REPEL_RADIUS){
-      const f = (1 - dist/REPEL_RADIUS) * REPEL_FORCE;
+      const f = (1 - dist/REPEL_RADIUS) * REPEL_FORCE * speedScale;
       const inv = Math.hypot(dx,dy) || 1;
       vx += (dx/inv) * f * dt;
       vy += (dy/inv) * f * dt;
@@ -513,18 +588,19 @@
     // (3) hover boost (nhẹ)
     if (now < hoverBoostUntil){
       const inv = Math.hypot(dx,dy) || 1;
-      vx += (dx/inv) * HOVER_BOOST * 0.006 * dt;
-      vy += (dy/inv) * HOVER_BOOST * 0.006 * dt;
+      vx += (dx/inv) * HOVER_BOOST * 0.006 * dt * speedScale;
+      vy += (dy/inv) * HOVER_BOOST * 0.006 * dt * speedScale;
     }
 
     // (4) duy trì quán tính nhỏ
     const invv = Math.hypot(vx,vy) || 1;
-    vx += (vx/invv) * BASE_SPEED * 0.001 * dt;
-    vy += (vy/invv) * BASE_SPEED * 0.001 * dt;
+    vx += (vx/invv) * BASE_SPEED * 0.001 * dt * speedScale;
+    vy += (vy/invv) * BASE_SPEED * 0.001 * dt * speedScale;
 
     // (5) clamp tốc độ
+    const maxV = MAX_SPEED * maxScale;
     const sp = Math.hypot(vx,vy);
-    if (sp > MAX_SPEED){ vx = vx/sp*MAX_SPEED; vy = vy/sp*MAX_SPEED; }
+    if (sp > maxV){ vx = vx/sp*maxV; vy = vy/sp*maxV; }
 
     // (6) vị trí
     x += vx * dt; y += vy * dt;
@@ -535,7 +611,7 @@
     if (x > vw - SIZE - EDGE_PADDING){ x = vw - SIZE - EDGE_PADDING; vx = -Math.abs(vx); }
     if (y > vh - SIZE - EDGE_PADDING){ y = vh - SIZE - EDGE_PADDING; vy = -Math.abs(vy); }
 
-    // (8) hướng mặt có hysteresis (đỡ giật)
+    // (8) hướng mặt (hysteresis)
     const mtx = getComputedStyle(el).transform;
     let currentScaleX = mtx.includes('matrix(-1') ? -1 : 1;
     let targetScaleX = currentScaleX;
@@ -545,8 +621,8 @@
     // (9) render
     el.style.transform = `translate(${x}px, ${y}px) scaleX(${targetScaleX})`;
 
-    // (10) cập nhật vị trí bubble nếu đang hiển thị
-    updateBubblePositionIfVisible();
+    // (10) cập nhật vị trí bubble nếu hiển thị
+    if (talking) placeBubble();
 
     requestAnimationFrame(tick);
   }
@@ -560,10 +636,12 @@
 })();
 </script>
 
+
  
   
 </body>
 </html>
+
 
 
 
