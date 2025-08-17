@@ -294,5 +294,143 @@
       btn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); cycle(); }});
     })();
   </script>
+
+<!-- 🐾 Doro Runner: random walk + face direction + mouse avoid -->
+<style>
+  #doro {
+    position: fixed;          /* nổi trên mọi trang */
+    left: 40px; top: 40px;
+    width: 96px; height: 96px; /* chỉnh kích thước tại đây */
+    pointer-events: auto;     /* để bắt hover */
+    user-select: none;
+    will-change: transform;
+    z-index: 9999;
+    /* bóng nhẹ cho dễ nhìn ở nền sáng/tối */
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,.25));
+    transition: filter .2s ease;
+  }
+  #doro:active { filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
+  @media (prefers-reduced-motion: reduce) {
+    #doro { display: none !important; } /* tắt nếu người dùng không thích motion */
+  }
+</style>
+
+<img id="doro" src="doro.gif" alt="doro gif cute" aria-hidden="true">
+
+<script>
+(() => {
+  // ====== Config ======
+  const GIF_SRC = 'doro.gif';
+  const SIZE = 96;                // px
+  const BASE_SPEED = 0.9;         // tốc độ cơ bản (px/ms)
+  const NOISE = 0.0007;           // “lạng lách” tự nhiên
+  const MAX_SPEED = 1.4;          // tốc độ trần
+  const EDGE_PADDING = 8;         // đệm mép màn hình
+  const REPEL_RADIUS = 150;       // bán kính bắt đầu né chuột
+  const REPEL_FORCE = 0.12;       // lực đẩy khỏi chuột
+  const HOVER_BOOST = 1.8;        // bơm tốc khi hover
+  const HOVER_DURATION = 420;     // ms
+  const FPS_LIMIT = 60;           // giới hạn fps
+
+  const el = document.getElementById('doro');
+  el.src = GIF_SRC;
+  el.width = el.height = SIZE;
+
+  // trạng thái
+  let x = 40, y = 40;
+  let vx = (Math.random() * 2 - 1) * BASE_SPEED;
+  let vy = (Math.random() * 2 - 1) * BASE_SPEED;
+  let last = performance.now();
+  let mouse = { x: -9999, y: -9999, inside: false };
+  let hoverBoostUntil = 0;
+
+  // events chuột / chạm
+  window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; }, {passive:true});
+  window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; }, {passive:true});
+  window.addEventListener('touchmove', (e) => {
+    const t = e.touches[0]; if (!t) return;
+    mouse.x = t.clientX; mouse.y = t.clientY;
+  }, {passive:true});
+  el.addEventListener('mouseenter', () => { hoverBoostUntil = performance.now() + HOVER_DURATION; });
+  el.addEventListener('dragstart', (e)=> e.preventDefault());
+
+  // util
+  const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
+  function norm(ax, ay){ const m = Math.hypot(ax,ay)||1; return [ax/m, ay/m]; }
+
+  // loop
+  let acc = 0, frameInterval = 1000 / FPS_LIMIT;
+  function tick(now){
+    const dt = now - last; last = now;
+    acc += dt;
+    if (acc < frameInterval) { requestAnimationFrame(tick); return; }
+    acc = 0;
+
+    const vw = window.innerWidth, vh = window.innerHeight;
+
+    // 1) random “lắc lư” nhẹ
+    vx += (Math.random() - 0.5) * NOISE * dt;
+    vy += (Math.random() - 0.5) * NOISE * dt;
+
+    // 2) né chuột nếu lại gần
+    const cx = x + SIZE/2, cy = y + SIZE/2;
+    const dx = cx - mouse.x, dy = cy - mouse.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist < REPEL_RADIUS) {
+      // lực đẩy tỉ lệ nghịch với khoảng cách (mềm)
+      const f = (1 - dist / REPEL_RADIUS) * REPEL_FORCE;
+      const [nx, ny] = norm(dx, dy);
+      vx += nx * f * dt;
+      vy += ny * f * dt;
+    }
+
+    // 3) tăng tốc khi hover trực tiếp
+    if (now < hoverBoostUntil) {
+      const [nx, ny] = norm(dx, dy);
+      vx += nx * HOVER_BOOST * 0.01 * dt;
+      vy += ny * HOVER_BOOST * 0.01 * dt;
+    }
+
+    // 4) thêm vận tốc cơ bản để không “đuối”
+    const [vxn, vyn] = norm(vx, vy);
+    vx += vxn * BASE_SPEED * 0.002 * dt;
+    vy += vyn * BASE_SPEED * 0.002 * dt;
+
+    // 5) giới hạn tốc độ
+    let speed = Math.hypot(vx, vy);
+    const maxv = MAX_SPEED;
+    if (speed > maxv) { vx = vx / speed * maxv; vy = vy / speed * maxv; }
+
+    // 6) cập nhật vị trí
+    x += vx * dt;
+    y += vy * dt;
+
+    // 7) va chạm biên (bật lại)
+    if (x < EDGE_PADDING) { x = EDGE_PADDING; vx = Math.abs(vx); }
+    if (y < EDGE_PADDING) { y = EDGE_PADDING; vy = Math.abs(vy); }
+    if (x > vw - SIZE - EDGE_PADDING) { x = vw - SIZE - EDGE_PADDING; vx = -Math.abs(vx); }
+    if (y > vh - SIZE - EDGE_PADDING) { y = vh - SIZE - EDGE_PADDING; vy = -Math.abs(vy); }
+
+    // 8) xoay mặt theo hướng (flip ngang theo vx)
+    const faceLeft = vx < -0.02; // ngưỡng nhỏ để bớt giật
+    const scaleX = faceLeft ? -1 : 1;
+
+    // 9) render
+    el.style.transform = `translate(${x}px, ${y}px) scaleX(${scaleX})`;
+
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // cập nhật lại vị trí nếu resize
+  window.addEventListener('resize', () => {
+    x = clamp(x, EDGE_PADDING, window.innerWidth - SIZE - EDGE_PADDING);
+    y = clamp(y, EDGE_PADDING, window.innerHeight - SIZE - EDGE_PADDING);
+  }, {passive:true});
+})();
+</script>
+  
+  
 </body>
 </html>
+
