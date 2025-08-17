@@ -295,39 +295,25 @@
     })();
   </script>
 
-<!-- 🐾 Doro Runner (slow mode) -->
-<style>
-  #doro {
-    position: fixed;
-    left: 40px; top: 40px;
-    width: 96px; height: 96px;     /* chỉnh size tại đây */
-    pointer-events: auto;
-    user-select: none;
-    will-change: transform;
-    z-index: 9999;
-    filter: drop-shadow(0 6px 10px rgba(0,0,0,.25));
-    transition: filter .2s ease;
-  }
-  #doro:active { filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
-  @media (prefers-reduced-motion: reduce) { #doro { display:none !important; } }
-</style>
-
-<img id="doro" src="doro.gif" alt="doro gif cute" aria-hidden="true">
-
 <script>
 (() => {
-  // ====== Config (slow & gentle) ======
+  // ====== Config (slower + correct facing) ======
   const GIF_SRC = 'doro.gif';
-  const SIZE = 96;            // px
-  const BASE_SPEED = 0.40;    // tốc độ cơ bản (px/ms)  ← giảm
-  const NOISE = 0.0005;       // “lạng lách” nhẹ hơn
-  const MAX_SPEED = 0.80;     // trần tốc độ             ← giảm
-  const EDGE_PADDING = 8;     
-  const REPEL_RADIUS = 150;   // bán kính né chuột
-  const REPEL_FORCE = 0.06;   // lực né chuột            ← giảm
-  const HOVER_BOOST = 1.2;    // boost khi hover         ← dịu hơn
-  const HOVER_DURATION = 380; // ms
+  const SIZE = 96;             // px
+  const BASE_SPEED = 0.22;     // tốc độ cơ bản (px/ms) -> chậm hơn
+  const NOISE = 0.00035;       // lạng lách nhẹ
+  const MAX_SPEED = 0.50;      // trần tốc độ -> chậm hơn
+  const EDGE_PADDING = 8;
+  const REPEL_RADIUS = 150;    // vùng né chuột
+  const REPEL_FORCE = 0.04;    // lực né -> dịu
+  const HOVER_BOOST = 1.05;    // boost khi hover -> rất nhẹ
+  const HOVER_DURATION = 360;  // ms
   const FPS_LIMIT = 60;
+
+  // 👉 Nếu GIF mặc định nhìn **trái**, để 'left' (đa số sticker kiểu này là left).
+  //    Nếu GIF mặc định nhìn **phải**, đổi thành 'right'.
+  const DEFAULT_FACE = 'left'; // 'left' | 'right'
+  const FACE_DEADZONE = 0.06;  // ngưỡng đổi hướng để đỡ giật mặt
 
   const el = document.getElementById('doro');
   el.src = GIF_SRC; el.width = el.height = SIZE;
@@ -351,7 +337,11 @@
   const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
   const norm = (ax,ay)=>{ const m=Math.hypot(ax,ay)||1; return [ax/m, ay/m]; };
 
-  // loop
+  // precompute scale mapping theo hướng mặc định của GIF
+  const scaleWhenFacingRight = (DEFAULT_FACE === 'right') ? 1 : -1;
+  const scaleWhenFacingLeft  = -scaleWhenFacingRight;
+
+  // loop (fps cap)
   let acc = 0, frameInterval = 1000 / FPS_LIMIT;
   function tick(now){
     const dt = now - last; last = now;
@@ -375,17 +365,17 @@
       vy += ny * f * dt;
     }
 
-    // (3) hover boost (dịu)
+    // (3) hover boost (nhẹ)
     if (now < hoverBoostUntil){
       const [nx,ny] = norm(dx,dy);
-      vx += nx * HOVER_BOOST * 0.008 * dt;
-      vy += ny * HOVER_BOOST * 0.008 * dt;
+      vx += nx * HOVER_BOOST * 0.006 * dt;
+      vy += ny * HOVER_BOOST * 0.006 * dt;
     }
 
-    // (4) duy trì ít quán tính
+    // (4) duy trì quán tính nhỏ
     const [vxn, vyn] = norm(vx,vy);
-    vx += vxn * BASE_SPEED * 0.0015 * dt;
-    vy += vyn * BASE_SPEED * 0.0015 * dt;
+    vx += vxn * BASE_SPEED * 0.0012 * dt;
+    vy += vyn * BASE_SPEED * 0.0012 * dt;
 
     // (5) clamp tốc độ
     const sp = Math.hypot(vx,vy);
@@ -400,12 +390,17 @@
     if (x > vw - SIZE - EDGE_PADDING){ x = vw - SIZE - EDGE_PADDING; vx = -Math.abs(vx); }
     if (y > vh - SIZE - EDGE_PADDING){ y = vh - SIZE - EDGE_PADDING; vy = -Math.abs(vy); }
 
-    // (8) XOAY MẶT CHUẨN: phải -> scaleX(1), trái -> scaleX(-1)
-    const faceRight = vx > 0.02;
-    const scaleX = faceRight ? 1 : -1;
+    // (8) XOAY MẶT CHUẨN với hysteresis:
+    // - vx > +deadzone  => đang đi sang phải  -> dùng scaleFacingRight
+    // - vx < -deadzone  => đang đi sang trái  -> dùng scaleFacingLeft
+    // - nằm trong deadzone giữ nguyên scale hiện tại để khỏi giật
+    let currentScaleX = getComputedStyle(el).transform.includes('matrix(-1') ? -1 : 1;
+    let targetScaleX = currentScaleX;
+    if (vx >  FACE_DEADZONE) targetScaleX = scaleWhenFacingRight;
+    if (vx < -FACE_DEADZONE) targetScaleX = scaleWhenFacingLeft;
 
     // (9) render
-    el.style.transform = `translate(${x}px, ${y}px) scaleX(${scaleX})`;
+    el.style.transform = `translate(${x}px, ${y}px) scaleX(${targetScaleX})`;
 
     requestAnimationFrame(tick);
   }
@@ -419,10 +414,12 @@
 })();
 </script>
 
+
   
   
 </body>
 </html>
+
 
 
 
