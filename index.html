@@ -432,11 +432,113 @@
     y = clamp(y, EDGE_PADDING, innerHeight - SIZE - EDGE_PADDING);
   }, {passive:true});
 })();
+  
+// Lời thoại
+<!-- Bubble chat -->
+<style>
+  #doro-bubble {
+    position: fixed;
+    max-width: 220px;
+    background: #fff;
+    color: #333;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.25);
+    line-height: 1.4;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease;
+    white-space: normal;
+  }
+  html[data-theme="dark"] #doro-bubble {
+    background: #222;
+    color: #eee;
+  }
+  #doro-bubble.show {
+    opacity: 1;
+    transform: translateY(-12px);
+  }
+</style>
+
+<div id="doro-bubble"></div>
+
+<script>
+(() => {
+  const bubble = document.getElementById('doro-bubble');
+  const doro   = document.getElementById('doro');
+
+  const lines = {
+    cute: [
+      "Nyaa~ bắt được Doro chưa nào?",
+      "Mou~ đừng dí nữa mà~",
+      "Bắt Doro đi, nếu dám đó!",
+      "Doro chạy nhanh như gió nè~",
+      "A… sugoi! Doro né được rồi!"
+    ],
+    cool: [
+      "Tốc độ chính là sức mạnh của ta!",
+      "Nếu muốn đuổi theo… hãy cố hơn đi!",
+      "Một khi Doro đã chạy… không gì cản nổi!",
+      "Đây… mới là tốc độ thật sự!",
+      "Ta không chạy trốn… chỉ đang tiến lên phía trước!"
+    ],
+    troll: [
+      "Thôi thôi, đừng dí nữa… Doro còn non nước lắm!",
+      "Chạy riết rồi sắp hết stamina rồi đó nha~",
+      "Ủa dí chi, có thưởng hả?",
+      "Đứng lại đi! …À nhầm, thôi để Doro chạy tiếp 😏",
+      "Ai cho tui ly trà sữa với, chạy xỉu luôn rồi! 🧋"
+    ]
+  };
+
+  const groups = Object.keys(lines);
+
+  function randomLine() {
+    const g = groups[Math.floor(Math.random()*groups.length)];
+    const arr = lines[g];
+    return arr[Math.floor(Math.random()*arr.length)];
+  }
+
+  let spamTimer;
+
+  function showBubble() {
+    bubble.textContent = randomLine();
+    const rect = doro.getBoundingClientRect();
+    const top = rect.top - 10;
+    const left = rect.left + rect.width/2;
+
+    bubble.style.top = `${top}px`;
+    bubble.style.left = `${left}px`;
+    bubble.style.transform = "translate(-50%, -20px)";
+    bubble.classList.add('show');
+
+    // ẩn đi sau một chút
+    setTimeout(()=> bubble.classList.remove('show'), 1800);
+  }
+
+  doro.addEventListener('mouseenter', () => {
+    if(spamTimer) clearInterval(spamTimer);
+    showBubble();
+    spamTimer = setInterval(showBubble, 2200); // spam đều đều 2.2s
+  });
+
+  doro.addEventListener('mouseleave', () => {
+    clearInterval(spamTimer);
+    spamTimer = null;
+    bubble.classList.remove('show');
+  });
+})();
+</script>
+
+  
 </script>
  
   
 </body>
 </html>
+
 
 
 
