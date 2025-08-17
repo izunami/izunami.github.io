@@ -295,62 +295,63 @@
     })();
   </script>
 
-<!-- 🐾 Doro Runner (slow mode + bubble spam + tail) -->
+<!-- 🐾 Doro Runner (high-FPS + fixed timestep + readable bubble) -->
 <style>
   #doro {
-    position: fixed;
-    left: 40px; top: 40px;
+    position: fixed; left: 40px; top: 40px;
     width: 96px; height: 96px;
-    pointer-events: auto;
-    user-select: none;
-    will-change: transform;
+    pointer-events: auto; user-select: none;
     z-index: 9999;
     filter: drop-shadow(0 6px 10px rgba(0,0,0,.25));
-    transition: filter .2s ease;
+    /* ép GPU compositing để transform mượt hơn */
+    transform: translate3d(0,0,0);
+    will-change: transform;
   }
-  #doro:active { filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
-  @media (prefers-reduced-motion: reduce) { #doro { display:none !important; } }
 
-  /* Bubble chat */
+  /* Bubble chat + tail */
   #doro-bubble {
     position: fixed;
-    max-width: 260px;
-    background: #fff;
-    color: #333;
-    font-size: 14px;
-    padding: 9px 12px;
+    max-width: 300px;
+    background: rgba(255,255,255,.92);
+    color: #111;
+    font-size: 15px;
+    padding: 10px 14px;
     border-radius: 12px;
-    box-shadow: 0 6px 16px rgba(0,0,0,.28);
-    line-height: 1.5;
+    box-shadow: 0 8px 22px rgba(0,0,0,.28);
+    line-height: 1.55;
     z-index: 10000;
     opacity: 0;
     pointer-events: none;
-    transition: opacity .22s ease, transform .22s ease;
+    transition: opacity .18s ease, transform .18s ease;
     white-space: normal;
-    transform: translate(0,0);
+    transform: translate3d(0,0,0);
+    backdrop-filter: saturate(120%) blur(4px);
+    /* viền chữ nhẹ để nổi trên nền phức tạp */
+    text-shadow: 0 1px 0 rgba(255,255,255,.35);
   }
-  html[data-theme="dark"] #doro-bubble { background:#222; color:#eee; }
+  html[data-theme="dark"] #doro-bubble {
+    background: rgba(34,34,34,.92);
+    color: #eee;
+    text-shadow: 0 1px 0 rgba(0,0,0,.35);
+  }
   #doro-bubble.show { opacity: 1; }
 
-  /* Đuôi tam giác (auto xoay theo class) */
   #doro-bubble::after {
-    content: "";
-    position: absolute;
-    width: 0; height: 0;
+    content: ""; position: absolute; width: 0; height: 0;
     border: 8px solid transparent;
   }
-  /* đuôi nhìn lên (bubble phía dưới đầu Doro) */
   #doro-bubble.tail-top::after    { top: -16px;    left: 20px; border-bottom-color: #fff; }
-  /* đuôi nhìn xuống (bubble phía trên đầu Doro) */
   #doro-bubble.tail-bottom::after { bottom: -16px; left: 20px; border-top-color:    #fff; }
-  /* đuôi nhìn trái (bubble bên phải Doro) */
   #doro-bubble.tail-left::after   { right: -16px;  top: 12px;  border-left-color:  #fff; }
-  /* đuôi nhìn phải (bubble bên trái Doro) */
   #doro-bubble.tail-right::after  { left: -16px;   top: 12px;  border-right-color: #fff; }
   html[data-theme="dark"] #doro-bubble.tail-top::after    { border-bottom-color:#222; }
   html[data-theme="dark"] #doro-bubble.tail-bottom::after { border-top-color:#222; }
   html[data-theme="dark"] #doro-bubble.tail-left::after   { border-left-color:#222; }
   html[data-theme="dark"] #doro-bubble.tail-right::after  { border-right-color:#222; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #doro { display:none !important; }
+  }
 </style>
 
 <img id="doro" src="doro.gif" alt="pet gif" aria-hidden="true">
@@ -358,9 +359,9 @@
 
 <script>
 (() => {
-  // ====== Config (slow + readable + tail) ======
-  const GIF_SRC = 'doro.gif';   // đổi tên nếu khác (vd: 'doro-no-bg.gif')
-  const SIZE = 96;              // px
+  // ===== Config =====
+  const GIF_SRC = 'doro.gif';       // đổi tên nếu khác
+  const SIZE = 96;                  // px
   const BASE_SPEED = 0.18;
   const NOISE = 0.00030;
   const MAX_SPEED = 0.38;
@@ -369,27 +370,30 @@
   const REPEL_FORCE = 0.03;
   const HOVER_BOOST = 1.03;
   const HOVER_DURATION = 340;
-  const FPS_LIMIT = 60;
 
-  // Khi đang nói: giảm tốc để dễ đọc
-  const TALK_SPEED_SCALE = 0.45;   // giảm ~55%
-  const TALK_MAX_SCALE   = 0.60;   // trần tốc độ khi nói
+  // Mượt hơn: fixed timestep vật lý 8ms (~125Hz), render theo rAF
+  const STEP_MS = 8;                // giảm xuống 6–8ms sẽ mượt hơn
+  const MAX_CATCHUP_STEPS = 8;      // tránh “đuổi theo” quá xa khi lag
 
-  // Bubble
-  const BUBBLE_MS = 2500;          // mỗi bubble tồn tại 2.5s
-  const HOVER_INTERVAL = 2500;     // chu kỳ spam khi hover
-  const TAIL_COUNT = 2;            // khi rời chuột: thêm 2 câu
-  const BUBBLE_OFFSET = 12;        // đệm khỏi đầu Doro
+  // Khi đang nói: giảm chuyển động để dễ đọc
+  const TALK_SPEED_SCALE = 0.30;    // chậm hơn (0.3 = 70% giảm)
+  const TALK_MAX_SCALE   = 0.45;    // trần tốc độ khi nói
+
+  // Bubble nói
+  const BUBBLE_MS = 2500;           // mỗi bubble tồn tại 2.5s
+  const HOVER_INTERVAL = 2500;      // chu kỳ spam khi hover
+  const TAIL_COUNT = 2;             // khi rời chuột: thêm 2 câu
+  const BUBBLE_OFFSET = 12;         // đệm khỏi đầu Doro
 
   // GIF mặc định nhìn TRÁI
-  const DEFAULT_FACE = 'left';     // 'left' | 'right'
+  const DEFAULT_FACE = 'left';      // 'left' | 'right'
   const FACE_DEADZONE = 0.10;
 
   const el = document.getElementById('doro');
   const bubble = document.getElementById('doro-bubble');
   el.src = GIF_SRC; el.width = el.height = SIZE;
 
-  // ====== Thoại ======
+  // ===== Thoại =====
   const lines = {
     cute: [
       "Nyaa~ bắt được Doro chưa nào?",
@@ -427,11 +431,15 @@
     return pick;
   }
 
-  // ====== State di chuyển ======
+  // ===== State di chuyển =====
   let x = 40, y = 40;
   let vx = (Math.random()*2-1) * BASE_SPEED;
   let vy = (Math.random()*2-1) * BASE_SPEED;
-  let last = performance.now();
+
+  // hướng mặt ban đầu
+  el.style.transform = `translate3d(${x}px, ${y}px, 0) scaleX(${DEFAULT_FACE==='left' ? 1 : -1})`;
+
+  // mouse & hover state
   let mouse = { x: -9999, y: -9999 };
   let hoverBoostUntil = 0;
 
@@ -439,64 +447,47 @@
   const scaleWhenFacingRight = (DEFAULT_FACE === 'right') ? 1 : -1;
   const scaleWhenFacingLeft  = -scaleWhenFacingRight;
 
-  // hướng mặt ban đầu
-  el.style.transform = `translate(${x}px, ${y}px) scaleX(${DEFAULT_FACE==='left' ? 1 : -1})`;
-
-  // ====== Bubble helpers ======
-  let bubbleHideTo = null;     // timeout ẩn bubble hiện tại
-  let hoverInterval = null;    // setInterval khi hover
-  let tailTimeouts = [];       // các timeout sau mouseleave
+  // ===== Bubble state =====
+  let bubbleHideTo = null;
+  let hoverInterval = null;
+  let tailTimeouts = [];
 
   function clearTail(){ tailTimeouts.forEach(t=>clearTimeout(t)); tailTimeouts = []; }
   function isBubbleVisible(){ return bubble.classList.contains('show'); }
 
-  // Tính vị trí bubble để KHÔNG che đầu + tự đổi vị trí/đuôi theo mép
+  // Vị trí bubble: không che đầu, tự đổi vị trí/đuôi theo mép
   function placeBubble() {
     const rect = el.getBoundingClientRect();
-    const bw = Math.max(bubble.offsetWidth || 220, 180);
+    const bw = Math.max(bubble.offsetWidth || 240, 180);
     const bh = Math.max(bubble.offsetHeight || 60, 40);
     const centerX = rect.left + rect.width/2;
-    const headX   = rect.left + rect.width*0.5;
     const headTop = rect.top;
     const headBot = rect.bottom;
     const facingRight = getComputedStyle(el).transform.includes('matrix(-1') ? false : true;
 
-    // Candidates: trên, dưới, trái, phải
-    const candidates = [];
+    const candidates = [
+      { // trên: lệch theo hướng mặt
+        x: centerX + (facingRight ? rect.width*0.25 : -rect.width*0.25),
+        y: headTop - BUBBLE_OFFSET - bh,
+        tail: 'tail-bottom'
+      },
+      { // dưới
+        x: centerX + (facingRight ? rect.width*0.25 : -rect.width*0.25),
+        y: headBot + BUBBLE_OFFSET,
+        tail: 'tail-top'
+      },
+      { // trái
+        x: rect.left - BUBBLE_OFFSET - bw,
+        y: headTop + rect.height*0.15,
+        tail: 'tail-right'
+      },
+      { // phải
+        x: rect.right + BUBBLE_OFFSET,
+        y: headTop + rect.height*0.15,
+        tail: 'tail-left'
+      }
+    ];
 
-    // Trên (ưu tiên) — đặt lệch xíu sang bên phải/trái theo hướng mặt
-    candidates.push({
-      x: centerX + (facingRight ? rect.width*0.25 : -rect.width*0.25),
-      y: headTop - BUBBLE_OFFSET - bh,
-      tail: 'tail-bottom',
-      score: 3
-    });
-
-    // Dưới
-    candidates.push({
-      x: centerX + (facingRight ? rect.width*0.25 : -rect.width*0.25),
-      y: headBot + BUBBLE_OFFSET,
-      tail: 'tail-top',
-      score: 2
-    });
-
-    // Trái
-    candidates.push({
-      x: rect.left - BUBBLE_OFFSET - bw,
-      y: headTop + rect.height*0.15,
-      tail: 'tail-right',
-      score: 2
-    });
-
-    // Phải
-    candidates.push({
-      x: rect.right + BUBBLE_OFFSET,
-      y: headTop + rect.height*0.15,
-      tail: 'tail-left',
-      score: 2
-    });
-
-    // Ưu tiên vị trí không vượt biên
     let pick = null;
     for (const c of candidates) {
       const okX = c.x >= 8 && c.x + bw <= innerWidth - 8;
@@ -504,7 +495,6 @@
       if (okX && okY) { pick = c; break; }
     }
     if (!pick) {
-      // nếu tất cả đều chạm biên, clamp theo màn hình cho vị trí "trên" đầu tiên
       pick = candidates[0];
       pick.x = Math.min(Math.max(8, pick.x), innerWidth - bw - 8);
       pick.y = Math.min(Math.max(8, pick.y), innerHeight - bh - 8);
@@ -528,7 +518,7 @@
     }, BUBBLE_MS);
   }
 
-  // ====== Events ======
+  // ===== Events =====
   addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; }, {passive:true});
   addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; }, {passive:true});
   addEventListener('touchmove', e => { const t=e.touches[0]; if(t){ mouse.x=t.clientX; mouse.y=t.clientY; }}, {passive:true});
@@ -545,88 +535,96 @@
   el.addEventListener('mouseleave', () => {
     clearInterval(hoverInterval);
     hoverInterval = null;
-
-    // giữ bubble hiện tại 2.5s (đã có timeout),
-    // xếp hàng thêm 2 câu: lần lượt sau 2.5s và 5s
+    // xếp hàng thêm 2 câu, mỗi câu 2.5s
     clearTail();
     for (let i = 1; i <= TAIL_COUNT; i++) {
       tailTimeouts.push(setTimeout(() => showBubble(), i * BUBBLE_MS));
     }
   });
 
-  // ====== Loop (fps cap + clamp dt + slow while talking) ======
-  let acc = 0, frameInterval = 1000 / FPS_LIMIT;
-  function tick(now){
-    let dt = now - last; last = now;
-    dt = Math.min(dt, 32); // clamp để tránh nhảy xa khi lag/tab ẩn
+  // ===== Loop: high-FPS render + fixed physics step =====
+  let prev = performance.now();
+  let accumulator = 0;
 
-    acc += dt; if (acc < frameInterval){ requestAnimationFrame(tick); return; }
-    acc = 0;
-
-    const vw = innerWidth, vh = innerHeight;
-
-    // (A) giảm tốc khi đang nói
-    const talking = bubble.classList.contains('show');
+  function physicsStep(step) {
+    // giảm tốc khi nói
+    const talking = isBubbleVisible();
     const speedScale = talking ? TALK_SPEED_SCALE : 1;
     const maxScale   = talking ? TALK_MAX_SCALE   : 1;
 
-    // (1) noise nhẹ
-    vx += (Math.random()-0.5) * NOISE * dt * speedScale;
-    vy += (Math.random()-0.5) * NOISE * dt * speedScale;
+    // noise
+    vx += (Math.random()-0.5) * NOISE * step * speedScale;
+    vy += (Math.random()-0.5) * NOISE * step * speedScale;
 
-    // (2) né chuột
+    // né chuột
     const cx = x + SIZE/2, cy = y + SIZE/2;
     const dx = cx - mouse.x, dy = cy - mouse.y;
     const dist = Math.hypot(dx,dy);
     if (dist < REPEL_RADIUS){
       const f = (1 - dist/REPEL_RADIUS) * REPEL_FORCE * speedScale;
-      const inv = Math.hypot(dx,dy) || 1;
-      vx += (dx/inv) * f * dt;
-      vy += (dy/inv) * f * dt;
+      const inv = dist || 1;
+      vx += (dx/inv) * f * step;
+      vy += (dy/inv) * f * step;
     }
 
-    // (3) hover boost (nhẹ)
-    if (now < hoverBoostUntil){
+    // boost nhẹ khi vừa hover
+    if (performance.now() < hoverBoostUntil){
       const inv = Math.hypot(dx,dy) || 1;
-      vx += (dx/inv) * HOVER_BOOST * 0.006 * dt * speedScale;
-      vy += (dy/inv) * HOVER_BOOST * 0.006 * dt * speedScale;
+      vx += (dx/inv) * HOVER_BOOST * 0.006 * step * speedScale;
+      vy += (dy/inv) * HOVER_BOOST * 0.006 * step * speedScale;
     }
 
-    // (4) duy trì quán tính nhỏ
+    // quán tính nhẹ
     const invv = Math.hypot(vx,vy) || 1;
-    vx += (vx/invv) * BASE_SPEED * 0.001 * dt * speedScale;
-    vy += (vy/invv) * BASE_SPEED * 0.001 * dt * speedScale;
+    vx += (vx/invv) * BASE_SPEED * 0.001 * step * speedScale;
+    vy += (vy/invv) * BASE_SPEED * 0.001 * step * speedScale;
 
-    // (5) clamp tốc độ
+    // clamp tốc
     const maxV = MAX_SPEED * maxScale;
     const sp = Math.hypot(vx,vy);
     if (sp > maxV){ vx = vx/sp*maxV; vy = vy/sp*maxV; }
 
-    // (6) vị trí
-    x += vx * dt; y += vy * dt;
+    // cập nhật vị trí
+    x += vx * step; y += vy * step;
 
-    // (7) bật tường
+    // bật tường
+    const vw = innerWidth, vh = innerHeight;
     if (x < EDGE_PADDING){ x = EDGE_PADDING; vx = Math.abs(vx); }
     if (y < EDGE_PADDING){ y = EDGE_PADDING; vy = Math.abs(vy); }
     if (x > vw - SIZE - EDGE_PADDING){ x = vw - SIZE - EDGE_PADDING; vx = -Math.abs(vx); }
     if (y > vh - SIZE - EDGE_PADDING){ y = vh - SIZE - EDGE_PADDING; vy = -Math.abs(vy); }
 
-    // (8) hướng mặt (hysteresis)
+    // xoay mặt (hysteresis)
     const mtx = getComputedStyle(el).transform;
     let currentScaleX = mtx.includes('matrix(-1') ? -1 : 1;
     let targetScaleX = currentScaleX;
-    if (vx >  FACE_DEADZONE) targetScaleX = (DEFAULT_FACE === 'right') ? 1 : -1; // facing right
-    if (vx < -FACE_DEADZONE) targetScaleX = (DEFAULT_FACE === 'right') ? -1 : 1; // facing left
+    if (vx >  FACE_DEADZONE) targetScaleX = (DEFAULT_FACE === 'right') ? 1 : -1;
+    if (vx < -FACE_DEADZONE) targetScaleX = (DEFAULT_FACE === 'right') ? -1 : 1;
 
-    // (9) render
-    el.style.transform = `translate(${x}px, ${y}px) scaleX(${targetScaleX})`;
+    // render transform (GPU)
+    el.style.transform = `translate3d(${x}px, ${y}px, 0) scaleX(${targetScaleX})`;
 
-    // (10) cập nhật vị trí bubble nếu hiển thị
+    // nếu đang nói: cập nhật vị trí bubble
     if (talking) placeBubble();
-
-    requestAnimationFrame(tick);
   }
-  requestAnimationFrame(tick);
+
+  function loop(now) {
+    // clamp dt để tránh nhảy lớn khi tab ẩn
+    const dt = Math.min(40, now - prev); // tối đa 40ms
+    prev = now;
+    accumulator += dt;
+
+    // chạy nhiều bước vật lý nhỏ cho đến khi bắt kịp thời gian
+    let safety = 0;
+    while (accumulator >= STEP_MS && safety++ < MAX_CATCHUP_STEPS) {
+      physicsStep(STEP_MS);
+      accumulator -= STEP_MS;
+    }
+
+    // render đã làm trong physicsStep cuối cùng
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
 
   // giữ trong màn khi resize
   addEventListener('resize', () => {
@@ -637,10 +635,12 @@
 </script>
 
 
+
  
   
 </body>
 </html>
+
 
 
 
