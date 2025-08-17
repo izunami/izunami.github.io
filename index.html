@@ -412,8 +412,8 @@
     if (y > vh - SIZE - EDGE_PADDING) { y = vh - SIZE - EDGE_PADDING; vy = -Math.abs(vy); }
 
     // 8) xoay mặt theo hướng (flip ngang theo vx)
-    const faceLeft = vx < -0.02; // ngưỡng nhỏ để bớt giật
-    const scaleX = faceLeft ? -1 : 1;
+    const faceLeft = vx > -0.02; // ngưỡng nhỏ để bớt giật
+    const scaleX = faceLeft ? 1 : -1;
 
     // 9) render
     el.style.transform = `translate(${x}px, ${y}px) scaleX(${scaleX})`;
@@ -433,5 +433,6 @@
   
 </body>
 </html>
+
 
 
