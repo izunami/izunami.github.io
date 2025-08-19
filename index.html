@@ -136,7 +136,17 @@
       .card, .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
       .typewriter { animation: none !important; border-right: none; }
     }
-  </style>
+/* Background */
+html[data-theme="light"] body {
+  background: radial-gradient(circle at 30% 30%, #7cc4ff, #3f8bff);
+}
+
+html[data-theme="dark"] body {
+  background: var(--bg);
+}
+
+    
+</style>
 </head>
 <body>
   <div class="container">
@@ -609,6 +619,7 @@
   
 </body>
 </html>
+
 
 
 
