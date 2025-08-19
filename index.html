@@ -136,14 +136,31 @@
       .card, .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
       .typewriter { animation: none !important; border-right: none; }
     }
-/* Background */
-html[data-theme="light"] body {
-  background: radial-gradient(circle at 30% 30%, #7cc4ff, #3f8bff);
+
+/* === Fix button size + mobile layout === */
+.actions {
+  display: flex;
+  gap: 10px;
+  align-items: stretch; /* cho nút cao bằng nhau */
 }
 
-html[data-theme="dark"] body {
-  background: var(--bg);
+.actions .btn {
+  flex: 1;              /* chia đều chiều rộng cho 2 nút */
+  text-align: center;   /* căn chữ giữa */
+  min-width: 120px;     /* để nút không quá nhỏ */
 }
+
+/* Mobile: cho full width */
+@media (max-width: 600px) {
+  .actions {
+    flex-direction: row;
+    width: 100%;
+  }
+  .actions .btn {
+    flex: 1 1 50%;   /* mỗi nút chiếm 1 nửa chiều ngang */
+  }
+}
+
 
     
 </style>
@@ -619,6 +636,7 @@ html[data-theme="dark"] body {
   
 </body>
 </html>
+
 
 
 
