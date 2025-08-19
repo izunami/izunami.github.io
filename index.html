@@ -137,44 +137,44 @@
       .typewriter { animation: none !important; border-right: none; }
     }
 
-/* ==== MOBILE FIX: header dùng grid, actions xuống hàng riêng ==== */
-@media (max-width: 600px) {
-  header.site{
-    display: grid;
-    grid-template-columns: 72px 1fr; /* avatar | text */
-    grid-auto-rows: min-content;
-    gap: 14px 16px;
-    align-items: center;
-  }
-
-  .avatar  { grid-column: 1; grid-row: 1; }
-  .headings{ grid-column: 2; grid-row: 1; min-width: 0; }
-
-  /* Nhóm nút chiếm full width ở hàng 2 */
-  .actions{
-    grid-column: 1 / -1;  /* span 2 cột */
-    grid-row: 2;
-    width: 100%;
-    min-width: 0;
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-  }
-
-  /* Mỗi nút chiếm 50% ngang, cao bằng nhau */
-  .actions .btn{
-    flex: 1 1 50%;
-    max-width: 50%;
-    text-align: center;
-  }
-
-  /* Tránh nút phóng to đè nhau trên màn nhỏ */
-  .actions .btn:hover{
-    transform: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,.12);
-  }
+/* ==== Đồng bộ style 2 nút ==== */
+.actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
 }
-    
+
+.actions .btn {
+  flex: 1 1 50%;
+  max-width: 50%;
+  background: var(--card);   /* trắng như nút Light */
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  text-align: center;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 10px;
+  transition: all .25s ease;
+}
+
+/* Xóa style màu tím riêng của brand */
+.actions .btn.brand {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+/* Hover chung cho cả 2 nút */
+.actions .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0,0,0,.12);
+}
+.actions .btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(0,0,0,.08);
+}
+  
     
 </style>
 </head>
@@ -649,6 +649,7 @@
   
 </body>
 </html>
+
 
 
 
