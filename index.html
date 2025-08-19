@@ -136,51 +136,6 @@
       .card, .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
       .typewriter { animation: none !important; border-right: none; }
     }
-
-/* === Fix button size + mobile layout === */
-.actions {
-  display: flex;
-  gap: 10px;
-  align-items: stretch;
-}
-
-.actions .btn {
-  flex: 1;
-  text-align: center;
-  min-width: 120px;
-  transition: all 0.25s ease; /* hiệu ứng mượt */
-}
-
-/* Hover chung */
-.actions .btn:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 18px rgba(0,0,0,.15);
-}
-
-/* Nút thương hiệu (Liên hệ) hover đậm hơn */
-.actions .btn.brand:hover {
-  background: #5a52e0; /* màu đậm hơn var(--brand) */
-}
-
-/* Mobile: nằm ngang chia đôi màn hình */
-@media (max-width: 600px) {
-  .actions {
-    flex-direction: row;
-    width: 100%;
-  }
-  .actions .btn {
-    flex: 1 1 50%;
-    max-width: 50%;
-  }
-
-  /* Mobile: hover nhẹ hơn (khỏi bay nhảy quá) */
-  .actions .btn:hover {
-    transform: scale(1.01);
-    box-shadow: 0 4px 12px rgba(0,0,0,.12);
-  }
-}
-
-
     
 </style>
 </head>
@@ -655,6 +610,7 @@
   
 </body>
 </html>
+
 
 
 
