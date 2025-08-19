@@ -136,6 +136,45 @@
       .card, .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
       .typewriter { animation: none !important; border-right: none; }
     }
+
+/* ==== MOBILE FIX: header dùng grid, actions xuống hàng riêng ==== */
+@media (max-width: 600px) {
+  header.site{
+    display: grid;
+    grid-template-columns: 72px 1fr; /* avatar | text */
+    grid-auto-rows: min-content;
+    gap: 14px 16px;
+    align-items: center;
+  }
+
+  .avatar  { grid-column: 1; grid-row: 1; }
+  .headings{ grid-column: 2; grid-row: 1; min-width: 0; }
+
+  /* Nhóm nút chiếm full width ở hàng 2 */
+  .actions{
+    grid-column: 1 / -1;  /* span 2 cột */
+    grid-row: 2;
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  /* Mỗi nút chiếm 50% ngang, cao bằng nhau */
+  .actions .btn{
+    flex: 1 1 50%;
+    max-width: 50%;
+    text-align: center;
+  }
+
+  /* Tránh nút phóng to đè nhau trên màn nhỏ */
+  .actions .btn:hover{
+    transform: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,.12);
+  }
+}
+    
     
 </style>
 </head>
@@ -610,6 +649,7 @@
   
 </body>
 </html>
+
 
 
 
