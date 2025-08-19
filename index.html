@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" data-theme="auto">
+<html lang="vi" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -7,156 +7,112 @@
   <meta name="description" content="Portfolio của Nguyễn Thuận: WordPress, Blogspot, Corel. Xây web nhanh, gọn, dễ bảo trì." />
   <link rel="canonical" href="https://izunami.github.io/" />
   <meta name="color-scheme" content="light dark">
-  <!-- Theme color cho mỗi mode -->
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f7fb">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f1216">
-  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Nguyễn Thuận • Portfolio">
   <meta property="og:description" content="WordPress • Blogspot • Corel. Web nhanh, gọn, dễ bảo trì.">
   <meta property="og:image" content="avatar.jpg">
   <meta property="og:locale" content="vi_VN">
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Nguyễn Thuận • Portfolio">
   <meta name="twitter:description" content="WordPress • Blogspot • Corel. Web nhanh, gọn, dễ bảo trì.">
   <meta name="twitter:image" content="avatar.jpg">
-  <!-- Preload avatar để giảm CLS -->
   <link rel="preload" as="image" href="avatar.jpg" imagesrcset="avatar.jpg 1x" imagesizes="72px">
 
   <style>
     :root{
-      /* Light theme */
-      --bg: #f6f7fb;
-      --card: #ffffff;
-      --text: #1f2430;
-      --muted: #5e6a7a;
-      --brand: #6c63ff;
-      --shadow: 0 10px 30px rgba(0,0,0,.06);
-      --border: rgba(0,0,0,.06);
+      --bg: #f6f7fb; --card:#fff; --text:#1f2430; --muted:#5e6a7a; --brand:#6c63ff;
+      --shadow: 0 10px 30px rgba(0,0,0,.06); --border: rgba(0,0,0,.06);
       --focus: 0 0 0 3px rgba(108,99,255,.35);
     }
     @media (prefers-color-scheme: dark){
       :root{
-        /* Dark base (when data-theme=auto and OS dark) */
-        --bg: #0f1216;
-        --card: #151a21;
-        --text: #e8ecf2;
-        --muted: #9aa6b2;
-        --brand: #7b7eff;
-        --shadow: 0 10px 30px rgba(0,0,0,.35);
-        --border: rgba(255,255,255,.06);
-        --focus: 0 0 0 3px rgba(123,126,255,.35);
+        --bg:#0f1216; --card:#151a21; --text:#e8ecf2; --muted:#9aa6b2; --brand:#7b7eff;
+        --shadow:0 10px 30px rgba(0,0,0,.35); --border:rgba(255,255,255,.06);
+        --focus:0 0 0 3px rgba(123,126,255,.35);
       }
     }
-    html[data-theme="light"]{
-      --bg:#f6f7fb; --card:#fff; --text:#1f2430; --muted:#5e6a7a; --brand:#6c63ff; --shadow:0 10px 30px rgba(0,0,0,.06); --border:rgba(0,0,0,.06); --focus:0 0 0 3px rgba(108,99,255,.35);
-    }
-    html[data-theme="dark"]{
-      --bg:#0f1216; --card:#151a21; --text:#e8ecf2; --muted:#9aa6b2; --brand:#7b7eff; --shadow:0 10px 30px rgba(0,0,0,.35); --border:rgba(255,255,255,.06); --focus:0 0 0 3px rgba(123,126,255,.35);
-    }
+    html[data-theme="light"]{ --bg:#f6f7fb; --card:#fff; --text:#1f2430; --muted:#5e6a7a; --brand:#6c63ff; --shadow:0 10px 30px rgba(0,0,0,.06); --border:rgba(0,0,0,.06); --focus:0 0 0 3px rgba(108,99,255,.35);}
+    html[data-theme="dark"] { --bg:#0f1216; --card:#151a21; --text:#e8ecf2; --muted:#9aa6b2; --brand:#7b7eff; --shadow:0 10px 30px rgba(0,0,0,.35); --border:rgba(255,255,255,.06); --focus:0 0 0 3px rgba(123,126,255,.35);}
 
     *{box-sizing:border-box}
-    body{
-      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
-      background:var(--bg); color:var(--text); line-height:1.65;
-      text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
-    }
-    a { color: inherit; }
-    a:focus-visible, button:focus-visible { outline: none; box-shadow: var(--focus); border-radius: 10px; }
+    body{margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      background:var(--bg); color:var(--text); line-height:1.65; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased;}
+    a{color:inherit}
+    a:focus-visible,button:focus-visible{outline:none; box-shadow:var(--focus); border-radius:10px;}
 
     .container{max-width:980px; margin:0 auto; padding:24px}
     header.site{
-      display:flex; align-items:center; gap:20px; padding:24px; border-radius:16px; background:var(--card); box-shadow:var(--shadow); border:1px solid var(--border);
-      position:sticky; top:16px; z-index:10; backdrop-filter:saturate(140%) blur(6px);
+      display:flex; align-items:center; gap:20px; padding:24px; border-radius:16px; background:var(--card);
+      box-shadow:var(--shadow); border:1px solid var(--border); position:sticky; top:16px; z-index:10; backdrop-filter:saturate(140%) blur(6px);
     }
-    .avatar{
-      width:72px; height:72px; border-radius:50%; border:3px solid var(--border); object-fit:cover;
-    }
+    .avatar{width:72px; height:72px; border-radius:50%; border:3px solid var(--border); object-fit:cover;}
     .headings{flex:1; min-width:0;}
     h1{margin:0 0 6px; font-size:clamp(22px, 2.4vw + 14px, 32px);}
     .sub{margin:0; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-    .actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-    .btn{
-      appearance:none; border:1px solid var(--border); background:var(--card); color:var(--text);
-      padding:10px 14px; border-radius:10px; cursor:pointer; box-shadow:var(--shadow); font-weight:600;
+
+    /* ===== Floating theme FAB ===== */
+    .theme-fab{
+      position: fixed; right: 16px; bottom: 16px;
+      width: 48px; height: 48px; border-radius: 999px;
+      background: var(--card); color: var(--text);
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 9999; user-select: none;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
     }
-    .btn.brand{background:var(--brand); color:#fff; border-color:transparent}
-    .btn:hover{transform:translateY(-1px)}
-    .btn:active{transform:translateY(0)}
+    .theme-fab:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(0,0,0,.16); }
+    .theme-fab:active{ transform: translateY(0); box-shadow: 0 6px 16px rgba(0,0,0,.12); }
+    .theme-fab .icon{ font-size: 20px; line-height: 1; }
+    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+    @media (max-width:600px){
+      header.site{ display:grid; grid-template-columns:72px 1fr; gap:14px 16px; align-items:center; }
+      .avatar{ grid-column:1; grid-row:1; }
+      .headings{ grid-column:2; grid-row:1; }
+      .theme-fab{ right: 12px; bottom: 12px; width: 44px; height: 44px; }
+    }
 
     main{margin-top:24px; display:grid; gap:24px}
-    .card{
-      background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; box-shadow:var(--shadow);
-      opacity:0; transform:translateY(12px); animation:fadeUp .7s ease forwards;
-    }
-    .card:nth-child(1){animation-delay:.05s}
-    .card:nth-child(2){animation-delay:.15s}
-    .card:nth-child(3){animation-delay:.25s}
-    .card:nth-child(4){animation-delay:.35s}
-
+    .card{ background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; box-shadow:var(--shadow);
+      opacity:0; transform:translateY(12px); animation:fadeUp .7s ease forwards; }
+    .card:nth-child(1){animation-delay:.05s} .card:nth-child(2){animation-delay:.15s}
+    .card:nth-child(3){animation-delay:.25s} .card:nth-child(4){animation-delay:.35s}
     @keyframes fadeUp{to{opacity:1; transform:none}}
 
     h2{margin-top:0; font-size:1.25rem; display:flex; align-items:center; gap:10px}
     h2 .dot{width:10px; height:10px; border-radius:50%; background:var(--brand); box-shadow:0 0 12px var(--brand)}
-    p, li{color:var(--text)}
-    .muted{color:var(--muted)}
+    p, li{color:var(--text)} .muted{color:var(--muted)}
 
-    .grid{
-      display:grid; gap:16px;
-      grid-template-columns:repeat(auto-fill, minmax(220px,1fr));
-    }
+    .grid{ display:grid; gap:16px; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); }
     .project{border:1px solid var(--border); border-radius:12px; padding:16px}
     .project h3{margin:0 0 8px; font-size:1.05rem}
     .project a{color:var(--brand); text-decoration:none}
     .project a:hover{text-decoration:underline}
 
-    .typewriter{
-      display:inline-block; border-right:2px solid var(--brand); white-space:nowrap; overflow:hidden;
-      animation:caret 900ms steps(1,end) infinite;
-    }
+    .typewriter{ display:inline-block; border-right:2px solid var(--brand); white-space:nowrap; overflow:hidden; animation:caret 900ms steps(1,end) infinite; }
     @keyframes caret{50%{border-right-color:transparent}}
 
     footer{color:var(--muted); text-align:center; padding:24px}
-
-    .theme-toggle{display:inline-flex; align-items:center; gap:8px}
-    .icon{width:18px; height:18px; display:inline-block}
-    .icon.sun{filter:drop-shadow(0 0 4px rgba(255,200,0,.35))}
-    .icon.moon{filter:drop-shadow(0 0 6px rgba(123,126,255,.35))}
-    .hide{display:none}
-
     .reveal{opacity:0; transform:translateY(16px)}
     .reveal.is-visible{opacity:1; transform:none; transition:opacity .6s ease, transform .6s ease}
+    a.link{color:var(--brand)} code{background:rgba(127,127,127,.12); padding:.1em .35em; border-radius:.4em}
 
-    a.link{color:var(--brand)}
-    code{background:rgba(127,127,127,.12); padding:.1em .35em; border-radius:.4em}
-
-    /* Giảm/ tắt animation nếu người dùng không thích chuyển động */
     @media (prefers-reduced-motion: reduce) {
       .card, .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
       .typewriter { animation: none !important; border-right: none; }
+      .theme-fab{ transition:none }
     }
-    
-</style>
+  </style>
 </head>
 <body>
   <div class="container">
     <header class="site">
-      <!-- Dùng avatar local để bền vững -->
       <img class="avatar" src="https://raw.githubusercontent.com/izunami/izunami.github.io/refs/heads/main/avatar.jpg" width="72" height="72" fetchpriority="high" alt="Ảnh đại diện Nguyễn Thuận">
       <div class="headings">
         <h1>Nguyễn Thuận 🍀</h1>
-        <p class="sub">
-          <span class="typewriter" id="tw"></span>
-        </p>
-      </div>
-      <div class="actions">
-        <a class="btn brand" href="https://zalo.me/0398427843">Liên hệ</a>
-        <button id="themeToggle" class="btn theme-toggle" aria-pressed="false" title="Đổi giao diện Light/Dark">
-          <span class="icon sun" id="icoSun" aria-hidden="true">☀️</span>
-          <span class="icon moon hide" id="icoMoon" aria-hidden="true">🌙</span>
-          <span id="themeLabel" class="muted">Auto</span>
-        </button>
+        <p class="sub"><span class="typewriter" id="tw"></span></p>
       </div>
     </header>
 
@@ -169,132 +125,112 @@
 
       <section class="card reveal">
         <h2><span class="dot"></span>Kỹ năng chính</h2>
-        <ul>
-          <li>WordPress</li>
-          <li>Blogspot</li>
-          <li>Corel</li>
-        </ul>
+        <ul><li>WordPress</li><li>Blogspot</li><li>Corel</li></ul>
       </section>
 
       <section class="card reveal">
         <h2><span class="dot"></span>Dự án nổi bật</h2>
         <div class="grid">
-          <article class="project">
-            <h3>Portfolio v1</h3>
-            <p>Trang giới thiệu cá nhân tối giản</p>
-            <a href="#" aria-label="Xem portfolio v1">Xem chi tiết →</a>
-          </article>
-          <article class="project">
-            <h3>Blog Tech</h3>
-            <p>Chia sẻ tips WordPress</p>
-            <a href="#" aria-label="Xem blog tech">Xem blog →</a>
-          </article>
-          <article class="project">
-            <h3>Website</h3>
-            <p>Một số website build bằng WP</p>
-            <a href="#" aria-label="Xem website demo">Xem demo →</a>
-          </article>
+          <article class="project"><h3>Portfolio v1</h3><p>Trang giới thiệu cá nhân tối giản</p><a href="#">Xem chi tiết →</a></article>
+          <article class="project"><h3>Blog Tech</h3><p>Chia sẻ tips WordPress</p><a href="#">Xem blog →</a></article>
+          <article class="project"><h3>Website</h3><p>Một số website build bằng WP</p><a href="#">Xem demo →</a></article>
         </div>
       </section>
 
       <section id="contact" class="card reveal">
         <h2><span class="dot"></span>Liên hệ</h2>
         <p>Email: <a class="link" href="mailto:info@vnbit.io.vn" rel="me">info@vnbit.io.vn</a></p>
-        <p>GitHub: <a class="link" href="https://github.com/yourusername" target="_blank" rel="noopener me">github.com/yourusername</a></p>
-        <p>LinkedIn: <a class="link" href="https://www.linkedin.com/in/nguyenthuan0109/" target="_blank" rel="noopener me">linkedin.com/in/nguyenthuan0109/</a></p>
+        <p>GitHub: <a class="link" href="https://github.com/yourusername" target="_blank">github.com/yourusername</a></p>
+        <p>LinkedIn: <a class="link" href="https://www.linkedin.com/in/nguyenthuan0109/" target="_blank">linkedin.com/in/nguyenthuan0109</a></p>
       </section>
     </main>
 
-    <footer>
-      © <span id="year"></span> Nguyễn Thuận 🍀 • Made with ❤️
-    </footer>
+    <footer>© <span id="year"></span> Nguyễn Thuận 🍀 • Made with ❤️</footer>
   </div>
 
+  <!-- Floating theme button -->
+  <button id="themeFab" class="theme-fab" aria-pressed="false" title="Chạm để đổi Light/Dark • Nhấn giữ để Auto">
+    <span id="fabIcon" class="icon" aria-hidden="true">☀️</span>
+    <span class="sr-only" id="fabLabel">Đổi giao diện</span>
+  </button>
+
   <script>
-    // ============ Typewriter ============
+    // Typewriter
     (function(){
       const el = document.getElementById('tw');
-      const roles = [
-        "Web Developer",
-        "WordPress (Static/Headless)",
-        "Arduino & IoT tinkerer",
-        "Coffee Lover ☕"
-      ];
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const roles = ["Web Developer","WordPress (Static/Headless)","Arduino & IoT tinkerer","Coffee Lover ☕"];
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduce) { el.textContent = roles[0]; return; }
-
-      let idx = 0, i = 0, typing = true, pause = 1200;
+      let idx=0,i=0,typing=true,pause=1200;
       function tick(){
         const full = roles[idx];
-        if(typing){
-          i++; el.textContent = full.slice(0, i);
-          if(i === full.length){ typing = false; setTimeout(tick, pause); return; }
-        }else{
-          i--; el.textContent = full.slice(0, i);
-          if(i === 0){ typing = true; idx = (idx + 1) % roles.length; }
-        }
-        setTimeout(tick, typing ? 60 : 35);
-      }
-      tick();
+        if(typing){ i++; el.textContent = full.slice(0,i); if(i===full.length){ typing=false; return setTimeout(tick,pause);} }
+        else { i--; el.textContent = full.slice(0,i); if(i===0){ typing=true; idx=(idx+1)%roles.length; } }
+        setTimeout(tick, typing?60:35);
+      } tick();
     })();
 
-    // ============ Fade-in on scroll ============
+    // Fade-in
     (function(){
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
       const items = document.querySelectorAll('.reveal');
-      if (reduce) { items.forEach(el => el.classList.add('is-visible')); return; }
+      if (reduce) { items.forEach(el=>el.classList.add('is-visible')); return; }
       const io = new IntersectionObserver((entries)=>{
-        entries.forEach(e=>{
-          if(e.isIntersecting){
-            e.target.classList.add('is-visible');
-            io.unobserve(e.target);
-          }
-        });
-      }, {threshold: .12});
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('is-visible'); io.unobserve(e.target);} });
+      }, {threshold:.12});
       items.forEach(i=>io.observe(i));
     })();
 
-    // ============ Year =============
+    // Year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ============ Theme Toggle (Auto / Light / Dark) ============
+    // Theme
     (function(){
       const root = document.documentElement;
-      const btn = document.getElementById('themeToggle');
-      const sun = document.getElementById('icoSun');
-      const moon = document.getElementById('icoMoon');
-      const label = document.getElementById('themeLabel');
-      const KEY = 'theme-pref'; // 'auto' | 'light' | 'dark'
+      const fab  = document.getElementById('themeFab');
+      const icon = document.getElementById('fabIcon');
+      const KEY  = 'theme-pref'; // 'auto' | 'light' | 'dark'
+      const mq   = matchMedia('(prefers-color-scheme: dark)');
 
+      function setIcon(mode){
+        const effectiveDark = mode==='dark' || (mode==='auto' && mq.matches);
+        icon.textContent = effectiveDark ? '🌙' : '☀️';
+      }
       function apply(mode){
         root.setAttribute('data-theme', mode);
-        btn.setAttribute('aria-pressed', mode !== 'auto');
-        if(mode === 'light'){
-          sun.classList.remove('hide'); moon.classList.add('hide'); label.textContent = 'Light';
-        }else if(mode === 'dark'){
-          sun.classList.add('hide'); moon.classList.remove('hide'); label.textContent = 'Dark';
-        }else{
-          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          sun.classList.toggle('hide', prefersDark);
-          moon.classList.toggle('hide', !prefersDark);
-          label.textContent = 'Auto';
-        }
+        fab.setAttribute('aria-pressed', mode!=='auto');
+        setIcon(mode);
       }
-      function cycle(){
-        const cur = localStorage.getItem(KEY) || 'auto';
-        const next = cur === 'auto' ? 'light' : cur === 'light' ? 'dark' : 'auto';
+
+      // Default = light
+      const start = localStorage.getItem(KEY) || 'light';
+      apply(start);
+
+      mq.addEventListener('change', ()=> {
+        if ((localStorage.getItem(KEY) || 'light') === 'auto') apply('auto');
+      });
+
+      fab.addEventListener('click', ()=> {
+        const cur = localStorage.getItem(KEY) || 'light';
+        const next = cur === 'dark' ? 'light' : 'dark';
         localStorage.setItem(KEY, next);
         apply(next);
-      }
-      const start = localStorage.getItem(KEY) || 'auto';
-      apply(start);
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=> {
-        if((localStorage.getItem(KEY) || 'auto') === 'auto') apply('auto');
-      });
-      btn.addEventListener('click', cycle, {passive:true});
-      btn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); cycle(); }});
+      }, {passive:true});
+
+      // Long-press ~600ms = Auto
+      let pressTimer;
+      fab.addEventListener('mousedown', ()=> { pressTimer = setTimeout(()=> {
+        localStorage.setItem(KEY, 'auto'); apply('auto');
+      }, 600); });
+      ['mouseup','mouseleave','touchend','touchcancel'].forEach(ev=>fab.addEventListener(ev, ()=>clearTimeout(pressTimer)));
+      fab.addEventListener('touchstart', ()=> { pressTimer = setTimeout(()=> {
+        localStorage.setItem(KEY, 'auto'); apply('auto');
+      }, 600); }, {passive:true});
     })();
   </script>
+</body>
+</html>
+
 
 <!-- 🐾 Doro Runner (high-FPS + fixed timestep + readable bubble + responsive size) -->
 <style>
@@ -607,6 +543,7 @@
 </script>  
 </body>
 </html>
+
 
 
 
