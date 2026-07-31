@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cambridge A2 Flyers - Quiz Race Arena</title>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.92);
+            --primary: #06b6d4;
+            --primary-glow: rgba(6, 182, 212, 0.4);
+            --accent: #f59e0b;
+            --correct: #10b981;
+            --wrong: #ef4444;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.15) 0px, transparent 50%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Screen States */
+        .screen { display: none; opacity: 0; transition: opacity 0.25s ease-in-out; }
+        .screen.active { display: block; opacity: 1; }
+
+        /* Typography & Utilities */
+        h1, h2, h3 { text-align: center; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .gradient-text {
+            background: linear-gradient(135deg, #38bdf8, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.15s ease;
+            color: white;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            touch-action: manipulation;
+        }
+        .btn-primary { background: linear-gradient(135deg, #06b6d4, #3b82f6); box-shadow: 0 4px 20px var(--primary-glow); }
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .btn-secondary { background: #334155; color: #cbd5e1; }
+
+        /* Welcome Screen */
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .avatar-item {
+            font-size: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .avatar-item.selected {
+            border-color: var(--primary);
+            background: var(--primary-glow);
+            transform: scale(1.05);
+        }
+
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px; /* 16px prevents iOS auto-zoom */
+            outline: none;
+        }
+        .input-field:focus { border-color: var(--primary); }
+
+        /* Quiz Header & Progress */
+        .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .user-badge { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .score-box { background: rgba(245, 158, 11, 0.2); border: 1px solid var(--accent); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 14px; }
+        
+        .timer-bar-container { width: 100%; height: 8px; background: #334155; border-radius: 4px; overflow: hidden; margin-bottom: 16px; }
+        .timer-bar { height: 100%; width: 100%; background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444); transition: width 0.1s linear; }
+
+        .combo-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        /* Question Card */
+        .q-meta { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .tag { background: rgba(255, 255, 255, 0.1); padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--primary); }
+        
+        .question-text { font-size: 17px; font-weight: 600; line-height: 1.4; margin-bottom: 16px; min-height: 48px; }
+        
+        .audio-script-box {
+            background: rgba(6, 182, 212, 0.1);
+            border-left: 3px solid var(--primary);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Options */
+        .options-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+        .opt-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 16px;
+            border-radius: 14px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.15s;
+            touch-action: manipulation;
+        }
+        .opt-btn:active { transform: scale(0.98); }
+        .opt-btn.correct { background: rgba(16, 185, 129, 0.3) !important; border-color: var(--correct) !important; color: #a7f3d0; }
+        .opt-btn.wrong { background: rgba(239, 68, 68, 0.3) !important; border-color: var(--wrong) !important; color: #fca5a5; }
+        .opt-btn.disabled { opacity: 0.4; pointer-events: none; }
+
+        /* Explanation Box */
+        .explanation-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .explanation-card.active { display: block; }
+        .exp-title { font-size: 12px; font-weight: 800; color: var(--accent); margin-bottom: 4px; text-transform: uppercase; }
+        .exp-text { font-size: 13px; color: #cbd5e1; line-height: 1.4; }
+
+        /* Action Row */
+        .action-row { display: flex; gap: 10px; }
+
+        /* Leaderboard / Result */
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 14px;
+            border-radius: 14px;
+            text-align: center;
+        }
+        .stat-card .val { font-size: 24px; font-weight: 900; color: var(--primary); }
+        .stat-card .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+
+        .leaderboard {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 14px;
+            padding: 12px;
+            margin: 14px 0;
+            max-height: 140px;
+            overflow-y: auto;
+        }
+        .lb-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 13px; }
+
+        /* Canvas */
+        #confetti-canvas { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:99; }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- MÀN HÌNH 1: WELCOME -->
+    <div id="screen-welcome" class="screen active">
+        <h1 style="font-size: 24px; margin-bottom: 4px;">CAMBRIDGE <span class="gradient-text">QUIZ RACE</span></h1>
+        <p style="text-align: center; font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">A2 Flyers Speed Challenge</p>
+
+        <div class="input-group">
+            <label>Chọn Linh Vật:</label>
+            <div class="avatar-grid" id="avatar-select">
+                <div class="avatar-item selected" onclick="selectAvatar('🚀')">🚀</div>
+                <div class="avatar-item" onclick="selectAvatar('🦁')">🦁</div>
+                <div class="avatar-item" onclick="selectAvatar('🦄')">🦄</div>
+                <div class="avatar-item" onclick="selectAvatar('🤖')">🤖</div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Họ và Tên Học Sinh:</label>
+            <input type="text" id="student-name" class="input-field" placeholder="Nhập tên (hoặc để trống)">
+        </div>
+
+        <div class="input-group">
+            <label>Lớp / Trường:</label>
+            <input type="text" id="student-class" class="input-field" placeholder="Nhập lớp (hoặc để trống)">
+        </div>
+
+        <button class="btn btn-primary" onclick="startGame()">
+            <i class="fa-solid fa-play"></i> BẮT ĐẦU CHƠI NGAY
+        </button>
+    </div>
+
+    <!-- MÀN HÌNH 2: QUIZ PLAYING -->
+    <div id="screen-quiz" class="screen">
+        <div class="quiz-header">
+            <div class="user-badge">
+                <span id="display-avatar">🚀</span>
+                <span id="display-name" style="font-size: 13px;">Student</span>
+                <span id="display-combo" class="combo-badge" style="display:none;">x2</span>
+            </div>
+            <div class="score-box">
+                <i class="fa-solid fa-bolt"></i> <span id="display-score">0</span>
+            </div>
+        </div>
+
+        <div class="timer-bar-container">
+            <div id="timer-bar" class="timer-bar"></div>
+        </div>
+
+        <div class="q-meta">
+            <span class="tag" id="q-topic">Topic</span>
+            <span style="font-size: 12px; color: var(--text-muted);" id="q-progress">1/10</span>
+        </div>
+
+        <div class="question-text" id="q-text">Loading Question...</div>
+
+        <!-- Audio Script button -->
+        <div id="audio-script-container" class="audio-script-box" style="display: none;">
+            <span><i class="fa-solid fa-headphones"></i> Bài nghe (Audio)</span>
+            <button class="btn btn-warning" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="speakAudioScript()">
+                <i class="fa-solid fa-volume-high"></i> Phát Âm
+            </button>
+        </div>
+
+        <div class="options-grid" id="options-container"></div>
+
+        <div class="explanation-card" id="explanation-box">
+            <div class="exp-title"><i class="fa-solid fa-lightbulb"></i> Giải thích:</div>
+            <div class="exp-text" id="exp-text">...</div>
+        </div>
+
+        <div class="action-row">
+            <button class="btn btn-secondary" id="btn-hint" style="width: 30%;" onclick="useHint()">
+                <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent);"></i> Gợi ý
+            </button>
+            <button class="btn btn-primary" id="btn-next" style="width: 70%; display: none;" onclick="nextQuestion()">
+                Tiếp Theo <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MÀN HÌNH 3: RESULT -->
+    <div id="screen-result" class="screen">
+        <h2 style="color: var(--accent); margin-bottom: 4px;"><i class="fa-solid fa-trophy"></i> HOÀN THÀNH!</h2>
+        <p style="text-align: center; font-size: 12px; color: var(--text-muted);">Kết quả Cambridge A2 Flyers</p>
+
+        <div class="result-stats">
+            <div class="stat-card">
+                <div class="val" id="res-score">0</div>
+                <div class="lbl">Tổng Điểm</div>
+            </div>
+            <div class="stat-card">
+                <div class="val" id="res-accuracy">0%</div>
+                <div class="lbl">Chính Xác</div>
+            </div>
+        </div>
+
+        <p style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">
+            <i class="fa-solid fa-ranking-star"></i> BẢNG XẾP HẠNG
+        </p>
+        <div class="leaderboard" id="leaderboard-list"></div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;">
+            <button class="btn btn-warning" onclick="shareAchievement()">
+                <i class="fa-solid fa-share-nodes"></i> CHIA SẺ THÀNH TÍCH
+            </button>
+            <button class="btn btn-primary" onclick="restartGame()">
+                <i class="fa-solid fa-rotate-right"></i> CHƠI LẠI
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- BỘ DỮ LIỆU CÂU HỎI JSON ---
+    const RAW_DATA = {
+  "questions": [
+    {"ID":"Q0101","Skill":"Vocabulary","Topic":"Food & Drink","Question":"What do you use to measure rice or soup?","Choices":["a bowl of","a piece of","a bottle of","a bar of"],"Answer":"a bowl of","Explanation":"'A bowl of' dùng cho món có dạng lỏng/hạt như súp, cơm.","AudioScript":null},
+    {"ID":"Q0102","Skill":"Vocabulary","Topic":"Food & Drink","Question":"Which word describes food that makes your mouth feel hot, like chilli?","Choices":["spicy","sour","sweet","fresh"],"Answer":"spicy","Explanation":"'Spicy' miêu tả vị cay.","AudioScript":null},
+    {"ID":"Q0103","Skill":"Vocabulary","Topic":"Food & Drink","Question":"Vegetables that were picked today are...","Choices":["fresh","sour","spicy","frozen"],"Answer":"fresh","Explanation":"'Fresh' miêu tả thực phẩm mới, chưa để lâu.","AudioScript":null},
+    {"ID":"Q0104","Skill":"Grammar","Topic":"Food & Drink","Question":"Have we got _____ milk left?","Choices":["some","any","a","many"],"Answer":"any","Explanation":"Câu hỏi với danh từ không đếm được dùng 'any'.","AudioScript":null},
+    {"ID":"Q0105","Skill":"Grammar","Topic":"Food & Drink","Question":"'_____ sugar do we need for the cake?' 'Just a little.'","Choices":["How many","How much","How long","How often"],"Answer":"How much","Explanation":"'Sugar' không đếm được nên dùng 'How much'.","AudioScript":null},
+    {"ID":"Q0106","Skill":"Grammar","Topic":"Food & Drink","Question":"Which sentence is correct?","Choices":["I ate an apple.","I ate a rice.","I ate a bread.","I ate a water."],"Answer":"I ate an apple.","Explanation":"'Apple' đếm được nên dùng 'an'; rice/bread/water không đếm được.","AudioScript":null},
+    {"ID":"Q0107","Skill":"Grammar","Topic":"Food & Drink","Question":"I'd like _____ bread, please.","Choices":["a piece of","a bowl of","a cup of","a bar of"],"Answer":"a piece of","Explanation":"'A piece of bread' là đơn vị đúng cho bánh mì.","AudioScript":null},
+    {"ID":"Q0108","Skill":"Reading","Topic":"Food & Drink","Question":"'Lan has cereal for breakfast and rice for lunch.' What does Lan have for breakfast?","Choices":["Rice","Cereal","Noodles","Bread"],"Answer":"Cereal","Explanation":"Câu văn nói rõ Lan ăn ngũ cốc vào bữa sáng.","AudioScript":null},
+    {"ID":"Q0109","Skill":"Reading","Topic":"Food & Drink","Question":"'The soup was delicious, but my mum said it wasn't very healthy because it had a lot of salt.' Was the soup healthy?","Choices":["Yes, very healthy","No, not very healthy","It's not mentioned","Yes, but not tasty"],"Answer":"No, not very healthy","Explanation":"Câu văn nói rõ 'wasn't very healthy'.","AudioScript":null},
+    {"ID":"Q0110","Skill":"Reading","Topic":"Food & Drink","Question":"'To make this soup, you need noodles, chicken, and some vegetables. First, boil the chicken.' What is the first step?","Choices":["Add the vegetables","Boil the chicken","Add the noodles","Serve the soup"],"Answer":"Boil the chicken","Explanation":"Câu văn nói 'First, boil the chicken.'","AudioScript":null},
+    {"ID":"Q0111","Skill":"Listening","Topic":"Food & Drink","Question":"What time does the boy have dinner?","Choices":["6 o'clock","6.30","7 o'clock","7.30"],"Answer":"6.30","Explanation":"Audio script nói rõ giờ ăn tối là 6.30.","AudioScript":"Boy: I usually have breakfast at seven, lunch at twelve, and dinner at half past six."},
+    {"ID":"Q0112","Skill":"Listening","Topic":"Food & Drink","Question":"How many eggs does the woman want?","Choices":["Six","Ten","Twelve","Two"],"Answer":"Ten","Explanation":"Audio script nói rõ số lượng trứng cần mua.","AudioScript":"Woman: I need some rice, ten eggs, and a bottle of milk for the cake."},
+    {"ID":"Q0113","Skill":"Writing","Topic":"Food & Drink","Question":"Write 2 sentences about a food you don't like and explain why.","Choices":["I don't like chilli because it is spicy.","I like chilli because it is sweet.","I don't chilli because spicy.","I not like chilli."],"Answer":"I don't like chilli because it is spicy.","Explanation":"Cấu trúc đúng: don't like + food + because + lý do.","AudioScript":null},
+    {"ID":"Q0114","Skill":"Writing","Topic":"Food & Drink","Question":"Which imperative sentence is correct for a recipe?","Choices":["Cut the bread.","Cuts the bread.","Cutting the bread.","To cut the bread."],"Answer":"Cut the bread.","Explanation":"Câu mệnh lệnh dùng động từ nguyên thể đứng đầu.","AudioScript":null},
+    {"ID":"Q0115","Skill":"Grammar","Topic":"Food & Drink","Question":"My sister _____ vegetables, but she loves fruit.","Choices":["like","likes","doesn't like","don't like"],"Answer":"doesn't like","Explanation":"Ngôi thứ 3 số ít phủ định dùng 'doesn't'.","AudioScript":null},
+    {"ID":"Q0116","Skill":"Vocabulary","Topic":"Time","Question":"What do we call 12 o'clock at night?","Choices":["Midnight","Midday","Noon","Evening"],"Answer":"Midnight","Explanation":"12 giờ đêm gọi là midnight.","AudioScript":null},
+    {"ID":"Q0117","Skill":"Vocabulary","Topic":"Time","Question":"What time is 3:05?","Choices":["Five past three","Five to three","Quarter past three","Half past three"],"Answer":"Five past three","Explanation":"3:05 = 5 phút sau 3 giờ = five past three.","AudioScript":null},
+    {"ID":"Q0118","Skill":"Grammar","Topic":"Time","Question":"School starts _____ eight o'clock.","Choices":["in","on","at","to"],"Answer":"at","Explanation":"Giờ cụ thể luôn dùng giới từ 'at'.","AudioScript":null},
+    {"ID":"Q0119","Skill":"Grammar","Topic":"Time","Question":"'_____, I do my homework. After that, I watch TV.'","Choices":["Finally","First","Later","Before"],"Answer":"First","Explanation":"'First' mở đầu chuỗi hoạt động theo trình tự.","AudioScript":null},
+    {"ID":"Q0120","Skill":"Reading","Topic":"Time","Question":"'Linh wakes up at 6.30, has breakfast at 7, and leaves home at 7.30.' What time does Linh leave home?","Choices":["6.30","7.00","7.30","8.00"],"Answer":"7.30","Explanation":"Câu văn nói rõ giờ rời nhà.","AudioScript":null},
+    {"ID":"Q0121","Skill":"Reading","Topic":"Time","Question":"'I'm busy at two, but free at three.' What time can this person meet a friend?","Choices":["Two o'clock","Three o'clock","Four o'clock","Not mentioned"],"Answer":"Three o'clock","Explanation":"Câu văn nói rõ người này rảnh lúc 3 giờ.","AudioScript":null},
+    {"ID":"Q0122","Skill":"Grammar","Topic":"Time","Question":"'_____ you like to meet at four?' 'Yes, that's perfect.'","Choices":["Do","Would","Are","Can"],"Answer":"Would","Explanation":"'Would you like to...?' là cách đề nghị lịch sự.","AudioScript":null},
+    {"ID":"Q0123","Skill":"Listening","Topic":"Time","Question":"What time does the film start?","Choices":["7.00","7.15","7.30","7.45"],"Answer":"7.30","Explanation":"Audio script nói rõ giờ chiếu phim là half past seven (7.30).","AudioScript":"Girl: The film starts at half past seven, so let's meet at seven o'clock at the cinema."},
+    {"ID":"Q0124","Skill":"Listening","Topic":"Time","Question":"What time is the doctor's appointment?","Choices":["3.00","3.30","4.00","4.30"],"Answer":"3.30","Explanation":"Audio script nói rõ giờ hẹn khám.","AudioScript":"Receptionist: The doctor can see you at half past three this afternoon."},
+    {"ID":"Q0125","Skill":"Writing","Topic":"Time","Question":"Which expression shows a specific time correctly?","Choices":["at 7 o'clock","on 7 o'clock","in 7 o'clock","to 7 o'clock"],"Answer":"at 7 o'clock","Explanation":"Dùng giới từ 'at' trước giờ giấc.","AudioScript":null},
+    {"ID":"Q0126","Skill":"Vocabulary","Topic":"Time","Question":"What time is 9:45?","Choices":["Quarter to ten","Quarter past nine","Half past nine","Ten o'clock"],"Answer":"Quarter to ten","Explanation":"9:45 = 15 phút trước 10 giờ = quarter to ten.","AudioScript":null},
+    {"ID":"Q0127","Skill":"Grammar","Topic":"Time","Question":"School finishes at four o'clock in the afternoon. This is _____.","Choices":["4 a.m.","4 p.m.","4 midnight","4 midday"],"Answer":"4 p.m.","Explanation":"Buổi chiều dùng 'p.m.'.","AudioScript":null},
+    {"ID":"Q0128","Skill":"Reading","Topic":"Time","Question":"'The bus leaves at ten to nine, not nine o'clock.' What time does the bus really leave?","Choices":["8.50","9.00","9.10","8.40"],"Answer":"8.50","Explanation":"'Ten to nine' nghĩa là 10 phút trước 9 giờ = 8:50.","AudioScript":null},
+    {"ID":"Q0129","Skill":"Vocabulary","Topic":"Time","Question":"How do you ask if someone is available to meet?","Choices":["Are you free?","Are you tired?","Are you late?","Are you busy cooking?"],"Answer":"Are you free?","Explanation":"'Are you free?' là câu hỏi chuẩn để hỏi ai đó có rảnh không.","AudioScript":null},
+    {"ID":"Q0130","Skill":"Grammar","Topic":"Time","Question":"Choose the word that does NOT fit: 'First, then, after that, _____'","Choices":["finally","never","later","next"],"Answer":"never","Explanation":"'Never' là trạng từ tần suất, không phải từ nối trình tự.","AudioScript":null},
+    {"ID":"Q0131","Skill":"Vocabulary","Topic":"Travel","Question":"What travels on water and carries passengers?","Choices":["Boat","Bike","Bus","Train"],"Answer":"Boat","Explanation":"Thuyền/tàu (boat) di chuyển trên mặt nước.","AudioScript":null},
+    {"ID":"Q0132","Skill":"Vocabulary","Topic":"Travel","Question":"What do you do before a trip, putting your clothes in a bag?","Choices":["Pack a suitcase","Book a ticket","Go sightseeing","Buy a souvenir"],"Answer":"Pack a suitcase","Explanation":"'Pack a suitcase' là xếp đồ vào vali.","AudioScript":null},
+    {"ID":"Q0133","Skill":"Grammar","Topic":"Travel","Question":"We travelled to Hanoi _____ plane.","Choices":["by","on","in","with"],"Answer":"by","Explanation":"Phương tiện di chuyển dùng giới từ 'by'.","AudioScript":null},
+    {"ID":"Q0134","Skill":"Grammar","Topic":"Travel","Question":"Next month, my family _____ visit my grandparents.","Choices":["is going to","are going to","go to","going"],"Answer":"are going to","Explanation":"'My family' đi với 'are going to' khi coi là tập hợp các thành viên.","AudioScript":null},
+    {"ID":"Q0135","Skill":"Grammar","Topic":"Travel","Question":"We _____ a lot of photos on our trip.","Choices":["take","takes","took","taking"],"Answer":"took","Explanation":"'Take' bất quy tắc ở quá khứ là 'took'.","AudioScript":null},
+    {"ID":"Q0136","Skill":"Reading","Topic":"Travel","Question":"'We stayed at a hotel near the beach. The view was amazing and we really enjoyed our holiday.' How did they feel?","Choices":["Bored","Tired","They enjoyed it","They didn't like it"],"Answer":"They enjoyed it","Explanation":"Câu văn nói rõ 'we really enjoyed our holiday'.","AudioScript":null},
+    {"ID":"Q0137","Skill":"Reading","Topic":"Travel","Question":"'On the last day, we went sightseeing and bought some souvenirs for our friends.' What did they do on the last day?","Choices":["Stayed at the hotel","Went sightseeing and bought souvenirs","Packed their suitcases","Took the plane home"],"Answer":"Went sightseeing and bought souvenirs","Explanation":"Câu văn nói rõ hoạt động ngày cuối.","AudioScript":null},
+    {"ID":"Q0138","Skill":"Listening","Topic":"Travel","Question":"How does the girl go to her grandmother's house?","Choices":["By car","By bus","By train","By bike"],"Answer":"By train","Explanation":"Audio script nói rõ phương tiện di chuyển là train.","AudioScript":"Girl: Every summer, I go to my grandmother's house by train. It takes about three hours."},
+    {"ID":"Q0139","Skill":"Listening","Topic":"Travel","Question":"Where is the family going to go next month?","Choices":["Da Lat","Nha Trang","Hanoi","Phu Quoc"],"Answer":"Phu Quoc","Explanation":"Audio script nói rõ điểm đến du lịch là Phú Quốc.","AudioScript":"Man: Next month, we're going to go to Phu Quoc for our summer holiday."},
+    {"ID":"Q0140","Skill":"Writing","Topic":"Travel","Question":"Which sentence correctly uses the Past Simple tense?","Choices":["We visited Hanoi last year.","We visit Hanoi last year.","We visiting Hanoi last year.","We will visit Hanoi last year."],"Answer":"We visited Hanoi last year.","Explanation":"Thì quá khứ đơn thêm '-ed' với động từ có quy tắc.","AudioScript":null},
+    {"ID":"Q0145","Skill":"Vocabulary","Topic":"Places & Directions","Question":"What is a round place where several roads meet?","Choices":["Roundabout","Crossroads","Corner","Traffic lights"],"Answer":"Roundabout","Explanation":"Bùng binh (roundabout) là nơi nhiều con đường gặp nhau.","AudioScript":null},
+    {"ID":"Q0146","Skill":"Grammar","Topic":"Places & Directions","Question":"'_____ right at the corner, then the shop is on your left.'","Choices":["Turn","Turns","Turning","To turn"],"Answer":"Turn","Explanation":"Câu chỉ đường dùng động từ nguyên thể (mệnh lệnh).","AudioScript":null},
+    {"ID":"Q0147","Skill":"Grammar","Topic":"Places & Directions","Question":"There's a bank _____ the supermarket and the library.","Choices":["between","next to","opposite","under"],"Answer":"between","Explanation":"'Between A and B' diễn tả vị trí ở giữa 2 vật.","AudioScript":null},
+    {"ID":"Q0148","Skill":"Vocabulary","Topic":"Places & Directions","Question":"Where can you send a parcel to another city?","Choices":["Post office","Bank","Library","Hospital"],"Answer":"Post office","Explanation":"Bưu điện là nơi gửi bưu kiện.","AudioScript":null},
+    {"ID":"Q0155","Skill":"Vocabulary","Topic":"Clothes","Question":"What do you wear around your neck when it's cold?","Choices":["Scarf","Socks","Shorts","Belt"],"Answer":"Scarf","Explanation":"Khăn quàng cổ (scarf) mặc khi trời lạnh.","AudioScript":null},
+    {"ID":"Q0156","Skill":"Grammar","Topic":"Clothes","Question":"Look! The boy _____ a yellow raincoat.","Choices":["wear","wears","is wearing","wearing"],"Answer":"is wearing","Explanation":"Hành động đang diễn ra dùng Present Continuous (is wearing).","AudioScript":null},
+    {"ID":"Q0165","Skill":"Vocabulary","Topic":"Weather","Question":"What word describes weather with strong wind, rain, and thunder?","Choices":["Stormy","Sunny","Cool","Warm"],"Answer":"Stormy","Explanation":"Stormy miêu tả thời tiết bão.","AudioScript":null},
+    {"ID":"Q0166","Skill":"Grammar","Topic":"Weather","Question":"'What's the weather like?' '_____ very windy today.'","Choices":["It's","It has","There's","It is has"],"Answer":"It's","Explanation":"Cấu trúc nói thời tiết: 'It's + adjective'.","AudioScript":null},
+    {"ID":"Q0176","Skill":"Vocabulary","Topic":"House & Home","Question":"What piece of furniture do you keep your clothes in?","Choices":["Wardrobe","Bookshelf","Fridge","Sofa"],"Answer":"Wardrobe","Explanation":"Tủ quần áo là 'wardrobe'.","AudioScript":null},
+    {"ID":"Q0177","Skill":"Grammar","Topic":"House & Home","Question":"_____ two bathrooms in my house.","Choices":["There is","There are","There has","It is"],"Answer":"There are","Explanation":"'Two bathrooms' số nhiều nên dùng 'there are'.","AudioScript":null}
+  ]
+};
+
+    // --- CẤU HÌNH GAME ---
+    const QUESTION_COUNT = 10;
+    const TIME_PER_QUESTION = 15;
+
+    let selectedAvatar = '🚀';
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let streak = 0;
+    let timer = null;
+    let timeLeft = TIME_PER_QUESTION;
+    let isAnswered = false;
+
+    // --- AUDIO ENGINE AN TOÀN CHO DI ĐỘNG (LAZY INIT) ---
+    let audioCtx = null;
+    function getAudioContext() {
+        if (!audioCtx) {
+            const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtxClass) audioCtx = new AudioCtxClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        return audioCtx;
+    }
+
+    function playSound(type) {
+        try {
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            const now = ctx.currentTime;
+            if (type === 'correct') {
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.linearRampToValueAtTime(100, now + 0.25);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now); osc.stop(now + 0.25);
+            } else if (type === 'click') {
+                osc.frequency.setValueAtTime(400, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                osc.start(now); osc.stop(now + 0.05);
+            }
+        } catch (e) {
+            console.log("Audio not supported or blocked");
+        }
+    }
+
+    // --- NAVIGATION ---
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function selectAvatar(emoji) {
+        selectedAvatar = emoji;
+        document.querySelectorAll('.avatar-item').forEach(el => {
+            el.classList.toggle('selected', el.innerText === emoji);
+        });
+        playSound('click');
+    }
+
+    // --- GAME LOGIC ---
+    function startGame() {
+        let name = document.getElementById('student-name').value.trim();
+        let className = document.getElementById('student-class').value.trim();
+
+        // Tự động điền nếu bỏ trống để tránh chặn người dùng trên mobile
+        if (!name) name = "Học sinh";
+        if (!className) className = "A2";
+
+        playSound('click');
+        document.getElementById('display-name').innerText = name;
+        document.getElementById('display-avatar').innerText = selectedAvatar;
+
+        // Xáo trộn câu hỏi
+        let shuffled = [...RAW_DATA.questions].sort(() => 0.5 - Math.random());
+        currentQuestions = shuffled.slice(0, QUESTION_COUNT);
+
+        currentIndex = 0;
+        score = 0;
+        streak = 0;
+        
+        showScreen('screen-quiz');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        isAnswered = false;
+        clearInterval(timer);
+        
+        const q = currentQuestions[currentIndex];
+        document.getElementById('q-topic').innerText = `${q.Skill} • ${q.Topic}`;
+        document.getElementById('q-progress').innerText = `${currentIndex + 1}/${QUESTION_COUNT}`;
+        document.getElementById('q-text').innerText = q.Question;
+        document.getElementById('btn-next').style.display = 'none';
+        document.getElementById('btn-hint').classList.remove('disabled');
+        document.getElementById('explanation-box').classList.remove('active');
+
+        // Audio Script Box
+        const audioContainer = document.getElementById('audio-script-container');
+        audioContainer.style.display = q.AudioScript ? 'flex' : 'none';
+
+        // Render Options
+        const optsContainer = document.getElementById('options-container');
+        optsContainer.innerHTML = '';
+        let choices = [...q.Choices].sort(() => 0.5 - Math.random());
+
+        choices.forEach((optText) => {
+            const btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.innerText = optText;
+            btn.onclick = () => checkAnswer(optText, q.Answer, btn);
+            optsContainer.appendChild(btn);
+        });
+
+        startTimer();
+    }
+
+    function startTimer() {
+        timeLeft = TIME_PER_QUESTION;
+        const timerBar = document.getElementById('timer-bar');
+        timerBar.style.width = '100%';
+
+        timer = setInterval(() => {
+            timeLeft -= 0.1;
+            let percent = (timeLeft / TIME_PER_QUESTION) * 100;
+            timerBar.style.width = `${percent}%`;
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                timeOut();
+            }
+        }, 100);
+    }
+
+    function timeOut() {
+        if (isAnswered) return;
+        isAnswered = true;
+        playSound('wrong');
+        streak = 0;
+        updateComboUI();
+        highlightCorrectAnswer();
+        showExplanation("Hết giờ làm bài!");
+    }
+
+    function checkAnswer(selected, correct, btnEl) {
+        if (isAnswered) return;
+        isAnswered = true;
+        clearInterval(timer);
+
+        if (selected === correct) {
+            playSound('correct');
+            btnEl.classList.add('correct');
+            streak++;
+            let comboBonus = streak > 1 ? streak * 20 : 0;
+            let timeBonus = Math.round(timeLeft * 10);
+            score += 100 + timeBonus + comboBonus;
+            triggerConfetti();
+        } else {
+            playSound('wrong');
+            btnEl.classList.add('wrong');
+            streak = 0;
+            highlightCorrectAnswer();
+        }
+
+        document.getElementById('display-score').innerText = score;
+        updateComboUI();
+        showExplanation();
+    }
+
+    function highlightCorrectAnswer() {
+        const correctText = currentQuestions[currentIndex].Answer;
+        document.querySelectorAll('.opt-btn').forEach(btn => {
+            if (btn.innerText === correctText) {
+                btn.classList.add('correct');
+            }
+            btn.classList.add('disabled');
+        });
+    }
+
+    function updateComboUI() {
+        const comboBadge = document.getElementById('display-combo');
+        if (streak > 1) {
+            comboBadge.style.display = 'inline-block';
+            comboBadge.innerText = `x${streak}`;
+        } else {
+            comboBadge.style.display = 'none';
+        }
+    }
+
+    function showExplanation(customMsg) {
+        const expBox = document.getElementById('explanation-box');
+        const expText = document.getElementById('exp-text');
+        const q = currentQuestions[currentIndex];
+        
+        expText.innerText = (customMsg ? customMsg + " " : "") + q.Explanation;
+        expBox.classList.add('active');
+        document.getElementById('btn-next').style.display = 'flex';
+    }
+
+    function useHint() {
+        if (isAnswered) return;
+        playSound('click');
+        const q = currentQuestions[currentIndex];
+        const wrongBtns = [];
+        
+        document.querySelectorAll('.opt-btn').forEach(btn => {
+            if (btn.innerText !== q.Answer) wrongBtns.push(btn);
+        });
+
+        if (wrongBtns.length > 0) {
+            wrongBtns[0].classList.add('disabled');
+            document.getElementById('btn-hint').classList.add('disabled');
+            score = Math.max(0, score - 30);
+            document.getElementById('display-score').innerText = score;
+        }
+    }
+
+    function speakAudioScript() {
+        const q = currentQuestions[currentIndex];
+        if (q.AudioScript && 'speechSynthesis' in window) {
+            try {
+                window.speechSynthesis.cancel(); // Hủy giọng cũ nếu có
+                const utter = new SpeechSynthesisUtterance(q.AudioScript);
+                utter.lang = 'en-US';
+                window.speechSynthesis.speak(utter);
+            } catch(e) {
+                console.log("SpeechSynthesis Error", e);
+            }
+        }
+    }
+
+    function nextQuestion() {
+        currentIndex++;
+        if (currentIndex < QUESTION_COUNT) {
+            loadQuestion();
+        } else {
+            endGame();
+        }
+    }
+
+    function endGame() {
+        showScreen('screen-result');
+        document.getElementById('res-score').innerText = score;
+        let accuracy = Math.round((score / (QUESTION_COUNT * 200)) * 100);
+        document.getElementById('res-accuracy').innerText = `${Math.min(100, accuracy)}%`;
+
+        saveToLocalStorage(score);
+    }
+
+    function saveToLocalStorage(newScore) {
+        try {
+            const name = document.getElementById('student-name').value || "Học sinh";
+            let lb = JSON.parse(localStorage.getItem('cambridge_lb') || '[]');
+            lb.push({ name: name, score: newScore, date: new Date().toLocaleDateString() });
+            lb.sort((a, b) => b.score - a.score);
+            lb = lb.slice(0, 5);
+            localStorage.setItem('cambridge_lb', JSON.stringify(lb));
+
+            const lbEl = document.getElementById('leaderboard-list');
+            if (lbEl) {
+                lbEl.innerHTML = lb.map((item, idx) => `
+                    <div class="lb-item">
+                        <span><b>#${idx + 1}</b> ${item.name}</span>
+                        <span style="color:var(--accent); font-weight:bold;">${item.score} pts</span>
+                    </div>
+                `).join('');
+            }
+        } catch(e) {
+            console.log("LocalStorage restricted on this browser");
+        }
+    }
+
+    function shareAchievement() {
+        const text = `🏆 Tớ vừa đạt ${score} điểm trong Game Cambridge Quiz Race! Mở file làm bài cùng tớ nhé!`;
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text);
+            alert('Đã sao chép lời thách đấu! Hãy dán (Paste) gửi cho bạn bè nhé.');
+        } else {
+            alert(text);
+        }
+    }
+
+    function restartGame() {
+        showScreen('screen-welcome');
+    }
+
+    // --- CANVAS CONFETTI ---
+    function triggerConfetti() {
+        try {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            let particles = Array.from({length: 25}, () => ({
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                vx: (Math.random() - 0.5) * 8,
+                vy: (Math.random() - 0.5) * 8,
+                color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                size: Math.random() * 5 + 2
+            }));
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx; p.y += p.vy;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                if (particles.some(p => p.size > 0.1)) {
+                    particles.forEach(p => p.size *= 0.94);
+                    requestAnimationFrame(draw);
+                }
+            }
+            draw();
+        } catch(e){}
+    }
+</script>
+</body>
+</html>
