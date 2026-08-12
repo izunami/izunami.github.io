@@ -1062,3 +1062,39 @@ export function getStorageKey(
     );
 
 }
+
+/* ============================================================
+ * TEST CONFIG
+ * ========================================================== */
+
+console.log("=== TEST CONFIG ===");
+
+console.log(
+    "API BASE URL =",
+    CONFIG.API.BASE_URL
+);
+
+console.log(
+    "LOGIN ACTION =",
+    CONFIG.API.ACTION.LOGIN
+);
+
+console.log(
+    "GET EXAMS ACTION =",
+    CONFIG.API.ACTION.GET_EXAMS
+);
+
+console.log(
+    "GET RESULTS ACTION =",
+    CONFIG.API.ACTION.GET_RESULTS
+);
+
+console.log(
+    "GET RESULT ACTION =",
+    CONFIG.API.ACTION.GET_RESULT
+);
+
+console.log(
+    "CONFIG TEST =",
+    CONFIG
+);
