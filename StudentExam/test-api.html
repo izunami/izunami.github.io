@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StudentExam - Test API</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:900px;margin:40px auto;padding:0 20px}
+button{padding:10px 16px;margin:4px;cursor:pointer}
+pre{background:#f5f5f5;padding:16px;border-radius:8px;white-space:pre-wrap;word-break:break-word}
+.ok{color:#087f23;font-weight:bold}.err{color:#c62828;font-weight:bold}
+</style>
+</head>
+<body>
+<h2>StudentExam v2.0 — Test API thật</h2>
+<p>Test: GitHub Pages → Utils.js → Google Apps Script Web App</p>
+
+<button id="config">1. Test CONFIG</button>
+<button id="login">2. Login HS001</button>
+<button id="session">3. Check Session</button>
+<button id="exams">4. Get Exams</button>
+<button id="results">5. Get Results</button>
+
+<p id="status"></p>
+<pre id="output">Chưa chạy test.</pre>
+
+<script type="module">
+import { CONFIG, getApiUrl, getApiActionUrl }
+    from "./assets/js/core/config.js";
+
+import { Utils }
+    from "./assets/js/core/utils.js";
+
+const output = document.getElementById("output");
+const status = document.getElementById("status");
+
+function show(data){
+    output.textContent =
+        typeof data === "string"
+        ? data
+        : JSON.stringify(data,null,2);
+}
+
+function ok(msg){
+    status.className="ok";
+    status.textContent=msg;
+}
+
+function err(msg){
+    status.className="err";
+    status.textContent=msg;
+}
+
+function getToken(){
+    return Utils.getToken();
+}
+
+/* TEST CONFIG */
+document.getElementById("config").onclick=function(){
+    show({
+        BASE_URL: CONFIG.API.BASE_URL,
+        LOGIN: CONFIG.API.ACTION.LOGIN,
+        CHECK_SESSION: CONFIG.API.ACTION.CHECK_SESSION,
+        GET_EXAMS: CONFIG.API.ACTION.GET_EXAMS,
+        GET_RESULTS: CONFIG.API.ACTION.GET_RESULTS,
+        GET_RESULT: CONFIG.API.ACTION.GET_RESULT,
+        API_URL: getApiUrl(),
+        LOGIN_URL: getApiActionUrl(CONFIG.API.ACTION.LOGIN)
+    });
+    ok("CONFIG PASS");
+};
+
+/* LOGIN */
+document.getElementById("login").onclick=async function(){
+    try{
+        show("Đang gọi login HS001...");
+        const result = await Utils.apiGet(
+            CONFIG.API.ACTION.LOGIN,
+            {studentId:"HS001"}
+        );
+
+        console.log("LOGIN RESULT =",result);
+        show(result);
+
+        if(result && result.success && result.data){
+            Utils.setSession({
+                token: result.data.loginKey || result.data.token || "",
+                loginKey: result.data.loginKey || result.data.token || "",
+                student: result.data.student || null
+            });
+            ok("LOGIN API PASS — session đã lưu.");
+        }else{
+            err("LOGIN API trả về lỗi.");
+        }
+    }catch(e){
+        console.error(e);
+        show({error:e.message,stack:e.stack||""});
+        err("LOGIN API ERROR");
+    }
+};
+
+/* CHECK SESSION */
+document.getElementById("session").onclick=async function(){
+    try{
+        const token=getToken();
+
+        if(!token){
+            show("Chưa có token. Hãy Login HS001 trước.");
+            err("Thiếu session token.");
+            return;
+        }
+
+        show("Đang check session...");
+        const result=await Utils.apiGet(
+            CONFIG.API.ACTION.CHECK_SESSION,
+            {token:token}
+        );
+
+        console.log("SESSION RESULT =",result);
+        show(result);
+
+        result && result.success
+            ? ok("SESSION API PASS")
+            : err("SESSION API trả về lỗi.");
+    }catch(e){
+        console.error(e);
+        show({error:e.message,stack:e.stack||""});
+        err("SESSION API ERROR");
+    }
+};
+
+/* GET EXAMS */
+document.getElementById("exams").onclick=async function(){
+    try{
+        const token=getToken();
+
+        if(!token){
+            show("Chưa có token. Hãy Login HS001 trước.");
+            err("Thiếu session token.");
+            return;
+        }
+
+        show("Đang lấy danh sách bài kiểm tra...");
+        const result=await Utils.apiGet(
+            CONFIG.API.ACTION.GET_EXAMS,
+            {token:token}
+        );
+
+        console.log("EXAMS RESULT =",result);
+        show(result);
+
+        result && result.success
+            ? ok("GET EXAMS API PASS")
+            : err("GET EXAMS API trả về lỗi.");
+    }catch(e){
+        console.error(e);
+        show({error:e.message,stack:e.stack||""});
+        err("GET EXAMS API ERROR");
+    }
+};
+
+/* GET RESULTS */
+document.getElementById("results").onclick=async function(){
+    try{
+        const token=getToken();
+
+        if(!token){
+            show("Chưa có token. Hãy Login HS001 trước.");
+            err("Thiếu session token.");
+            return;
+        }
+
+        show("Đang lấy kết quả...");
+        const result=await Utils.apiGet(
+            CONFIG.API.ACTION.GET_RESULTS,
+            {token:token}
+        );
+
+        console.log("RESULTS RESULT =",result);
+        show(result);
+
+        result && result.success
+            ? ok("GET RESULTS API PASS")
+            : err("GET RESULTS API trả về lỗi.");
+    }catch(e){
+        console.error(e);
+        show({error:e.message,stack:e.stack||""});
+        err("GET RESULTS API ERROR");
+    }
+};
+
+console.log("=== TEST API PAGE LOADED ===");
+console.log("Utils.apiGet =", typeof Utils.apiGet);
+console.log("Utils.apiPost =", typeof Utils.apiPost);
+console.log("Utils.getToken =", typeof Utils.getToken);
+</script>
+</body>
+</html>
