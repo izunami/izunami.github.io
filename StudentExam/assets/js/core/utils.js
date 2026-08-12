@@ -98,7 +98,7 @@ export class Utils {
      * Number
      * ====================================================== */
 
-    static Number = {
+    static Numbers = {
 
         toNumber(value) {
 
