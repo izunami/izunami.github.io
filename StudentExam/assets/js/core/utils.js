@@ -1,92 +1,197 @@
+/**
+ * ============================================================
+ * StudentExam v2.0
+ * Utility Library
+ * ============================================================
+ *
+ * Author  : Nguyễn Thuận
+ * Version : 2.0.0
+ *
+ * File:
+ * assets/js/utils.js
+ *
+ * Purpose:
+ * - Type helpers
+ * - String helpers
+ * - Number helpers
+ * - Object helpers
+ * - UUID
+ * - LocalStorage
+ * - Session
+ * - API GET / POST
+ * - Authentication
+ * - Student API
+ * - Exam API
+ * - Result API
+ * - UI helpers
+ *
+ * IMPORTANT:
+ * - Không hard-code API action.
+ * - Không hard-code Storage Key.
+ * - Mọi cấu hình lấy từ CONFIG.
+ * - ID HTML phải tuân theo index.html chuẩn.
+ * ============================================================
+ */
+
 import { CONFIG } from "./config.js";
+
+
+/* ============================================================
+ * UTILS
+ * ============================================================ */
 
 export class Utils {
 
+
     /* ========================================================
-     * Type
+     * TYPE
      * ====================================================== */
 
     static Type = {
 
         isString(value) {
-            return typeof value === "string";
+
+            return (
+                typeof value === "string"
+            );
+
         },
+
 
         isNumber(value) {
-            return typeof value === "number"
-                && !Number.isNaN(value);
+
+            return (
+                typeof value === "number" &&
+                Number.isFinite(value)
+            );
+
         },
+
 
         isBoolean(value) {
-            return typeof value === "boolean";
+
+            return (
+                typeof value === "boolean"
+            );
+
         },
+
 
         isArray(value) {
+
             return Array.isArray(value);
+
         },
 
+
         isObject(value) {
+
             return (
                 value !== null &&
                 typeof value === "object" &&
                 !Array.isArray(value)
             );
+
         },
+
 
         isFunction(value) {
-            return typeof value === "function";
+
+            return (
+                typeof value === "function"
+            );
+
         },
+
 
         isNull(value) {
-            return value === null;
+
+            return (
+                value === null
+            );
+
         },
+
 
         isUndefined(value) {
-            return value === undefined;
+
+            return (
+                value === undefined
+            );
+
         },
 
+
         isNullOrUndefined(value) {
+
             return (
                 value === null ||
                 value === undefined
             );
+
         }
 
     };
 
 
     /* ========================================================
-     * Object
+     * OBJECT
      * ====================================================== */
 
     static Object = {
 
-        clone(obj) {
+        clone(object) {
 
             if (
-                obj === null ||
-                obj === undefined
+                object === null ||
+                object === undefined
             ) {
-                return obj;
+
+                return object;
+
             }
 
-            return JSON.parse(
-                JSON.stringify(obj)
-            );
+            try {
+
+                return JSON.parse(
+                    JSON.stringify(object)
+                );
+
+            } catch (error) {
+
+                console.warn(
+                    "Utils.Object.clone:",
+                    error
+                );
+
+                return null;
+
+            }
 
         },
 
-        isEmpty(obj) {
+
+        isEmpty(object) {
 
             if (
-                obj === null ||
-                obj === undefined
+                object === null ||
+                object === undefined
             ) {
+
                 return true;
+
+            }
+
+            if (
+                !Utils.Type.isObject(object)
+            ) {
+
+                return false;
+
             }
 
             return (
-                Object.keys(obj).length === 0
+                Object.keys(object).length === 0
             );
 
         }
@@ -95,7 +200,7 @@ export class Utils {
 
 
     /* ========================================================
-     * Number
+     * NUMBER
      * ====================================================== */
 
     static Numbers = {
@@ -105,22 +210,27 @@ export class Utils {
             const number =
                 Number(value);
 
-            return Number.isNaN(number)
-                ? 0
-                : number;
+            return Number.isFinite(number)
+                ? number
+                : 0;
 
         },
+
 
         toInteger(value) {
 
             const number =
-                parseInt(value, 10);
+                Number.parseInt(
+                    value,
+                    10
+                );
 
-            return Number.isNaN(number)
-                ? 0
-                : number;
+            return Number.isFinite(number)
+                ? number
+                : 0;
 
         },
+
 
         isInteger(value) {
 
@@ -130,61 +240,43 @@ export class Utils {
 
         },
 
+
         isPositive(value) {
 
             return (
-                typeof value === "number" &&
-                !Number.isNaN(value) &&
+                Utils.Type.isNumber(value) &&
                 value > 0
             );
 
-        }
-
-    };
+        },
 
 
-    /* ========================================================
-     * UUID
-     * ====================================================== */
+        round(
+            value,
+            decimals = CONFIG.RESULT.DECIMAL
+        ) {
 
-    static UUID = {
+            const number =
+                Utils.Numbers.toNumber(
+                    value
+                );
 
-        create() {
-
-            if (
-                typeof crypto !== "undefined" &&
-                crypto.randomUUID
-            ) {
-
-                return crypto.randomUUID();
-
-            }
+            const factor =
+                10 ** decimals;
 
             return (
-                "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
-            ).replace(
-                /[xy]/g,
-                function(c) {
-
-                    const r =
-                        Math.random() * 16 | 0;
-
-                    const v =
-                        c === "x"
-                            ? r
-                            : (r & 0x3 | 0x8);
-
-                    return v.toString(16);
-
-                }
+                Math.round(
+                    number * factor
+                ) / factor
             );
 
         }
 
     };
 
+
     /* ========================================================
-     * String
+     * TEXT
      * ====================================================== */
 
     static Text = {
@@ -195,7 +287,9 @@ export class Utils {
                 value === null ||
                 value === undefined
             ) {
+
                 return "";
+
             }
 
             return String(value).trim();
@@ -224,9 +318,7 @@ export class Utils {
         isEmpty(value) {
 
             return (
-                Utils.Text
-                    .trim(value)
-                    .length === 0
+                Utils.Text.trim(value).length === 0
             );
 
         },
@@ -247,7 +339,9 @@ export class Utils {
                 value === null ||
                 value === undefined
             ) {
+
                 return "";
+
             }
 
             return String(value);
@@ -255,20 +349,27 @@ export class Utils {
         },
 
 
-        safeJsonParse(value, fallback = null) {
+        safeJsonParse(
+            value,
+            fallback = null
+        ) {
 
             if (
                 value === null ||
                 value === undefined ||
                 value === ""
             ) {
+
                 return fallback;
+
             }
 
             if (
                 typeof value === "object"
             ) {
+
                 return value;
+
             }
 
             try {
@@ -280,7 +381,7 @@ export class Utils {
             } catch (error) {
 
                 console.warn(
-                    "safeJsonParse:",
+                    "Utils.Text.safeJsonParse:",
                     error
                 );
 
@@ -291,7 +392,10 @@ export class Utils {
         },
 
 
-        safeJsonStringify(value, fallback = "") {
+        safeJsonStringify(
+            value,
+            fallback = ""
+        ) {
 
             try {
 
@@ -302,7 +406,7 @@ export class Utils {
             } catch (error) {
 
                 console.warn(
-                    "safeJsonStringify:",
+                    "Utils.Text.safeJsonStringify:",
                     error
                 );
 
@@ -314,61 +418,655 @@ export class Utils {
 
     };
 
+
     /* ========================================================
-     * API CORE
+     * UUID
      * ====================================================== */
 
-    /**
-     * Gọi API bằng GET
-     *
-     * @param {string} action
-     * @param {Object} params
-     * @returns {Promise<Object>}
-     */
-    static async apiGet(
-        action,
-        params = {}
-    ) {
+    static UUID = {
 
-        if (!action) {
+        create() {
 
-            throw new Error(
-                "Thiếu action."
+            if (
+                typeof crypto !== "undefined" &&
+                typeof crypto.randomUUID === "function"
+            ) {
+
+                return crypto.randomUUID();
+
+            }
+
+            return (
+                "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+            ).replace(
+                /[xy]/g,
+                function(character) {
+
+                    const random =
+                        Math.random() * 16 | 0;
+
+                    const value =
+                        character === "x"
+                            ? random
+                            : (
+                                random & 0x3
+                            ) | 0x8;
+
+                    return value.toString(16);
+
+                }
             );
 
         }
 
-        const query =
-            new URLSearchParams();
+    };
 
-        query.set(
-            "action",
-            action
-        );
 
-        Object.keys(
-            params
-        ).forEach(
-            function(key) {
+    /* ========================================================
+     * DOM
+     * ====================================================== */
 
-                const value =
-                    params[key];
+    static DOM = {
+
+        get(id) {
+
+            if (
+                !id
+            ) {
+
+                return null;
+
+            }
+
+            return document.getElementById(
+                id
+            );
+
+        },
+
+
+        exists(id) {
+
+            return (
+                Utils.DOM.get(id) !== null
+            );
+
+        },
+
+
+        setText(
+            id,
+            value = ""
+        ) {
+
+            const element =
+                Utils.DOM.get(id);
+
+            if (
+                !element
+            ) {
+
+                return false;
+
+            }
+
+            element.textContent =
+                Utils.Text.toString(
+                    value
+                );
+
+            return true;
+
+        },
+
+
+        setHTML(
+            id,
+            html = ""
+        ) {
+
+            const element =
+                Utils.DOM.get(id);
+
+            if (
+                !element
+            ) {
+
+                return false;
+
+            }
+
+            element.innerHTML =
+                Utils.Text.toString(
+                    html
+                );
+
+            return true;
+
+        },
+
+
+        show(id) {
+
+            const element =
+                Utils.DOM.get(id);
+
+            if (
+                !element
+            ) {
+
+                return false;
+
+            }
+
+            element.classList.remove(
+                "d-none"
+            );
+
+            return true;
+
+        },
+
+
+        hide(id) {
+
+            const element =
+                Utils.DOM.get(id);
+
+            if (
+                !element
+            ) {
+
+                return false;
+
+            }
+
+            element.classList.add(
+                "d-none"
+            );
+
+            return true;
+
+        },
+
+
+        toggle(
+            id,
+            show
+        ) {
+
+            return show
+                ? Utils.DOM.show(id)
+                : Utils.DOM.hide(id);
+
+        },
+
+
+        setValue(
+            id,
+            value = ""
+        ) {
+
+            const element =
+                Utils.DOM.get(id);
+
+            if (
+                !element
+            ) {
+
+                return false;
+
+            }
+
+            element.value =
+                value ?? "";
+
+            return true;
+
+        },
+
+
+        getValue(id) {
+
+            const element =
+                Utils.DOM.get(id);
+
+            if (
+                !element
+            ) {
+
+                return "";
+
+            }
+
+            return element.value ?? "";
+
+        },
+
+
+        setDisabled(
+            id,
+            disabled = true
+        ) {
+
+            const element =
+                Utils.DOM.get(id);
+
+            if (
+                !element
+            ) {
+
+                return false;
+
+            }
+
+            element.disabled =
+                Boolean(disabled);
+
+            return true;
+
+        }
+
+    };
+
+
+    /* ========================================================
+     * STORAGE
+     * ====================================================== */
+
+    static Storage = {
+
+        get(key) {
+
+            if (
+                !key
+            ) {
+
+                return null;
+
+            }
+
+            try {
+
+                return localStorage.getItem(
+                    key
+                );
+
+            } catch (error) {
+
+                console.warn(
+                    "Utils.Storage.get:",
+                    error
+                );
+
+                return null;
+
+            }
+
+        },
+
+
+        set(
+            key,
+            value
+        ) {
+
+            if (
+                !key
+            ) {
+
+                return false;
+
+            }
+
+            try {
+
+                localStorage.setItem(
+                    key,
+                    String(value)
+                );
+
+                return true;
+
+            } catch (error) {
+
+                console.error(
+                    "Utils.Storage.set:",
+                    error
+                );
+
+                return false;
+
+            }
+
+        },
+
+
+        remove(key) {
+
+            if (
+                !key
+            ) {
+
+                return false;
+
+            }
+
+            try {
+
+                localStorage.removeItem(
+                    key
+                );
+
+                return true;
+
+            } catch (error) {
+
+                console.error(
+                    "Utils.Storage.remove:",
+                    error
+                );
+
+                return false;
+
+            }
+
+        },
+
+
+        getJSON(
+            key,
+            fallback = null
+        ) {
+
+            const raw =
+                Utils.Storage.get(
+                    key
+                );
+
+            return Utils.Text.safeJsonParse(
+                raw,
+                fallback
+            );
+
+        },
+
+
+        setJSON(
+            key,
+            value
+        ) {
+
+            const raw =
+                Utils.Text.safeJsonStringify(
+                    value
+                );
+
+            if (
+                !raw
+            ) {
+
+                return false;
+
+            }
+
+            return Utils.Storage.set(
+                key,
+                raw
+            );
+
+        },
+
+
+        clear() {
+
+            try {
+
+                localStorage.clear();
+
+                return true;
+
+            } catch (error) {
+
+                console.error(
+                    "Utils.Storage.clear:",
+                    error
+                );
+
+                return false;
+
+            }
+
+        }
+
+    };
+
+
+    /* ========================================================
+     * SESSION
+     * ====================================================== */
+
+    static Session = {
+
+        get() {
+
+            return Utils.Storage.getJSON(
+                CONFIG.STORAGE.LOGIN,
+                null
+            );
+
+        },
+
+
+        set(session) {
+
+            if (
+                !session ||
+                typeof session !== "object"
+            ) {
+
+                return Utils.Session.clear();
+
+            }
+
+            const saved =
+                Utils.Storage.setJSON(
+                    CONFIG.STORAGE.LOGIN,
+                    session
+                );
+
+            if (
+                !saved
+            ) {
+
+                return false;
+
+            }
+
+            /*
+             * Đồng bộ các key chuẩn của CONFIG.STORAGE.
+             */
+
+            if (
+                session.token ||
+                session.loginKey
+            ) {
+
+                Utils.Storage.set(
+                    CONFIG.STORAGE.TOKEN,
+                    session.token ||
+                    session.loginKey
+                );
+
+            }
+
+            if (
+                session.student
+            ) {
+
+                Utils.Storage.setJSON(
+                    CONFIG.STORAGE.STUDENT,
+                    session.student
+                );
+
+            }
+
+            if (
+                session.class
+            ) {
+
+                Utils.Storage.set(
+                    CONFIG.STORAGE.CLASS,
+                    session.class
+                );
+
+            }
+
+            return true;
+
+        },
+
+
+        clear() {
+
+            Utils.Storage.remove(
+                CONFIG.STORAGE.LOGIN
+            );
+
+            Utils.Storage.remove(
+                CONFIG.STORAGE.TOKEN
+            );
+
+            Utils.Storage.remove(
+                CONFIG.STORAGE.STUDENT
+            );
+
+            Utils.Storage.remove(
+                CONFIG.STORAGE.CLASS
+            );
+
+            Utils.Storage.remove(
+                CONFIG.STORAGE.PROFILE
+            );
+
+            return true;
+
+        },
+
+
+        getToken() {
+
+            const session =
+                Utils.Session.get();
+
+            if (
+                session
+            ) {
+
+                const token =
+                    Utils.Text.trim(
+                        session.token ||
+                        session.loginKey ||
+                        ""
+                    );
 
                 if (
-                    value !== undefined &&
-                    value !== null
+                    token
                 ) {
 
-                    /*
-                     * Object / Array:
-                     * chuyển thành JSON.
-                     *
-                     * Ví dụ:
-                     * answers = {
-                     *     "1": "B",
-                     *     "2": "B"
-                     * }
-                     */
+                    return token;
+
+                }
+
+            }
+
+            return Utils.Text.trim(
+                Utils.Storage.get(
+                    CONFIG.STORAGE.TOKEN
+                ) || ""
+            );
+
+        },
+
+
+        isLoggedIn() {
+
+            return (
+                Utils.Session.getToken()
+                    .length > 0
+            );
+
+        },
+
+
+        validate() {
+
+            const session =
+                Utils.Session.get();
+
+            const token =
+                Utils.Session.getToken();
+
+            if (
+                !session ||
+                !token
+            ) {
+
+                Utils.Session.clear();
+
+                return false;
+
+            }
+
+            return true;
+
+        }
+
+    };
+
+
+    /* ========================================================
+     * API CORE
+     * ====================================================== */
+
+    static API = {
+
+        async get(
+            action,
+            params = {}
+        ) {
+
+            if (
+                !action
+            ) {
+
+                throw new Error(
+                    "Thiếu action."
+                );
+
+            }
+
+            const query =
+                new URLSearchParams();
+
+            query.set(
+                "action",
+                action
+            );
+
+            Object.entries(
+                params
+            ).forEach(
+                ([key, value]) => {
+
+                    if (
+                        value === undefined ||
+                        value === null
+                    ) {
+
+                        return;
+
+                    }
 
                     if (
                         typeof value === "object"
@@ -376,9 +1074,7 @@ export class Utils {
 
                         query.set(
                             key,
-                            JSON.stringify(
-                                value
-                            )
+                            JSON.stringify(value)
                         );
 
                     } else {
@@ -391,974 +1087,943 @@ export class Utils {
                     }
 
                 }
-
-            }
-        );
-
-        const url =
-            CONFIG.API.BASE_URL +
-            "?" +
-            query.toString();
-
-        const controller =
-            new AbortController();
-
-        const timeout =
-            setTimeout(
-                function() {
-
-                    controller.abort();
-
-                },
-                CONFIG.API.TIMEOUT
             );
 
-        try {
+            const url =
+                CONFIG.API.BASE_URL +
+                "?" +
+                query.toString();
 
-            const response =
-                await fetch(
-                    url,
-                    {
-                        method:
-                            "GET",
+            return Utils.API.request(
+                url,
+                {
+                    method: "GET"
+                }
+            );
 
-                        signal:
-                            controller.signal
-                    }
-                );
+        },
+
+
+        async post(
+            action,
+            data = {}
+        ) {
 
             if (
-                !response.ok
+                !action
             ) {
 
                 throw new Error(
-                    "HTTP " +
-                    response.status
+                    "Thiếu action."
                 );
 
             }
-
-            const result =
-                await response.json();
-
-            return result;
-
-        } catch (error) {
-
-            if (
-                error.name ===
-                "AbortError"
-            ) {
-
-                throw new Error(
-                    "API request timeout."
-                );
-
-            }
-
-            throw error;
-
-        } finally {
-
-            clearTimeout(
-                timeout
-            );
-
-        }
-
-    }
-
-
-    /**
-     * Gọi API bằng POST
-     *
-     * @param {string} action
-     * @param {Object} data
-     * @returns {Promise<Object>}
-     */
-    static async apiPost(
-        action,
-        data = {}
-    ) {
-
-        if (!action) {
-
-            throw new Error(
-                "Thiếu action."
-            );
-
-        }
-
-        const controller =
-            new AbortController();
-
-        const timeout =
-            setTimeout(
-                function() {
-
-                    controller.abort();
-
-                },
-                CONFIG.API.TIMEOUT
-            );
-
-        try {
 
             const payload = {
 
-                action:
-                    action,
+                action,
 
                 ...data
 
             };
 
+            return Utils.API.request(
+                CONFIG.API.BASE_URL,
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "text/plain;charset=utf-8"
+
+                    },
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
+
+                }
+            );
+
+        },
+
+
+        async request(
+            url,
+            options = {}
+        ) {
+
+            const controller =
+                new AbortController();
+
+            const timeout =
+                setTimeout(
+                    () => {
+
+                        controller.abort();
+
+                    },
+                    CONFIG.API.TIMEOUT
+                );
+
+            try {
+
+                const response =
+                    await fetch(
+                        url,
+                        {
+                            ...options,
+                            signal:
+                                controller.signal
+                        }
+                    );
+
+                if (
+                    !response.ok
+                ) {
+
+                    throw new Error(
+                        "HTTP " +
+                        response.status
+                    );
+
+                }
+
+                return await response.json();
+
+            } catch (error) {
+
+                if (
+                    error.name ===
+                    "AbortError"
+                ) {
+
+                    throw new Error(
+                        "API request timeout."
+                    );
+
+                }
+
+                throw error;
+
+            } finally {
+
+                clearTimeout(
+                    timeout
+                );
+
+            }
+
+        },
+
+
+        checkResponse(response) {
+
+            if (
+                !response
+            ) {
+
+                throw new Error(
+                    "API không trả về dữ liệu."
+                );
+
+            }
+
+            if (
+                response.success !== true
+            ) {
+
+                throw new Error(
+                    response.message ||
+                    CONFIG.MESSAGE.UNKNOWN_ERROR
+                );
+
+            }
+
+            return response.data;
+
+        }
+
+    };
+
+
+    /* ========================================================
+     * AUTHENTICATION
+     * ====================================================== */
+
+    static Auth = {
+
+        async login(studentId) {
+
+            const id =
+                Utils.Text.trim(
+                    studentId
+                );
+
+            if (
+                !id
+            ) {
+
+                throw new Error(
+                    "Vui lòng nhập mã học sinh."
+                );
+
+            }
+
             const response =
-                await fetch(
-                    CONFIG.API.BASE_URL,
+                await Utils.API.get(
+                    CONFIG.API.ACTION.LOGIN,
                     {
-                        method:
-                            "POST",
-
-                        /*
-                         * Dùng text/plain để tránh
-                         * preflight CORS của Google Apps Script.
-                         */
-                        headers: {
-
-                            "Content-Type":
-                                "text/plain;charset=utf-8"
-
-                        },
-
-                        body:
-                            JSON.stringify(
-                                payload
-                            ),
-
-                        signal:
-                            controller.signal
-
+                        studentId:
+                            id
                     }
                 );
 
+            const data =
+                Utils.API.checkResponse(
+                    response
+                );
+
             if (
-                !response.ok
+                !data ||
+                !(
+                    data.loginKey ||
+                    data.token
+                )
             ) {
 
                 throw new Error(
-                    "HTTP " +
-                    response.status
+                    "Đăng nhập không trả về Login Key."
                 );
 
             }
 
-            const result =
-                await response.json();
+            const token =
+                Utils.Text.trim(
+                    data.loginKey ||
+                    data.token
+                );
 
-            return result;
+            const session = {
 
-        } catch (error) {
+                token,
+
+                loginKey:
+                    token,
+
+                student:
+                    data.student ||
+                    null,
+
+                loginTime:
+                    Date.now()
+
+            };
+
+            Utils.Session.set(
+                session
+            );
+
+            return data;
+
+        },
+
+
+        logout() {
+
+            Utils.Session.clear();
+
+            return true;
+
+        },
+
+
+        checkSession() {
 
             if (
-                error.name ===
-                "AbortError"
+                !Utils.Session.validate()
             ) {
-
-                throw new Error(
-                    "API request timeout."
-                );
-
-            }
-
-            throw error;
-
-        } finally {
-
-            clearTimeout(
-                timeout
-            );
-
-        }
-
-    }
-
-
-    /**
-     * Kiểm tra response API
-     *
-     * @param {Object} response
-     * @returns {*}
-     */
-    static apiCheckResponse(
-        response
-    ) {
-
-        if (!response) {
-
-            throw new Error(
-                "API không trả về dữ liệu."
-            );
-
-        }
-
-        if (
-            response.success !== true
-        ) {
-
-            throw new Error(
-                response.message ||
-                "API request thất bại."
-            );
-
-        }
-
-        return response.data;
-
-    }
-
-        /* ========================================================
-     * SESSION
-     * ====================================================== */
-
-    static SESSION_KEY =
-        "studentExamSession";
-
-
-    /**
-     * Lấy session hiện tại
-     *
-     * @returns {Object|null}
-     */
-    static getSession() {
-
-        try {
-
-            const raw =
-                localStorage.getItem(
-                    Utils.SESSION_KEY
-                );
-
-            if (!raw) {
 
                 return null;
 
             }
+
+            return Utils.Session.get();
+
+        },
+
+
+        requireLogin() {
 
             const session =
-                JSON.parse(
-                    raw
-                );
+                Utils.Auth.checkSession();
 
             if (
-                !session ||
-                typeof session !== "object"
+                !session
             ) {
 
-                return null;
+                throw new Error(
+                    CONFIG.MESSAGE.SESSION_EXPIRED
+                );
 
             }
 
             return session;
 
-        } catch (error) {
-
-            console.error(
-                "Không đọc được session:",
-                error
-            );
-
-            return null;
-
-        }
-
-    }
+        },
 
 
-    /**
-     * Lưu session
-     *
-     * @param {Object} session
-     */
-    static setSession(
-        session
-    ) {
+        getCurrentStudent() {
 
-        if (
-            !session ||
-            typeof session !== "object"
-        ) {
+            const session =
+                Utils.Session.get();
 
-            Utils.clearSession();
+            if (
+                !session
+            ) {
 
-            return;
+                return null;
 
-        }
+            }
 
-        try {
-
-            localStorage.setItem(
-                Utils.SESSION_KEY,
-                JSON.stringify(
-                    session
+            return (
+                session.student ||
+                Utils.Storage.getJSON(
+                    CONFIG.STORAGE.STUDENT,
+                    null
                 )
             );
 
-        } catch (error) {
-
-            console.error(
-                "Không lưu được session:",
-                error
-            );
-
-        }
-
-    }
+        },
 
 
-    /**
-     * Xóa session
-     */
-    static clearSession() {
+        getCurrentStudentId() {
 
-        try {
+            const student =
+                Utils.Auth.getCurrentStudent();
 
-            localStorage.removeItem(
-                Utils.SESSION_KEY
-            );
+            if (
+                !student
+            ) {
 
-        } catch (error) {
+                return "";
 
-            console.error(
-                "Không xóa được session:",
-                error
-            );
+            }
 
-        }
-
-    }
-
-
-    /**
-     * Lấy session token
-     *
-     * Hỗ trợ:
-     * - token
-     * - loginKey
-     *
-     * @returns {string}
-     */
-    static getToken() {
-
-        const session =
-            Utils.getSession();
-
-        if (!session) {
-
-            return "";
-
-        }
-
-        return (
-            Utils.Text.trim(
-                session.token ||
-                session.loginKey ||
+            return Utils.Text.trim(
+                student.id ||
+                student.studentId ||
                 ""
-            )
-        );
+            );
 
-    }
+        },
 
 
-    /**
-     * Kiểm tra đã đăng nhập hay chưa
-     *
-     * @returns {boolean}
-     */
-    static isLoggedIn() {
+        getLoginKey() {
 
-        return (
-            Utils.getToken()
-                .length > 0
-        );
+            return Utils.Session.getToken();
 
-    }
+        },
 
-        /* ========================================================
+
+        isCurrentStudent(studentId) {
+
+            const currentId =
+                Utils.Auth.getCurrentStudentId();
+
+            const id =
+                Utils.Text.trim(
+                    studentId
+                );
+
+            if (
+                !currentId ||
+                !id
+            ) {
+
+                return false;
+
+            }
+
+            return (
+                currentId === id
+            );
+
+        }
+
+    };
+
+
+    /* ========================================================
      * STUDENT API
      * ====================================================== */
 
-    /**
-     * Lấy dashboard học sinh
-     *
-     * @returns {Promise<Object>}
-     */
-    static async getDashboard() {
+    static Student = {
 
-        const token =
-            Utils.getToken();
+        async getClasses() {
 
-        if (!token) {
+            const response =
+                await Utils.API.get(
+                    CONFIG.API.ACTION.GET_CLASSES
+                );
 
-            throw new Error(
-                "Phiên đăng nhập đã hết hạn."
+            return Utils.API.checkResponse(
+                response
             );
 
-        }
+        },
 
-        const response =
-            await Utils.apiGet(
-                "getDashboard",
-                {
-                    token:
-                        token
-                }
+
+        async getStudents(className = "") {
+
+            const params = {};
+
+            if (
+                Utils.Text.isNotEmpty(
+                    className
+                )
+            ) {
+
+                params.class =
+                    Utils.Text.trim(
+                        className
+                    );
+
+            }
+
+            const response =
+                await Utils.API.get(
+                    CONFIG.API.ACTION.GET_STUDENTS,
+                    params
+                );
+
+            return Utils.API.checkResponse(
+                response
             );
 
-        return Utils.apiCheckResponse(
-            response
-        );
-
-    }
+        },
 
 
-    /**
-     * Lấy danh sách bài kiểm tra
-     *
-     * @returns {Promise<Array>}
-     */
-    static async getExams() {
-
-        const token =
-            Utils.getToken();
-
-        if (!token) {
-
-            throw new Error(
-                "Phiên đăng nhập đã hết hạn."
-            );
-
-        }
-
-        const response =
-            await Utils.apiGet(
-                "getExams",
-                {
-                    token:
-                        token
-                }
-            );
-
-        return Utils.apiCheckResponse(
-            response
-        );
-
-    }
-
-
-    /**
-     * Lấy đề thi
-     *
-     * @param {string} examId
-     * @returns {Promise<Object>}
-     */
-    static async getExam(
-        examId
-    ) {
-
-        const token =
-            Utils.getToken();
-
-        if (!token) {
-
-            throw new Error(
-                "Phiên đăng nhập đã hết hạn."
-            );
-
-        }
-
-        if (!examId) {
-
-            throw new Error(
-                "Thiếu mã bài kiểm tra."
-            );
-
-        }
-
-        const response =
-            await Utils.apiGet(
-                "getExam",
-                {
-                    token:
-                        token,
-
-                    examId:
-                        examId
-                }
-            );
-
-        return Utils.apiCheckResponse(
-            response
-        );
-
-    }
-
-
-    /**
-     * Nộp bài kiểm tra
-     *
-     * @param {string} examId
-     * @param {Object} answers
-     * @param {string|null} startTime
-     * @param {number} duration
-     * @returns {Promise<Object>}
-     */
-    static async submitExam(
-        examId,
-        answers,
-        startTime = null,
-        duration = 0
-    ) {
-
-        const token =
-            Utils.getToken();
-
-        if (!token) {
-
-            throw new Error(
-                "Phiên đăng nhập đã hết hạn."
-            );
-
-        }
-
-        if (!examId) {
-
-            throw new Error(
-                "Thiếu mã bài kiểm tra."
-            );
-
-        }
-
-        if (
-            !answers ||
-            typeof answers !== "object" ||
-            Array.isArray(answers)
+        async findStudent(
+            studentId
         ) {
 
-            throw new Error(
-                "Dữ liệu câu trả lời không hợp lệ."
+            const id =
+                Utils.Text.trim(
+                    studentId
+                );
+
+            if (
+                !id
+            ) {
+
+                throw new Error(
+                    "Thiếu mã học sinh."
+                );
+
+            }
+
+            const response =
+                await Utils.API.get(
+                    CONFIG.API.ACTION.FIND_STUDENT,
+                    {
+                        studentId:
+                            id
+                    }
+                );
+
+            return Utils.API.checkResponse(
+                response
             );
 
         }
 
-        const payload = {
+    };
 
-            token:
-                token,
-
-            examId:
-                examId,
-
-            answers:
-                answers
-
-        };
-
-        if (
-            startTime !== null &&
-            startTime !== undefined &&
-            startTime !== ""
-        ) {
-
-            payload.startTime =
-                startTime;
-
-        }
-
-        if (
-            duration !== null &&
-            duration !== undefined
-        ) {
-
-            payload.duration =
-                duration;
-
-        }
-
-        const response =
-            await Utils.apiPost(
-                "submitExam",
-                payload
-            );
-
-        return Utils.apiCheckResponse(
-            response
-        );
-
-    }
-
-
-    /**
-     * Lấy danh sách kết quả
-     *
-     * @returns {Promise<Array>}
-     */
-    static async getResults() {
-
-        const token =
-            Utils.getToken();
-
-        if (!token) {
-
-            throw new Error(
-                "Phiên đăng nhập đã hết hạn."
-            );
-
-        }
-
-        const response =
-            await Utils.apiGet(
-                "getResults",
-                {
-                    token:
-                        token
-                }
-            );
-
-        return Utils.apiCheckResponse(
-            response
-        );
-
-    }
-
-
-    /**
-     * Lấy một kết quả cụ thể
-     *
-     * @param {string} resultId
-     * @returns {Promise<Object>}
-     */
-    static async getResult(
-        resultId
-    ) {
-
-        const token =
-            Utils.getToken();
-
-        if (!token) {
-
-            throw new Error(
-                "Phiên đăng nhập đã hết hạn."
-            );
-
-        }
-
-        if (!resultId) {
-
-            throw new Error(
-                "Thiếu mã kết quả."
-            );
-
-        }
-
-        const response =
-            await Utils.apiGet(
-                "getResult",
-                {
-                    token:
-                        token,
-
-                    resultId:
-                        resultId
-                }
-            );
-
-        return Utils.apiCheckResponse(
-            response
-        );
-
-    }
-
-    /* ============================================================
-    * AUTH / LOGIN API
-    * ============================================================ */
-
-    /**
-     * Đăng nhập học sinh.
-    *
-    * Backend:
-    * action=login
-    * studentId=HS001
-    *
-    * @param {string} studentId
-          * @returns {Promise<Object>}
-     */
-    static async login(
-      studentId
-    ) {
-
-      const id =
-          Utils.Text.trim(
-                studentId
-         );
-
-        if (!id) {
-
-           throw new Error(
-            "Vui lòng nhập mã học sinh."
-           );
-
-     }
-
-        const response =
-            await Utils.apiGet(
-                "login",
-                {
-                    studentId:
-                        id
-                }
-            );
-
-        const data =
-         Utils.apiCheckResponse(
-               response
-         );
-
-        /*
-        * Backend trả:
-        *
-        * {
-        *   loginKey: "...",
-         *   student: {
-        *       id: "...",
-        *       name: "...",
-        *       class: "..."
-        *   }
-        * }
-         */
-
-     if (
-          !data ||
-         !data.loginKey
-     ) {
-
-         throw new Error(
-             "Đăng nhập không trả về Login Key."
-         );
-
-     }
-
-        /*
-         * Lưu Login Key.
-        */
-
-     Utils.setSession({
-
-           token:
-             data.loginKey,
-
-          loginKey:
-                data.loginKey,
-
-          student:
-             data.student || null
-
-      });
-
-     return data;
-
-    }
-
-
-    /**
-     * Đăng xuất học sinh.
-     *
-     * Backend hiện tại chưa có API logout.
-     *
-     * Vì vậy frontend chỉ xóa session
-    * ở trình duyệt.
-    *
-     * @returns {boolean}
-    */
-    static logout() {
-
-     Utils.clearSession();
-
-     return true;
-
-    }
-
-
-    /**
-    * Kiểm tra session hiện tại.
-    *
-    * Không gọi API.
-    * Chỉ kiểm tra session local.
-    *
-    * @returns {Object|null}
-    */
-    static checkSession() {
-
-     const session =
-         Utils.getSession();
-
-     if (
-         !session
-     ) {
-
-            return null;
-
-     }
-
-     const token =
-          Utils.Text.trim(
-             session.token ||
-             session.loginKey
-            );
-
-     if (!token) {
-
-           Utils.clearSession();
-
-         return null;
-
-     }
-
-     return session;
-
-    }
-
-
-    /**
-     * Yêu cầu session hợp lệ.
-    *
-    * Dùng ở các màn hình cần đăng nhập.
-    *
-     * @returns {Object}
-    */
-    static requireSession() {
-
-     const session =
-            Utils.checkSession();
-
-     if (!session) {
-
-         throw new Error(
-             "Phiên đăng nhập đã hết hạn."
-         );
-
-        }
-
-     return session;
-
-    }
-
-
-    /**
-    * Lấy thông tin học sinh đang đăng nhập.
-    *
-    * @returns {Object|null}
-    */
-    static getCurrentStudent() {
-
-      const session =
-         Utils.getSession();
-
-     if (
-            !session
-     ) {
-
-         return null;
-
-     }
-
-     return (
-           session.student ||
-            null
-        );
-
-    }
-
-
-    /**
-    * Lấy mã học sinh hiện tại.
-    *
-    * @returns {string}
-    */
-    static getCurrentStudentId() {
-
-     const student =
-            Utils.getCurrentStudent();
-
-     if (
-         !student
-     ) {
-
-         return "";
-
-     }
-
-     return Utils.Text.trim(
-         student.id
-     );
-
-    }
 
     /* ========================================================
-     * SESSION / UI HELPERS
+     * DASHBOARD API
      * ====================================================== */
 
+    static Dashboard = {
 
-    /**
-     * Kiểm tra session có token hợp lệ hay không.
-     *
-     * @returns {boolean}
-     */
-    static hasSession() {
+        async get() {
 
-        const token =
-            Utils.getToken();
+            const token =
+                Utils.Session.getToken();
 
-        return (
-            typeof token === "string" &&
-            token.trim() !== ""
-        );
+            if (
+                !token
+            ) {
 
-    }
+                throw new Error(
+                    CONFIG.MESSAGE.SESSION_EXPIRED
+                );
 
+            }
 
-    /**
-     * Kiểm tra session và tự xóa
-     * nếu session không hợp lệ.
-     *
-     * @returns {boolean}
-     */
-    static validateSession() {
+            const response =
+                await Utils.API.get(
+                    CONFIG.API.ACTION.GET_DASHBOARD,
+                    {
+                        token
+                    }
+                );
 
-        const session =
-            Utils.checkSession();
-
-        if (!session) {
-
-            return false;
+            return Utils.API.checkResponse(
+                response
+            );
 
         }
 
-        return true;
-
-    }
+    };
 
 
-    /**
-     * Xử lý session hết hạn.
-     *
-     * Dùng khi API trả về:
-     *
-     * "Phiên đăng nhập đã hết hạn."
-     *
-     * @param {Object|string|null} response
-     * @returns {boolean}
-     */
+    /* ========================================================
+     * EXAM API
+     * ====================================================== */
+
+    static Exam = {
+
+        async getList() {
+
+            const token =
+                Utils.Session.getToken();
+
+            if (
+                !token
+            ) {
+
+                throw new Error(
+                    CONFIG.MESSAGE.SESSION_EXPIRED
+                );
+
+            }
+
+            const response =
+                await Utils.API.get(
+                    CONFIG.API.ACTION.GET_EXAMS,
+                    {
+                        token
+                    }
+                );
+
+            return Utils.API.checkResponse(
+                response
+            );
+
+        },
+
+
+        async get(
+            examId
+        ) {
+
+            const token =
+                Utils.Session.getToken();
+
+            if (
+                !token
+            ) {
+
+                throw new Error(
+                    CONFIG.MESSAGE.SESSION_EXPIRED
+                );
+
+            }
+
+            const id =
+                Utils.Text.trim(
+                    examId
+                );
+
+            if (
+                !id
+            ) {
+
+                throw new Error(
+                    "Thiếu mã bài kiểm tra."
+                );
+
+            }
+
+            const response =
+                await Utils.API.get(
+                    CONFIG.API.ACTION.GET_EXAM,
+                    {
+                        token,
+
+                        examId:
+                            id
+                    }
+                );
+
+            return Utils.API.checkResponse(
+                response
+            );
+
+        },
+
+
+        async submit(
+            examId,
+            answers,
+            startTime = null,
+            duration = 0
+        ) {
+
+            const token =
+                Utils.Session.getToken();
+
+            if (
+                !token
+            ) {
+
+                throw new Error(
+                    CONFIG.MESSAGE.SESSION_EXPIRED
+                );
+
+            }
+
+            const id =
+                Utils.Text.trim(
+                    examId
+                );
+
+            if (
+                !id
+            ) {
+
+                throw new Error(
+                    "Thiếu mã bài kiểm tra."
+                );
+
+            }
+
+            if (
+                !Utils.Type.isObject(
+                    answers
+                )
+            ) {
+
+                throw new Error(
+                    "Dữ liệu câu trả lời không hợp lệ."
+                );
+
+            }
+
+            const payload = {
+
+                token,
+
+                examId:
+                    id,
+
+                answers
+
+            };
+
+            if (
+                startTime !== null &&
+                startTime !== undefined &&
+                startTime !== ""
+            ) {
+
+                payload.startTime =
+                    startTime;
+
+            }
+
+            if (
+                duration !== null &&
+                duration !== undefined
+            ) {
+
+                payload.duration =
+                    duration;
+
+            }
+
+            const response =
+                await Utils.API.post(
+                    CONFIG.API.ACTION.SUBMIT_EXAM,
+                    payload
+                );
+
+            return Utils.API.checkResponse(
+                response
+            );
+
+        }
+
+    };
+
+
+    /* ========================================================
+     * RESULT API
+     * ====================================================== */
+
+    static Result = {
+
+        async getList() {
+
+            const token =
+                Utils.Session.getToken();
+
+            if (
+                !token
+            ) {
+
+                throw new Error(
+                    CONFIG.MESSAGE.SESSION_EXPIRED
+                );
+
+            }
+
+            const response =
+                await Utils.API.get(
+                    CONFIG.API.ACTION.GET_RESULTS,
+                    {
+                        token
+                    }
+                );
+
+            return Utils.API.checkResponse(
+                response
+            );
+
+        },
+
+
+        async get(
+            resultId
+        ) {
+
+            const token =
+                Utils.Session.getToken();
+
+            if (
+                !token
+            ) {
+
+                throw new Error(
+                    CONFIG.MESSAGE.SESSION_EXPIRED
+                );
+
+            }
+
+            const id =
+                Utils.Text.trim(
+                    resultId
+                );
+
+            if (
+                !id
+            ) {
+
+                throw new Error(
+                    "Thiếu mã kết quả."
+                );
+
+            }
+
+            const response =
+                await Utils.API.get(
+                    CONFIG.API.ACTION.GET_RESULT,
+                    {
+                        token,
+
+                        resultId:
+                            id
+                    }
+                );
+
+            return Utils.API.checkResponse(
+                response
+            );
+
+        }
+
+    };
+
+
+    /* ========================================================
+     * CACHE
+     * ====================================================== */
+
+    static Cache = {
+
+        get(
+            key
+        ) {
+
+            return Utils.Storage.getJSON(
+                key,
+                null
+            );
+
+        },
+
+
+        set(
+            key,
+            value
+        ) {
+
+            return Utils.Storage.setJSON(
+                key,
+                value
+            );
+
+        },
+
+
+        remove(key) {
+
+            return Utils.Storage.remove(
+                key
+            );
+
+        },
+
+
+        clearAppCache() {
+
+            const keys = [
+
+                CONFIG.STORAGE.DASHBOARD,
+
+                CONFIG.STORAGE.EXAM,
+
+                CONFIG.STORAGE.RESULT,
+
+                CONFIG.STORAGE.CACHE
+
+            ];
+
+            keys.forEach(
+                function(key) {
+
+                    Utils.Storage.remove(
+                        key
+                    );
+
+                }
+            );
+
+            return true;
+
+        }
+
+    };
+
+
+    /* ========================================================
+     * DATE / TIME
+     * ====================================================== */
+
+    static DateTime = {
+
+        formatDate(
+            date = new Date()
+        ) {
+
+            const value =
+                date instanceof Date
+                    ? date
+                    : new Date(date);
+
+            if (
+                Number.isNaN(
+                    value.getTime()
+                )
+            ) {
+
+                return "";
+
+            }
+
+            return new Intl.DateTimeFormat(
+                CONFIG.DATE.LOCALE,
+                {
+                    timeZone:
+                        CONFIG.DATE.TIMEZONE,
+
+                    day:
+                        "2-digit",
+
+                    month:
+                        "2-digit",
+
+                    year:
+                        "numeric"
+                }
+            ).format(value);
+
+        },
+
+
+        formatDateTime(
+            date = new Date()
+        ) {
+
+            const value =
+                date instanceof Date
+                    ? date
+                    : new Date(date);
+
+            if (
+                Number.isNaN(
+                    value.getTime()
+                )
+            ) {
+
+                return "";
+
+            }
+
+            return new Intl.DateTimeFormat(
+                CONFIG.DATE.LOCALE,
+                {
+                    timeZone:
+                        CONFIG.DATE.TIMEZONE,
+
+                    day:
+                        "2-digit",
+
+                    month:
+                        "2-digit",
+
+                    year:
+                        "numeric",
+
+                    hour:
+                        "2-digit",
+
+                    minute:
+                        "2-digit",
+
+                    second:
+                        "2-digit",
+
+                    hour12:
+                        false
+                }
+            ).format(value);
+
+        }
+
+    };
+
+
+    /* ========================================================
+     * SESSION ERROR HANDLING
+     * ====================================================== */
+
     static handleSessionExpired(
         response
     ) {
@@ -1376,9 +2041,7 @@ export class Utils {
                     ""
                 );
 
-        } else if (
-            typeof response === "string"
-        ) {
+        } else {
 
             message =
                 Utils.Text.trim(
@@ -1387,37 +2050,31 @@ export class Utils {
 
         }
 
-        const expiredMessages = [
+        const normalized =
+            message.toLowerCase();
 
-            "Phiên đăng nhập đã hết hạn.",
+        const expired = [
 
-            "Phiên đăng nhập đã hết hạn",
+            "phiên đăng nhập đã hết hạn.",
 
-            "Session expired",
+            "phiên đăng nhập đã hết hạn",
 
-            "Unauthorized"
+            "session expired",
+
+            "unauthorized"
 
         ];
 
         const isExpired =
-            expiredMessages.some(
-                function(item) {
-
-                    return (
-                        message
-                            .toLowerCase() ===
-                        item
-                            .toLowerCase()
-                    );
-
-                }
+            expired.includes(
+                normalized
             );
 
         if (
             isExpired
         ) {
 
-            Utils.clearSession();
+            Utils.Auth.logout();
 
             return true;
 
@@ -1428,93 +2085,213 @@ export class Utils {
     }
 
 
-    /**
-     * Yêu cầu người dùng phải đăng nhập.
+    /* ========================================================
+     * BACKWARD-COMPATIBILITY ALIASES
      *
-     * Hàm này không tự chuyển trang.
-     *
-     * @returns {Object}
-     */
-    static requireLogin() {
+     * Chỉ giữ các alias cần thiết để tránh
+     * làm hỏng module cũ trong quá trình chuyển đổi.
+     * ====================================================== */
 
-        const session =
-            Utils.checkSession();
+    static getSession() {
 
-        if (!session) {
-
-            throw new Error(
-                "Vui lòng đăng nhập."
-            );
-
-        }
-
-        return session;
+        return Utils.Session.get();
 
     }
 
 
-    /**
-     * Lấy Login Key hiện tại.
-     *
-     * Alias của getToken().
-     *
-     * @returns {string}
-     */
-    static getLoginKey() {
+    static setSession(session) {
 
-        return Utils.getToken();
-
-    }
-
-
-    /**
-     * Kiểm tra session có phải của
-     * một học sinh cụ thể hay không.
-     *
-     * @param {string} studentId
-     * @returns {boolean}
-     */
-    static isCurrentStudent(
-        studentId
-    ) {
-
-        const currentId =
-            Utils.getCurrentStudentId();
-
-        const id =
-            Utils.Text.trim(
-                studentId
-            );
-
-        if (
-            !currentId ||
-            !id
-        ) {
-
-            return false;
-
-        }
-
-        return (
-            currentId === id
+        return Utils.Session.set(
+            session
         );
 
     }
 
 
-    /**
-     * Xóa session và trả về trạng thái.
-     *
-     * @returns {boolean}
-     */
-    static resetSession() {
+    static clearSession() {
 
-        Utils.clearSession();
+        return Utils.Session.clear();
 
-        return (
-            !Utils.hasSession()
+    }
+
+
+    static getToken() {
+
+        return Utils.Session.getToken();
+
+    }
+
+
+    static isLoggedIn() {
+
+        return Utils.Session.isLoggedIn();
+
+    }
+
+
+    static login(studentId) {
+
+        return Utils.Auth.login(
+            studentId
+        );
+
+    }
+
+
+    static logout() {
+
+        return Utils.Auth.logout();
+
+    }
+
+
+    static checkSession() {
+
+        return Utils.Auth.checkSession();
+
+    }
+
+
+    static requireSession() {
+
+        return Utils.Auth.requireLogin();
+
+    }
+
+
+    static getCurrentStudent() {
+
+        return Utils.Auth.getCurrentStudent();
+
+    }
+
+
+    static getCurrentStudentId() {
+
+        return Utils.Auth.getCurrentStudentId();
+
+    }
+
+
+    static getLoginKey() {
+
+        return Utils.Auth.getLoginKey();
+
+    }
+
+
+    static isCurrentStudent(
+        studentId
+    ) {
+
+        return Utils.Auth.isCurrentStudent(
+            studentId
+        );
+
+    }
+
+
+    static apiGet(
+        action,
+        params = {}
+    ) {
+
+        return Utils.API.get(
+            action,
+            params
+        );
+
+    }
+
+
+    static apiPost(
+        action,
+        data = {}
+    ) {
+
+        return Utils.API.post(
+            action,
+            data
+        );
+
+    }
+
+
+    static apiCheckResponse(
+        response
+    ) {
+
+        return Utils.API.checkResponse(
+            response
+        );
+
+    }
+
+
+    static getDashboard() {
+
+        return Utils.Dashboard.get();
+
+    }
+
+
+    static getExams() {
+
+        return Utils.Exam.getList();
+
+    }
+
+
+    static getExam(
+        examId
+    ) {
+
+        return Utils.Exam.get(
+            examId
+        );
+
+    }
+
+
+    static submitExam(
+        examId,
+        answers,
+        startTime = null,
+        duration = 0
+    ) {
+
+        return Utils.Exam.submit(
+            examId,
+            answers,
+            startTime,
+            duration
+        );
+
+    }
+
+
+    static getResults() {
+
+        return Utils.Result.getList();
+
+    }
+
+
+    static getResult(
+        resultId
+    ) {
+
+        return Utils.Result.get(
+            resultId
         );
 
     }
 
 }
+
+
+/* ============================================================
+ * EXPORT
+ * ============================================================ */
+
+export default Utils;
