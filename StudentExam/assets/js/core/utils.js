@@ -1,3 +1,5 @@
+import { CONFIG } from "./config.js";
+
 export class Utils {
 
     /* ========================================================
@@ -394,7 +396,7 @@ export class Utils {
         );
 
         const url =
-            config.API.BASE_URL +
+            CONFIG.API.BASE_URL +
             "?" +
             query.toString();
 
@@ -408,7 +410,7 @@ export class Utils {
                     controller.abort();
 
                 },
-                config.API.TIMEOUT
+                CONFIG.API.TIMEOUT
             );
 
         try {
@@ -497,7 +499,7 @@ export class Utils {
                     controller.abort();
 
                 },
-                config.API.TIMEOUT
+                CONFIG.API.TIMEOUT
             );
 
         try {
@@ -513,7 +515,7 @@ export class Utils {
 
             const response =
                 await fetch(
-                    config.API.BASE_URL,
+                    CONFIG.API.BASE_URL,
                     {
                         method:
                             "POST",
