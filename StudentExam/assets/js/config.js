@@ -102,7 +102,7 @@ const config = {
          */
 
         BASE_URL:
-            "https://script.google.com/macros/s/AKfycbz9lqUk-JaZ3zqyx9_2XwPDN9yKuv1GLANpUnG06M2hQcHcICoWUU_SPMGcZkGYCkA/exec",
+            "https://script.google.com/macros/s/AKfycbyiHHV6vrGy4xuhq3NhaeKnVdYocDfvrG_FWuya5-skCVe6VVgHtMpgccOitRxmPOFE/exec",
 
         /**
          * Request timeout
