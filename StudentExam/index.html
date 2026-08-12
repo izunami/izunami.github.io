@@ -1,95 +1,94 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 
 <head>
 
+    <!-- =========================================================
+         StudentExam v2.0
+         ========================================================= -->
 
-<!-- =========================================================
-     StudentExam v2.0
-     ========================================================= -->
+    <meta charset="UTF-8">
 
-<meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible"
+          content="IE=edge">
 
-<meta http-equiv="X-UA-Compatible"
-      content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1">
+    <meta name="application-name"
+          content="StudentExam">
 
-<meta name="application-name"
-      content="StudentExam">
+    <meta name="description"
+          content="Hệ thống kiểm tra trực tuyến StudentExam">
 
-<meta name="description"
-      content="Hệ thống kiểm tra trực tuyến StudentExam">
+    <meta name="theme-color"
+          content="#0d6efd">
 
-<meta name="theme-color"
-      content="#0d6efd">
+    <meta name="color-scheme"
+          content="light dark">
 
-<meta name="color-scheme"
-      content="light dark">
+    <meta name="apple-mobile-web-app-capable"
+          content="yes">
 
-<meta name="apple-mobile-web-app-capable"
-      content="yes">
+    <meta name="mobile-web-app-capable"
+          content="yes">
 
-<meta name="mobile-web-app-capable"
-      content="yes">
-
-<title>StudentExam v2.0</title>
-
-
-<!-- =========================================================
-     FAVICON
-     ========================================================= -->
-
-<link rel="icon"
-      type="image/png"
-      href="assets/img/favicon.png">
+    <title>StudentExam v2.0</title>
 
 
-<!-- =========================================================
-     BOOTSTRAP 5
-     ========================================================= -->
+    <!-- =========================================================
+         FAVICON
+         ========================================================= -->
 
-<link rel="stylesheet"
-      href="assets/plugins/bootstrap/css/bootstrap.min.css">
-
-
-<!-- =========================================================
-     FONT AWESOME
-     ========================================================= -->
-
-<link rel="stylesheet"
-      href="assets/plugins/fontawesome/css/all.min.css">
+    <link rel="icon"
+          type="image/png"
+          href="assets/img/favicon.png">
 
 
-<!-- =========================================================
-     OVERLAYSCROLLBARS
-     ========================================================= -->
+    <!-- =========================================================
+         BOOTSTRAP 5
+         ========================================================= -->
 
-<link rel="stylesheet"
-      href="assets/plugins/overlayscrollbars/css/OverlayScrollbars.min.css">
-
-
-<!-- =========================================================
-     ADMINLTE
-     ========================================================= -->
-
-<link rel="stylesheet"
-      href="assets/css/adminlte.min.css">
+    <link rel="stylesheet"
+          href="assets/plugins/bootstrap/css/bootstrap.min.css">
 
 
-<!-- =========================================================
-     CUSTOM CSS
-     ========================================================= -->
+    <!-- =========================================================
+         FONT AWESOME
+         ========================================================= -->
 
-<link rel="stylesheet"
-      href="assets/css/custom.css">
+    <link rel="stylesheet"
+          href="assets/plugins/fontawesome/css/all.min.css">
 
+
+    <!-- =========================================================
+         OVERLAYSCROLLBARS
+         ========================================================= -->
+
+    <link rel="stylesheet"
+          href="assets/plugins/overlayscrollbars/css/OverlayScrollbars.min.css">
+
+
+    <!-- =========================================================
+         ADMINLTE
+         ========================================================= -->
+
+    <link rel="stylesheet"
+          href="assets/css/adminlte.min.css">
+
+
+    <!-- =========================================================
+         CUSTOM CSS
+         ========================================================= -->
+
+    <link rel="stylesheet"
+          href="assets/css/custom.css">
 
 </head>
 
+
 <body class="hold-transition sidebar-mini layout-fixed">
+
 
 <!-- =============================================================
      APP WRAPPER
@@ -98,1066 +97,636 @@
 <div class="wrapper">
 
 
-<!-- =========================================================
-     PRELOADER
-     ========================================================= -->
+    <!-- =========================================================
+         PRELOADER
+         ========================================================= -->
 
-<div id="preloader"
-     class="preloader flex-column justify-content-center align-items-center">
+    <div id="app-preloader"
+         class="preloader flex-column justify-content-center align-items-center">
 
-    <img src="assets/img/logo.png"
-         alt="StudentExam"
-         width="120"
-         height="120"
-         class="animation__shake">
+        <img src="assets/img/logo.png"
+             alt="StudentExam"
+             width="120"
+             height="120"
+             class="animation__shake">
 
-    <h3 class="mt-3 fw-bold">
-        StudentExam
-    </h3>
+        <h3 class="mt-3 fw-bold">
+            StudentExam
+        </h3>
 
-    <div class="spinner-border text-primary mt-3"
-         role="status">
+        <div class="spinner-border text-primary mt-3"
+             role="status">
 
-        <span class="visually-hidden">
-            Loading...
-        </span>
+            <span class="visually-hidden">
+                Loading...
+            </span>
+
+        </div>
+
+        <div class="mt-3 text-muted">
+            Đang khởi tạo hệ thống...
+        </div>
 
     </div>
 
-    <div class="mt-3 text-muted">
-        Đang khởi tạo hệ thống...
-    </div>
 
-</div>
+    <!-- =========================================================
+         NAVBAR
+         ========================================================= -->
 
-
-<!-- =========================================================
-     NAVBAR
-     ========================================================= -->
-
-<nav class="main-header navbar navbar-expand navbar-white navbar-light border-bottom">
-
-    <!-- LEFT NAVBAR -->
-
-    <ul class="navbar-nav">
-
-        <!-- Sidebar toggle -->
-
-        <li class="nav-item">
-
-            <a class="nav-link"
-               data-lte-toggle="sidebar"
-               href="#"
-               role="button"
-               title="Thu gọn menu">
-
-                <i class="fas fa-bars"></i>
-
-            </a>
-
-        </li>
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light border-bottom">
 
 
-        <!-- Application title -->
+        <!-- LEFT NAVBAR -->
 
-        <li class="nav-item d-none d-sm-inline-flex align-items-center">
+        <ul class="navbar-nav">
 
-            <span class="navbar-brand mb-0 h1 fw-bold">
 
-                <i class="fas fa-graduation-cap text-primary me-2"></i>
+            <!-- Sidebar toggle -->
 
-                <span id="appTitle">
-                    StudentExam
+            <li class="nav-item">
+
+                <a class="nav-link"
+                   data-lte-toggle="sidebar"
+                   href="#"
+                   role="button"
+                   title="Thu gọn menu">
+
+                    <i class="fas fa-bars"></i>
+
+                </a>
+
+            </li>
+
+
+            <!-- Application title -->
+
+            <li class="nav-item d-none d-sm-inline-flex align-items-center">
+
+                <span class="navbar-brand mb-0 h1 fw-bold">
+
+                    <i class="fas fa-graduation-cap text-primary me-2"></i>
+
+                    <span id="app-title">
+                        StudentExam
+                    </span>
+
+                    <small id="app-version"
+                           class="text-muted ms-2">
+                        v2.0
+                    </small>
+
                 </span>
 
-                <small id="appVersion"
-                       class="text-muted ms-2">
-                    v2.0
-                </small>
+            </li>
 
-            </span>
-
-        </li>
-
-    </ul>
+        </ul>
 
 
-    <!-- RIGHT NAVBAR -->
+        <!-- RIGHT NAVBAR -->
 
-    <ul class="navbar-nav ms-auto align-items-center">
-
-        <!-- Sync status -->
-
-        <li class="nav-item d-none d-md-block">
-
-            <span id="syncStatus"
-                  class="badge bg-success">
-
-                Online
-
-            </span>
-
-        </li>
+        <ul class="navbar-nav ms-auto align-items-center">
 
 
-        <!-- Theme -->
+            <!-- Sync status -->
 
-        <li class="nav-item">
+            <li class="nav-item d-none d-md-block">
 
-            <a id="btnTheme"
-               class="nav-link"
-               href="#"
-               title="Đổi giao diện">
-
-                <i id="themeIcon"
-                   class="fas fa-moon"></i>
-
-            </a>
-
-        </li>
-
-
-        <!-- Fullscreen -->
-
-        <li class="nav-item">
-
-            <a class="nav-link"
-               data-lte-toggle="fullscreen"
-               href="#"
-               title="Toàn màn hình">
-
-                <i class="fas fa-expand-arrows-alt"></i>
-
-            </a>
-
-        </li>
-
-
-        <!-- User menu -->
-
-        <li class="nav-item dropdown user-menu">
-
-            <a href="#"
-               class="nav-link dropdown-toggle"
-               data-bs-toggle="dropdown">
-
-                <div id="navbarAvatar"
-                     class="avatar-circle avatar-sm me-2">
-                    HS
-                </div>
-
-                <span id="navbarUserName"
-                      class="d-none d-md-inline">
-                    Chưa đăng nhập
+                <span id="nav-sync-status"
+                      class="badge bg-success">
+                    Online
                 </span>
 
-            </a>
+            </li>
 
 
-            <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+            <!-- Theme -->
 
-                <!-- User header -->
+            <li class="nav-item">
 
-                <li class="user-header bg-primary">
+                <a id="btn-theme"
+                   class="nav-link"
+                   href="#"
+                   title="Đổi giao diện">
 
-                    <div id="profileAvatar"
-                         class="avatar-circle avatar-xl bg-white text-primary mx-auto mb-3">
+                    <i id="theme-icon"
+                       class="fas fa-moon"></i>
+
+                </a>
+
+            </li>
+
+
+            <!-- Fullscreen -->
+
+            <li class="nav-item">
+
+                <a id="btn-fullscreen"
+                   class="nav-link"
+                   data-lte-toggle="fullscreen"
+                   href="#"
+                   title="Toàn màn hình">
+
+                    <i class="fas fa-expand-arrows-alt"></i>
+
+                </a>
+
+            </li>
+
+
+            <!-- User menu -->
+
+            <li class="nav-item dropdown user-menu">
+
+                <a href="#"
+                   class="nav-link dropdown-toggle"
+                   data-bs-toggle="dropdown">
+
+
+                    <div id="nav-user-avatar"
+                         class="avatar-circle avatar-sm me-2">
                         HS
                     </div>
 
-                    <h5 id="profileName"
-                        class="mb-1">
+
+                    <span id="nav-user-name"
+                          class="d-none d-md-inline">
                         Chưa đăng nhập
-                    </h5>
+                    </span>
 
-                    <p id="profileClass"
-                       class="mb-0">
-                        ---
-                    </p>
-
-                </li>
-
-
-                <!-- User statistics -->
-
-                <li class="user-body">
-
-                    <div class="row text-center">
-
-                        <div class="col-4">
-
-                            <strong id="totalExamCount">
-                                0
-                            </strong>
-
-                            <br>
-
-                            <small>
-                                Bài
-                            </small>
-
-                        </div>
-
-
-                        <div class="col-4">
-
-                            <strong id="completedExamCount">
-                                0
-                            </strong>
-
-                            <br>
-
-                            <small>
-                                Đã làm
-                            </small>
-
-                        </div>
-
-
-                        <div class="col-4">
-
-                            <strong id="averageScore">
-                                0.00
-                            </strong>
-
-                            <br>
-
-                            <small>
-                                Điểm TB
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                </li>
-
-
-                <!-- User footer -->
-
-                <li class="user-footer d-flex justify-content-between">
-
-                    <button id="btnProfile"
-                            type="button"
-                            class="btn btn-outline-primary btn-sm">
-
-                        <i class="fas fa-user me-1"></i>
-
-                        Hồ sơ
-
-                    </button>
-
-
-                    <button id="btnLogout"
-                            type="button"
-                            class="btn btn-danger btn-sm">
-
-                        <i class="fas fa-right-from-bracket me-1"></i>
-
-                        Đăng xuất
-
-                    </button>
-
-                </li>
-
-            </ul>
-
-        </li>
-
-    </ul>
-
-</nav>
-
-
-<!-- =========================================================
-     SIDEBAR
-     ========================================================= -->
-
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
-
-
-    <!-- Brand -->
-
-    <a href="#"
-       class="brand-link text-decoration-none">
-
-        <div class="brand-image avatar-circle avatar-sm bg-white text-primary">
-            SE
-        </div>
-
-        <span class="brand-text fw-semibold ms-2">
-
-            <span id="sidebarAppTitle">
-                StudentExam
-            </span>
-
-        </span>
-
-    </a>
-
-
-    <!-- Sidebar content -->
-
-    <div class="sidebar">
-
-
-        <!-- User panel -->
-
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
-
-            <div class="image">
-
-                <div id="sidebarAvatar"
-                     class="avatar-circle avatar-lg">
-                    HS
-                </div>
-
-            </div>
-
-
-            <div class="info">
-
-                <a href="#"
-                   id="sidebarUserName"
-                   class="d-block fw-semibold text-decoration-none">
-                    Chưa đăng nhập
                 </a>
 
-                <small id="sidebarClassName"
-                       class="text-muted">
-                    ---
-                </small>
 
-            </div>
+                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
 
-        </div>
 
+                    <!-- User header -->
 
-        <!-- Navigation -->
+                    <li class="user-header bg-primary">
 
-        <nav class="mt-2">
-
-            <ul class="nav nav-pills nav-sidebar flex-column"
-                data-lte-toggle="treeview"
-                role="menu"
-                data-accordion="false">
-
-
-                <!-- Dashboard -->
-
-                <li class="nav-item">
-
-                    <a href="#"
-                       id="menuDashboard"
-                       class="nav-link active">
-
-                        <i class="nav-icon fas fa-house"></i>
-
-                        <p>
-                            Dashboard
-                        </p>
-
-                    </a>
-
-                </li>
-
-
-                <!-- Exam -->
-
-                <li class="nav-item">
-
-                    <a href="#"
-                       id="menuExam"
-                       class="nav-link">
-
-                        <i class="nav-icon fas fa-file-pen"></i>
-
-                        <p>
-                            Bài kiểm tra
-                        </p>
-
-                        <span id="examBadge"
-                              class="badge bg-primary ms-auto">
-                            0
-                        </span>
-
-                    </a>
-
-                </li>
-
-
-                <!-- Result -->
-
-                <li class="nav-item">
-
-                    <a href="#"
-                       id="menuResult"
-                       class="nav-link">
-
-                        <i class="nav-icon fas fa-chart-column"></i>
-
-                        <p>
-                            Kết quả
-                        </p>
-
-                    </a>
-
-                </li>
-
-
-                <!-- Profile -->
-
-                <li class="nav-item">
-
-                    <a href="#"
-                       id="menuProfile"
-                       class="nav-link">
-
-                        <i class="nav-icon fas fa-user"></i>
-
-                        <p>
-                            Hồ sơ
-                        </p>
-
-                    </a>
-
-                </li>
-
-
-                <!-- System header -->
-
-                <li class="nav-header">
-                    HỆ THỐNG
-                </li>
-
-
-                <!-- Refresh -->
-
-                <li class="nav-item">
-
-                    <a href="#"
-                       id="menuRefresh"
-                       class="nav-link">
-
-                        <i class="nav-icon fas fa-rotate"></i>
-
-                        <p>
-                            Đồng bộ dữ liệu
-                        </p>
-
-                    </a>
-
-                </li>
-
-
-                <!-- Logout -->
-
-                <li class="nav-item">
-
-                    <a href="#"
-                       id="menuLogout"
-                       class="nav-link text-danger">
-
-                        <i class="nav-icon fas fa-right-from-bracket"></i>
-
-                        <p>
-                            Đăng xuất
-                        </p>
-
-                    </a>
-
-                </li>
-
-            </ul>
-
-        </nav>
-
-    </div>
-
-</aside>
-
-
-<!-- =========================================================
-     CONTENT WRAPPER
-     ========================================================= -->
-
-<div class="content-wrapper">
-
-
-    <!-- =====================================================
-         CONTENT HEADER
-         ===================================================== -->
-
-    <section class="content-header">
-
-        <div class="container-fluid">
-
-            <div class="row mb-2">
-
-                <div class="col-sm-6">
-
-                    <h1 id="pageTitle">
-                        Dashboard
-                    </h1>
-
-                </div>
-
-
-                <div class="col-sm-6">
-
-                    <ol class="breadcrumb float-sm-end">
-
-                        <li class="breadcrumb-item">
-                            StudentExam
-                        </li>
-
-                        <li class="breadcrumb-item active"
-                            id="breadcrumbTitle">
-                            Dashboard
-                        </li>
-
-                    </ol>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         MAIN CONTENT
-         ===================================================== -->
-
-    <section class="content">
-
-        <div class="container-fluid">
-
-
-            <!-- =================================================
-                 DASHBOARD VIEW
-                 ================================================= -->
-
-            <div id="viewDashboard"
-                 class="app-view">
-
-
-                <!-- Welcome -->
-
-                <div class="card shadow-sm mb-4">
-
-                    <div class="card-body">
-
-                        <div class="row align-items-center">
-
-                            <div class="col-auto">
-
-                                <div id="dashboardAvatar"
-                                     class="avatar-circle avatar-xl">
-                                    HS
-                                </div>
-
-                            </div>
-
-
-                            <div class="col">
-
-                                <h3 id="dashboardStudentName"
-                                    class="mb-1">
-                                    Chưa đăng nhập
-                                </h3>
-
-                                <div class="text-muted">
-
-                                    Lớp:
-
-                                    <span id="dashboardClass">
-                                        ---
-                                    </span>
-
-                                </div>
-
-                                <div class="text-muted">
-
-                                    Xin chào 👋
-
-                                    Chúc bạn có một buổi học hiệu quả.
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="col-auto text-end">
-
-                                <div class="fw-bold">
-                                    Hôm nay
-                                </div>
-
-                                <div id="dashboardDate">
-                                    --
-                                </div>
-
-                            </div>
-
+                        <div id="user-menu-avatar"
+                             class="avatar-circle avatar-xl bg-white text-primary mx-auto mb-3">
+                            HS
                         </div>
 
-                    </div>
 
-                </div>
-
-
-                <!-- Statistics -->
-
-                <div class="row">
+                        <h5 id="user-menu-name"
+                            class="mb-1">
+                            Chưa đăng nhập
+                        </h5>
 
 
-                    <!-- Total -->
+                        <p id="user-menu-class"
+                           class="mb-0">
+                            ---
+                        </p>
 
-                    <div class="col-lg-3 col-6">
+                    </li>
 
-                        <div class="small-box bg-primary">
 
-                            <div class="inner">
+                    <!-- User statistics -->
 
-                                <h3 id="statTotalExam">
+                    <li class="user-body">
+
+                        <div class="row text-center">
+
+
+                            <div class="col-4">
+
+                                <strong id="user-stat-total">
                                     0
-                                </h3>
-
-                                <p>
-                                    Tổng bài kiểm tra
-                                </p>
-
-                            </div>
-
-                            <div class="icon">
-
-                                <i class="fas fa-book"></i>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Completed -->
-
-                    <div class="col-lg-3 col-6">
-
-                        <div class="small-box bg-success">
-
-                            <div class="inner">
-
-                                <h3 id="statCompleted">
-                                    0
-                                </h3>
-
-                                <p>
-                                    Đã hoàn thành
-                                </p>
-
-                            </div>
-
-                            <div class="icon">
-
-                                <i class="fas fa-circle-check"></i>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Average -->
-
-                    <div class="col-lg-3 col-6">
-
-                        <div class="small-box bg-warning">
-
-                            <div class="inner">
-
-                                <h3 id="statAverage">
-                                    0.00
-                                </h3>
-
-                                <p>
-                                    Điểm trung bình
-                                </p>
-
-                            </div>
-
-                            <div class="icon">
-
-                                <i class="fas fa-star"></i>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Pending -->
-
-                    <div class="col-lg-3 col-6">
-
-                        <div class="small-box bg-danger">
-
-                            <div class="inner">
-
-                                <h3 id="statPending">
-                                    0
-                                </h3>
-
-                                <p>
-                                    Chưa hoàn thành
-                                </p>
-
-                            </div>
-
-                            <div class="icon">
-
-                                <i class="fas fa-clock"></i>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Exam list -->
-
-                <div class="card">
-
-                    <div class="card-header">
-
-                        <h3 class="card-title">
-                            Danh sách bài kiểm tra
-                        </h3>
-
-                        <div class="card-tools">
-
-                            <button id="btnRefreshDashboard"
-                                    type="button"
-                                    class="btn btn-tool">
-
-                                <i class="fas fa-rotate"></i>
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="card-body">
-
-                        <div id="dashboardExamList"
-                             class="row g-3">
-
-                            <!-- dashboard.js render -->
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 EXAM VIEW
-                 ================================================= -->
-
-            <div id="viewExam"
-                 class="app-view d-none">
-
-
-                <!-- Exam header -->
-
-                <div class="card shadow-sm mb-3">
-
-                    <div class="card-body">
-
-                        <div class="row align-items-center">
-
-                            <div class="col-lg-8">
-
-                                <h3 id="examTitle"
-                                    class="mb-2">
-                                    Đang tải bài kiểm tra...
-                                </h3>
-
-                                <div class="text-muted">
-
-                                    Môn:
-
-                                    <strong id="examSubject">
-                                        --
-                                    </strong>
-
-                                    &nbsp;&nbsp;|&nbsp;&nbsp;
-
-                                    Thời gian:
-
-                                    <strong id="examDuration">
-                                        --
-                                    </strong>
-
-                                    phút
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="col-lg-4 text-end">
-
-                                <div class="fs-5">
-                                    ⏳ Còn lại
-                                </div>
-
-                                <div id="examTimer"
-                                     class="display-6 fw-bold text-danger">
-                                    00:00
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Progress -->
-
-                <div class="card mb-3">
-
-                    <div class="card-body">
-
-                        <div class="d-flex justify-content-between mb-2">
-
-                            <span>
-                                Tiến độ làm bài
-                            </span>
-
-                            <span id="progressText">
-                                0 / 0
-                            </span>
-
-                        </div>
-
-
-                        <div class="progress">
-
-                            <div id="progressBar"
-                                 class="progress-bar"
-                                 style="width: 0%">
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Question area -->
-
-                <div class="row">
-
-
-                    <!-- Question -->
-
-                    <div class="col-lg-9">
-
-                        <div class="card">
-
-                            <div class="card-header">
-
-                                <strong>
-
-                                    Câu
-
-                                    <span id="questionNumber">
-                                        1
-                                    </span>
-
                                 </strong>
 
-                            </div>
+                                <br>
 
-
-                            <div class="card-body">
-
-
-                                <!-- Question content -->
-
-                                <div id="questionContent"
-                                     class="fs-5 mb-4">
-                                    Nội dung câu hỏi...
-                                </div>
-
-
-                                <!-- Question image -->
-
-                                <div id="questionImage"
-                                     class="mb-4 d-none text-center">
-
-                                    <img id="questionImageSrc"
-                                         class="img-fluid rounded shadow"
-                                         alt="Question">
-
-                                </div>
-
-
-                                <!-- Answers -->
-
-                                <div id="answerContainer">
-
-
-                                    <!-- Answer A -->
-
-                                    <div class="form-check mb-3">
-
-                                        <input id="answerA"
-                                               class="form-check-input"
-                                               type="radio"
-                                               name="answer"
-                                               value="A">
-
-                                        <label class="form-check-label w-100"
-                                               for="answerA">
-
-                                            <strong>
-                                                A.
-                                            </strong>
-
-                                            <span id="textAnswerA">
-                                                ...
-                                            </span>
-
-                                        </label>
-
-                                    </div>
-
-
-                                    <!-- Answer B -->
-
-                                    <div class="form-check mb-3">
-
-                                        <input id="answerB"
-                                               class="form-check-input"
-                                               type="radio"
-                                               name="answer"
-                                               value="B">
-
-                                        <label class="form-check-label w-100"
-                                               for="answerB">
-
-                                            <strong>
-                                                B.
-                                            </strong>
-
-                                            <span id="textAnswerB">
-                                                ...
-                                            </span>
-
-                                        </label>
-
-                                    </div>
-
-
-                                    <!-- Answer C -->
-
-                                    <div class="form-check mb-3">
-
-                                        <input id="answerC"
-                                               class="form-check-input"
-                                               type="radio"
-                                               name="answer"
-                                               value="C">
-
-                                        <label class="form-check-label w-100"
-                                               for="answerC">
-
-                                            <strong>
-                                                C.
-                                            </strong>
-
-                                            <span id="textAnswerC">
-                                                ...
-                                            </span>
-
-                                        </label>
-
-                                    </div>
-
-
-                                    <!-- Answer D -->
-
-                                    <div class="form-check mb-3">
-
-                                        <input id="answerD"
-                                               class="form-check-input"
-                                               type="radio"
-                                               name="answer"
-                                               value="D">
-
-                                        <label class="form-check-label w-100"
-                                               for="answerD">
-
-                                            <strong>
-                                                D.
-                                            </strong>
-
-                                            <span id="textAnswerD">
-                                                ...
-                                            </span>
-
-                                        </label>
-
-                                    </div>
-
-                                </div>
+                                <small>
+                                    Bài
+                                </small>
 
                             </div>
 
 
-                            <!-- Question navigation -->
+                            <div class="col-4">
 
-                            <div class="card-footer d-flex justify-content-between">
+                                <strong id="user-stat-completed">
+                                    0
+                                </strong>
 
-                                <button id="btnPreviousQuestion"
-                                        type="button"
-                                        class="btn btn-secondary">
+                                <br>
 
-                                    <i class="fas fa-arrow-left"></i>
+                                <small>
+                                    Đã làm
+                                </small>
 
-                                    Câu trước
-
-                                </button>
+                            </div>
 
 
-                                <button id="btnNextQuestion"
-                                        type="button"
-                                        class="btn btn-primary">
+                            <div class="col-4">
 
-                                    Câu tiếp
+                                <strong id="user-stat-average">
+                                    0.00
+                                </strong>
 
-                                    <i class="fas fa-arrow-right"></i>
+                                <br>
 
-                                </button>
+                                <small>
+                                    Điểm TB
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </li>
+
+
+                    <!-- User footer -->
+
+                    <li class="user-footer d-flex justify-content-between">
+
+
+                        <button id="btn-profile"
+                                type="button"
+                                class="btn btn-outline-primary btn-sm">
+
+                            <i class="fas fa-user me-1"></i>
+
+                            Hồ sơ
+
+                        </button>
+
+
+                        <button id="btn-logout"
+                                type="button"
+                                class="btn btn-danger btn-sm">
+
+                            <i class="fas fa-right-from-bracket me-1"></i>
+
+                            Đăng xuất
+
+                        </button>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+    <!-- =========================================================
+         SIDEBAR
+         ========================================================= -->
+
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+
+
+        <!-- Brand -->
+
+        <a href="#"
+           class="brand-link text-decoration-none">
+
+
+            <div class="brand-image avatar-circle avatar-sm bg-white text-primary">
+                SE
+            </div>
+
+
+            <span class="brand-text fw-semibold ms-2">
+
+                <span id="app-sidebar-title">
+                    StudentExam
+                </span>
+
+            </span>
+
+        </a>
+
+
+        <!-- Sidebar content -->
+
+        <div class="sidebar">
+
+
+            <!-- User panel -->
+
+            <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
+
+
+                <div class="image">
+
+                    <div id="sidebar-user-avatar"
+                         class="avatar-circle avatar-lg">
+                        HS
+                    </div>
+
+                </div>
+
+
+                <div class="info">
+
+                    <a href="#"
+                       id="sidebar-user-name"
+                       class="d-block fw-semibold text-decoration-none">
+
+                        Chưa đăng nhập
+
+                    </a>
+
+
+                    <small id="sidebar-user-class"
+                           class="text-muted">
+
+                        ---
+
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- Navigation -->
+
+            <nav class="mt-2">
+
+                <ul class="nav nav-pills nav-sidebar flex-column"
+                    data-lte-toggle="treeview"
+                    role="menu"
+                    data-accordion="false">
+
+
+                    <!-- Dashboard -->
+
+                    <li class="nav-item">
+
+                        <a href="#"
+                           id="nav-dashboard"
+                           class="nav-link active">
+
+                            <i class="nav-icon fas fa-house"></i>
+
+                            <p>
+                                Dashboard
+                            </p>
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- Exam -->
+
+                    <li class="nav-item">
+
+                        <a href="#"
+                           id="nav-exam"
+                           class="nav-link">
+
+                            <i class="nav-icon fas fa-file-pen"></i>
+
+                            <p>
+                                Bài kiểm tra
+                            </p>
+
+
+                            <span id="nav-exam-badge"
+                                  class="badge bg-primary ms-auto">
+                                0
+                            </span>
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- Result -->
+
+                    <li class="nav-item">
+
+                        <a href="#"
+                           id="nav-result"
+                           class="nav-link">
+
+                            <i class="nav-icon fas fa-chart-column"></i>
+
+                            <p>
+                                Kết quả
+                            </p>
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- Profile -->
+
+                    <li class="nav-item">
+
+                        <a href="#"
+                           id="nav-profile"
+                           class="nav-link">
+
+                            <i class="nav-icon fas fa-user"></i>
+
+                            <p>
+                                Hồ sơ
+                            </p>
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- System header -->
+
+                    <li class="nav-header">
+                        HỆ THỐNG
+                    </li>
+
+
+                    <!-- Refresh -->
+
+                    <li class="nav-item">
+
+                        <a href="#"
+                           id="nav-refresh"
+                           class="nav-link">
+
+                            <i class="nav-icon fas fa-rotate"></i>
+
+                            <p>
+                                Đồng bộ dữ liệu
+                            </p>
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- Logout -->
+
+                    <li class="nav-item">
+
+                        <a href="#"
+                           id="nav-logout"
+                           class="nav-link text-danger">
+
+                            <i class="nav-icon fas fa-right-from-bracket"></i>
+
+                            <p>
+                                Đăng xuất
+                            </p>
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </nav>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================================================
+         CONTENT WRAPPER
+         ========================================================= -->
+
+    <div class="content-wrapper">
+
+
+        <!-- =====================================================
+             CONTENT HEADER
+             ===================================================== -->
+
+        <section class="content-header">
+
+            <div class="container-fluid">
+
+                <div class="row mb-2">
+
+
+                    <div class="col-sm-6">
+
+                        <h1 id="page-title">
+                            Dashboard
+                        </h1>
+
+                    </div>
+
+
+                    <div class="col-sm-6">
+
+                        <ol class="breadcrumb float-sm-end">
+
+                            <li class="breadcrumb-item">
+                                StudentExam
+                            </li>
+
+                            <li class="breadcrumb-item active"
+                                id="breadcrumb-title">
+
+                                Dashboard
+
+                            </li>
+
+                        </ol>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+             ===================================================== -->
+
+        <section class="content">
+
+            <div class="container-fluid">
+
+
+                <!-- =================================================
+                     DASHBOARD VIEW
+                     ================================================= -->
+
+                <div id="view-dashboard"
+                     class="app-view">
+
+
+                    <!-- Welcome -->
+
+                    <div class="card shadow-sm mb-4">
+
+                        <div class="card-body">
+
+                            <div class="row align-items-center">
+
+
+                                <div class="col-auto">
+
+                                    <div id="dashboard-avatar"
+                                         class="avatar-circle avatar-xl">
+                                        HS
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col">
+
+                                    <h3 id="dashboard-student-name"
+                                        class="mb-1">
+
+                                        Chưa đăng nhập
+
+                                    </h3>
+
+
+                                    <div class="text-muted">
+
+                                        Lớp:
+
+                                        <span id="dashboard-class">
+                                            ---
+                                        </span>
+
+                                    </div>
+
+
+                                    <div class="text-muted">
+
+                                        Xin chào 👋
+
+                                        Chúc bạn có một buổi học hiệu quả.
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-auto text-end">
+
+                                    <div class="fw-bold">
+                                        Hôm nay
+                                    </div>
+
+
+                                    <div id="dashboard-date">
+                                        --
+                                    </div>
+
+                                </div>
 
                             </div>
 
@@ -1166,39 +735,474 @@
                     </div>
 
 
-                    <!-- Question palette -->
+                    <!-- Statistics -->
 
-                    <div class="col-lg-3">
+                    <div class="row">
 
-                        <div class="card">
 
-                            <div class="card-header">
-                                Điều hướng câu hỏi
+                        <!-- Total -->
+
+                        <div class="col-lg-3 col-6">
+
+                            <div class="small-box bg-primary">
+
+                                <div class="inner">
+
+                                    <h3 id="dashboard-stat-total">
+                                        0
+                                    </h3>
+
+                                    <p>
+                                        Tổng bài kiểm tra
+                                    </p>
+
+                                </div>
+
+                                <div class="icon">
+
+                                    <i class="fas fa-book"></i>
+
+                                </div>
+
                             </div>
 
+                        </div>
 
-                            <div class="card-body">
 
-                                <div id="questionPalette"
-                                     class="d-grid gap-2">
+                        <!-- Completed -->
 
-                                    <!-- exam.js render -->
+                        <div class="col-lg-3 col-6">
+
+                            <div class="small-box bg-success">
+
+                                <div class="inner">
+
+                                    <h3 id="dashboard-stat-completed">
+                                        0
+                                    </h3>
+
+                                    <p>
+                                        Đã hoàn thành
+                                    </p>
+
+                                </div>
+
+                                <div class="icon">
+
+                                    <i class="fas fa-circle-check"></i>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Average -->
+
+                        <div class="col-lg-3 col-6">
+
+                            <div class="small-box bg-warning">
+
+                                <div class="inner">
+
+                                    <h3 id="dashboard-stat-average">
+                                        0.00
+                                    </h3>
+
+                                    <p>
+                                        Điểm trung bình
+                                    </p>
+
+                                </div>
+
+                                <div class="icon">
+
+                                    <i class="fas fa-star"></i>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Pending -->
+
+                        <div class="col-lg-3 col-6">
+
+                            <div class="small-box bg-danger">
+
+                                <div class="inner">
+
+                                    <h3 id="dashboard-stat-pending">
+                                        0
+                                    </h3>
+
+                                    <p>
+                                        Chưa hoàn thành
+                                    </p>
+
+                                </div>
+
+                                <div class="icon">
+
+                                    <i class="fas fa-clock"></i>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Exam list -->
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <h3 class="card-title">
+                                Danh sách bài kiểm tra
+                            </h3>
+
+
+                            <div class="card-tools">
+
+                                <button id="btn-dashboard-refresh"
+                                        type="button"
+                                        class="btn btn-tool">
+
+                                    <i class="fas fa-rotate"></i>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <div id="dashboard-exam-list"
+                                 class="row g-3">
+
+                                <!-- dashboard.js render -->
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     EXAM VIEW
+                     ================================================= -->
+
+                <div id="view-exam"
+                     class="app-view d-none">
+
+
+                    <!-- Exam header -->
+
+                    <div class="card shadow-sm mb-3">
+
+                        <div class="card-body">
+
+                            <div class="row align-items-center">
+
+
+                                <div class="col-lg-8">
+
+                                    <h3 id="exam-title"
+                                        class="mb-2">
+
+                                        Đang tải bài kiểm tra...
+
+                                    </h3>
+
+
+                                    <div class="text-muted">
+
+                                        Môn:
+
+                                        <strong id="exam-subject">
+                                            --
+                                        </strong>
+
+                                        &nbsp;&nbsp;|&nbsp;&nbsp;
+
+                                        Thời gian:
+
+                                        <strong id="exam-duration">
+                                            --
+                                        </strong>
+
+                                        phút
+
+                                    </div>
 
                                 </div>
 
 
-                                <hr>
+                                <div class="col-lg-4 text-end">
+
+                                    <div class="fs-5">
+                                        ⏳ Còn lại
+                                    </div>
 
 
-                                <div class="d-grid">
+                                    <div id="exam-timer"
+                                         class="display-6 fw-bold text-danger">
 
-                                    <button id="btnSubmitExam"
+                                        00:00
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Progress -->
+
+                    <div class="card mb-3">
+
+                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between mb-2">
+
+                                <span>
+                                    Tiến độ làm bài
+                                </span>
+
+
+                                <span id="exam-progress-text">
+                                    0 / 0
+                                </span>
+
+                            </div>
+
+
+                            <div class="progress">
+
+                                <div id="exam-progress-bar"
+                                     class="progress-bar"
+                                     style="width: 0%">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Question area -->
+
+                    <div class="row">
+
+
+                        <!-- Question -->
+
+                        <div class="col-lg-9">
+
+                            <div class="card">
+
+
+                                <div class="card-header">
+
+                                    <strong>
+
+                                        Câu
+
+                                        <span id="exam-question-number">
+                                            1
+                                        </span>
+
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="card-body">
+
+
+                                    <!-- Question content -->
+
+                                    <div id="exam-question-content"
+                                         class="fs-5 mb-4">
+
+                                        Nội dung câu hỏi...
+
+                                    </div>
+
+
+                                    <!-- Question image -->
+
+                                    <div id="exam-question-image"
+                                         class="mb-4 d-none text-center">
+
+                                        <img id="exam-question-image-src"
+                                             class="img-fluid rounded shadow"
+                                             alt="Question">
+
+                                    </div>
+
+
+                                    <!-- Answers -->
+
+                                    <div id="exam-answer-container">
+
+
+                                        <!-- Answer A -->
+
+                                        <div class="form-check mb-3">
+
+                                            <input id="exam-answer-a"
+                                                   class="form-check-input"
+                                                   type="radio"
+                                                   name="exam-answer"
+                                                   value="A">
+
+
+                                            <label class="form-check-label w-100"
+                                                   for="exam-answer-a">
+
+                                                <strong>
+                                                    A.
+                                                </strong>
+
+
+                                                <span id="exam-answer-text-a">
+                                                    ...
+                                                </span>
+
+                                            </label>
+
+                                        </div>
+
+
+                                        <!-- Answer B -->
+
+                                        <div class="form-check mb-3">
+
+                                            <input id="exam-answer-b"
+                                                   class="form-check-input"
+                                                   type="radio"
+                                                   name="exam-answer"
+                                                   value="B">
+
+
+                                            <label class="form-check-label w-100"
+                                                   for="exam-answer-b">
+
+                                                <strong>
+                                                    B.
+                                                </strong>
+
+
+                                                <span id="exam-answer-text-b">
+                                                    ...
+                                                </span>
+
+                                            </label>
+
+                                        </div>
+
+
+                                        <!-- Answer C -->
+
+                                        <div class="form-check mb-3">
+
+                                            <input id="exam-answer-c"
+                                                   class="form-check-input"
+                                                   type="radio"
+                                                   name="exam-answer"
+                                                   value="C">
+
+
+                                            <label class="form-check-label w-100"
+                                                   for="exam-answer-c">
+
+                                                <strong>
+                                                    C.
+                                                </strong>
+
+
+                                                <span id="exam-answer-text-c">
+                                                    ...
+                                                </span>
+
+                                            </label>
+
+                                        </div>
+
+
+                                        <!-- Answer D -->
+
+                                        <div class="form-check mb-3">
+
+                                            <input id="exam-answer-d"
+                                                   class="form-check-input"
+                                                   type="radio"
+                                                   name="exam-answer"
+                                                   value="D">
+
+
+                                            <label class="form-check-label w-100"
+                                                   for="exam-answer-d">
+
+                                                <strong>
+                                                    D.
+                                                </strong>
+
+
+                                                <span id="exam-answer-text-d">
+                                                    ...
+                                                </span>
+
+                                            </label>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Question navigation -->
+
+                                <div class="card-footer d-flex justify-content-between">
+
+
+                                    <button id="btn-exam-previous"
                                             type="button"
-                                            class="btn btn-danger">
+                                            class="btn btn-secondary">
 
-                                        <i class="fas fa-paper-plane"></i>
+                                        <i class="fas fa-arrow-left"></i>
 
-                                        Nộp bài
+                                        Câu trước
+
+                                    </button>
+
+
+                                    <button id="btn-exam-next"
+                                            type="button"
+                                            class="btn btn-primary">
+
+                                        Câu tiếp
+
+                                        <i class="fas fa-arrow-right"></i>
 
                                     </button>
 
@@ -1208,136 +1212,48 @@
 
                         </div>
 
-                    </div>
 
-                </div>
+                        <!-- Question palette -->
 
-            </div>
+                        <div class="col-lg-3">
 
-
-            <!-- =================================================
-                 RESULT VIEW
-                 ================================================= -->
-
-            <div id="viewResult"
-                 class="app-view d-none">
+                            <div class="card">
 
 
-                <div class="card">
-
-                    <div class="card-header">
-
-                        <h3 class="card-title">
-                            Kết quả học tập
-                        </h3>
-
-                        <div class="card-tools">
-
-                            <button id="btnRefreshResult"
-                                    type="button"
-                                    class="btn btn-tool">
-
-                                <i class="fas fa-rotate"></i>
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="card-body">
-
-                        <div class="table-responsive">
-
-                            <table class="table table-hover table-bordered align-middle">
-
-                                <thead class="table-light">
-
-                                    <tr>
-
-                                        <th width="60">
-                                            #
-                                        </th>
-
-                                        <th>
-                                            Môn học
-                                        </th>
-
-                                        <th>
-                                            Bài kiểm tra
-                                        </th>
-
-                                        <th width="100">
-                                            Điểm
-                                        </th>
-
-                                        <th width="150">
-                                            Ngày làm
-                                        </th>
-
-                                        <th width="120">
-                                            Trạng thái
-                                        </th>
-
-                                        <th width="100">
-                                            Chi tiết
-                                        </th>
-
-                                    </tr>
-
-                                </thead>
-
-
-                                <tbody id="resultTableBody">
-
-                                    <!-- result.js render -->
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 PROFILE VIEW
-                 ================================================= -->
-
-            <div id="viewProfile"
-                 class="app-view d-none">
-
-
-                <div class="row">
-
-
-                    <!-- Profile summary -->
-
-                    <div class="col-lg-4">
-
-                        <div class="card">
-
-                            <div class="card-body text-center">
-
-                                <div id="profileAvatarLarge"
-                                     class="avatar-circle avatar-xxl mx-auto mb-3">
-                                    HS
+                                <div class="card-header">
+                                    Điều hướng câu hỏi
                                 </div>
 
-                                <h3 id="profileFullName">
-                                    Chưa đăng nhập
-                                </h3>
 
-                                <p id="profileClassLarge"
-                                   class="text-muted">
-                                    ---
-                                </p>
+                                <div class="card-body">
+
+
+                                    <div id="exam-question-palette"
+                                         class="d-grid gap-2">
+
+                                        <!-- exam.js render -->
+
+                                    </div>
+
+
+                                    <hr>
+
+
+                                    <div class="d-grid">
+
+                                        <button id="btn-exam-submit"
+                                                type="button"
+                                                class="btn btn-danger">
+
+                                            <i class="fas fa-paper-plane"></i>
+
+                                            Nộp bài
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
 
                             </div>
 
@@ -1345,75 +1261,92 @@
 
                     </div>
 
+                </div>
 
-                    <!-- Student information -->
 
-                    <div class="col-lg-8">
+                <!-- =================================================
+                     RESULT VIEW
+                     ================================================= -->
 
-                        <div class="card">
+                <div id="view-result"
+                     class="app-view d-none">
 
-                            <div class="card-header">
-                                Thông tin học sinh
+
+                    <div class="card">
+
+
+                        <div class="card-header">
+
+                            <h3 class="card-title">
+                                Kết quả học tập
+                            </h3>
+
+
+                            <div class="card-tools">
+
+                                <button id="btn-result-refresh"
+                                        type="button"
+                                        class="btn btn-tool">
+
+                                    <i class="fas fa-rotate"></i>
+
+                                </button>
+
                             </div>
 
-
-                            <div class="card-body">
-
-                                <table class="table">
-
-                                    <tr>
-
-                                        <th width="180">
-                                            Họ tên
-                                        </th>
-
-                                        <td id="infoName"></td>
-
-                                    </tr>
+                        </div>
 
 
-                                    <tr>
+                        <div class="card-body">
 
-                                        <th>
-                                            Lớp
-                                        </th>
-
-                                        <td id="infoClass"></td>
-
-                                    </tr>
+                            <div class="table-responsive">
 
 
-                                    <tr>
-
-                                        <th>
-                                            Tổng số bài
-                                        </th>
-
-                                        <td id="infoTotalExam"></td>
-
-                                    </tr>
+                                <table class="table table-hover table-bordered align-middle">
 
 
-                                    <tr>
+                                    <thead class="table-light">
 
-                                        <th>
-                                            Đã hoàn thành
-                                        </th>
+                                        <tr>
 
-                                        <td id="infoCompleted"></td>
+                                            <th width="60">
+                                                #
+                                            </th>
 
-                                    </tr>
+                                            <th>
+                                                Môn học
+                                            </th>
+
+                                            <th>
+                                                Bài kiểm tra
+                                            </th>
+
+                                            <th width="100">
+                                                Điểm
+                                            </th>
+
+                                            <th width="150">
+                                                Ngày làm
+                                            </th>
+
+                                            <th width="120">
+                                                Trạng thái
+                                            </th>
+
+                                            <th width="100">
+                                                Chi tiết
+                                            </th>
+
+                                        </tr>
+
+                                    </thead>
 
 
-                                    <tr>
+                                    <tbody id="result-table-body">
 
-                                        <th>
-                                            Điểm trung bình
-                                        </th>
+                                        <!-- result.js render -->
 
-                                        <td id="infoAverage"></td>
-
-                                    </tr>
+                                    </tbody>
 
                                 </table>
 
@@ -1425,144 +1358,283 @@
 
                 </div>
 
+
+                <!-- =================================================
+                     PROFILE VIEW
+                     ================================================= -->
+
+                <div id="view-profile"
+                     class="app-view d-none">
+
+
+                    <div class="row">
+
+
+                        <!-- Profile summary -->
+
+                        <div class="col-lg-4">
+
+                            <div class="card">
+
+                                <div class="card-body text-center">
+
+
+                                    <div id="profile-avatar"
+                                         class="avatar-circle avatar-xxl mx-auto mb-3">
+
+                                        HS
+
+                                    </div>
+
+
+                                    <h3 id="profile-full-name">
+                                        Chưa đăng nhập
+                                    </h3>
+
+
+                                    <p id="profile-class"
+                                       class="text-muted">
+
+                                        ---
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Student information -->
+
+                        <div class="col-lg-8">
+
+                            <div class="card">
+
+
+                                <div class="card-header">
+                                    Thông tin học sinh
+                                </div>
+
+
+                                <div class="card-body">
+
+
+                                    <table class="table">
+
+
+                                        <tr>
+
+                                            <th width="180">
+                                                Họ tên
+                                            </th>
+
+                                            <td id="profile-info-name"></td>
+
+                                        </tr>
+
+
+                                        <tr>
+
+                                            <th>
+                                                Lớp
+                                            </th>
+
+                                            <td id="profile-info-class"></td>
+
+                                        </tr>
+
+
+                                        <tr>
+
+                                            <th>
+                                                Tổng số bài
+                                            </th>
+
+                                            <td id="profile-info-total-exam"></td>
+
+                                        </tr>
+
+
+                                        <tr>
+
+                                            <th>
+                                                Đã hoàn thành
+                                            </th>
+
+                                            <td id="profile-info-completed"></td>
+
+                                        </tr>
+
+
+                                        <tr>
+
+                                            <th>
+                                                Điểm trung bình
+                                            </th>
+
+                                            <td id="profile-info-average"></td>
+
+                                        </tr>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
 
-        </div>
+        </section>
 
-    </section>
-
-</div>
-
-
-<!-- =========================================================
-     FOOTER
-     ========================================================= -->
-
-<footer class="main-footer">
-
-    <strong>
-        StudentExam v2.0
-    </strong>
-
-    <span class="ms-2">
-        © 2026
-    </span>
-
-    <div class="float-end d-none d-sm-inline">
-        Powered by Google Apps Script
     </div>
 
-</footer>
 
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+
+    <footer class="main-footer">
+
+        <strong>
+            StudentExam v2.0
+        </strong>
+
+
+        <span class="ms-2">
+            © 2026
+        </span>
+
+
+        <div class="float-end d-none d-sm-inline">
+            Powered by Google Apps Script
+        </div>
+
+    </footer>
 
 </div>
+
 
 <!-- =============================================================
      LOGIN OVERLAY
      ============================================================= -->
 
-<div id="loginOverlay"
+<div id="login-overlay"
      class="login-overlay d-none">
 
 
-<div class="login-box">
+    <div class="login-box">
 
-    <div class="card shadow-lg">
+        <div class="card shadow-lg">
 
-        <div class="card-body">
+            <div class="card-body">
 
 
-            <!-- Login logo -->
+                <!-- Login logo -->
 
-            <div class="text-center mb-4">
+                <div class="text-center mb-4">
 
-                <div class="avatar-circle avatar-xxl mx-auto">
-                    SE
+                    <div class="avatar-circle avatar-xxl mx-auto">
+                        SE
+                    </div>
+
+
+                    <h2 class="mt-3">
+                        StudentExam
+                    </h2>
+
+
+                    <p class="text-muted">
+                        Hệ thống kiểm tra trực tuyến
+                    </p>
+
                 </div>
 
-                <h2 class="mt-3">
-                    StudentExam
-                </h2>
 
-                <p class="text-muted">
-                    Hệ thống kiểm tra trực tuyến
-                </p>
+                <!-- Login form -->
+
+                <form id="login-form">
+
+
+                    <!-- Class -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label"
+                               for="login-class">
+
+                            Lớp
+
+                        </label>
+
+
+                        <select id="login-class"
+                                class="form-select">
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Student -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label"
+                               for="login-student">
+
+                            Học sinh
+
+                        </label>
+
+
+                        <select id="login-student"
+                                class="form-select">
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Remember -->
+
+                    <div class="form-check mb-3">
+
+                        <input id="login-remember"
+                               class="form-check-input"
+                               type="checkbox">
+
+
+                        <label class="form-check-label"
+                               for="login-remember">
+
+                            Ghi nhớ đăng nhập
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- Login button -->
+
+                    <button id="btn-login"
+                            type="submit"
+                            class="btn btn-primary w-100">
+
+                        Đăng nhập
+
+                    </button>
+
+                </form>
 
             </div>
-
-
-            <!-- Login form -->
-
-            <form id="loginForm">
-
-
-                <!-- Class -->
-
-                <div class="mb-3">
-
-                    <label class="form-label"
-                           for="loginClass">
-
-                        Lớp
-
-                    </label>
-
-                    <select id="loginClass"
-                            class="form-select">
-
-                    </select>
-
-                </div>
-
-
-                <!-- Student -->
-
-                <div class="mb-3">
-
-                    <label class="form-label"
-                           for="loginStudent">
-
-                        Học sinh
-
-                    </label>
-
-                    <select id="loginStudent"
-                            class="form-select">
-
-                    </select>
-
-                </div>
-
-
-                <!-- Remember -->
-
-                <div class="form-check mb-3">
-
-                    <input id="rememberLogin"
-                           class="form-check-input"
-                           type="checkbox">
-
-                    <label class="form-check-label"
-                           for="rememberLogin">
-
-                        Ghi nhớ đăng nhập
-
-                    </label>
-
-                </div>
-
-
-                <!-- Login button -->
-
-                <button id="btnLogin"
-                        type="submit"
-                        class="btn btn-primary w-100">
-
-                    Đăng nhập
-
-                </button>
-
-            </form>
 
         </div>
 
@@ -1570,106 +1642,112 @@
 
 </div>
 
-
-</div>
 
 <!-- =============================================================
      LOADING OVERLAY
      ============================================================= -->
 
-<div id="loadingOverlay"
+<div id="loading-overlay"
      class="loading-overlay d-none">
 
 
-<div class="text-center">
+    <div class="text-center">
 
-    <div class="spinner-border text-primary"
-         role="status">
+        <div class="spinner-border text-primary"
+             role="status">
+        </div>
 
-    </div>
 
-    <div id="loadingText"
-         class="mt-3">
-        Đang tải...
+        <div id="loading-text"
+             class="mt-3">
+
+            Đang tải...
+
+        </div>
+
     </div>
 
 </div>
 
-
-</div>
 
 <!-- =============================================================
      TOAST
      ============================================================= -->
 
-<div id="toastContainer"
+<div id="toast-container"
      class="toast-container position-fixed top-0 end-0 p-3">
 </div>
+
 
 <!-- =============================================================
      APP MODAL
      ============================================================= -->
 
-<div id="appModal"
+<div id="app-modal"
      class="modal fade"
      tabindex="-1"
      aria-hidden="true">
 
 
-<div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered">
 
-    <div class="modal-content">
-
-
-        <!-- Modal header -->
-
-        <div id="appModalHeader"
-             class="modal-header">
-
-            <h5 class="modal-title">
-
-                <i id="appModalIcon"
-                   class="fas fa-circle-info me-2"></i>
-
-                <span id="appModalTitle">
-                    Thông báo
-                </span>
-
-            </h5>
-
-        </div>
+        <div class="modal-content">
 
 
-        <!-- Modal body -->
+            <!-- Modal header -->
 
-        <div class="modal-body">
-
-            <div id="appModalMessage"></div>
-
-        </div>
+            <div id="modal-header"
+                 class="modal-header">
 
 
-        <!-- Modal footer -->
+                <h5 class="modal-title">
 
-        <div class="modal-footer">
-
-            <button id="btnModalCancel"
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal">
-
-                Huỷ
-
-            </button>
+                    <i id="modal-icon"
+                       class="fas fa-circle-info me-2"></i>
 
 
-            <button id="btnModalOk"
-                    type="button"
-                    class="btn btn-primary">
+                    <span id="modal-title">
+                        Thông báo
+                    </span>
 
-                Đồng ý
+                </h5>
 
-            </button>
+            </div>
+
+
+            <!-- Modal body -->
+
+            <div class="modal-body">
+
+                <div id="modal-message"></div>
+
+            </div>
+
+
+            <!-- Modal footer -->
+
+            <div class="modal-footer">
+
+
+                <button id="btn-modal-cancel"
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                    Huỷ
+
+                </button>
+
+
+                <button id="btn-modal-ok"
+                        type="button"
+                        class="btn btn-primary">
+
+                    Đồng ý
+
+                </button>
+
+            </div>
 
         </div>
 
@@ -1677,8 +1755,6 @@
 
 </div>
 
-
-</div>
 
 <!-- =============================================================
      JAVASCRIPT LIBRARIES
@@ -1692,12 +1768,14 @@
 
 <script src="assets/js/adminlte.min.js"></script>
 
+
 <!-- =============================================================
      STUDENTEXAM APPLICATION
      ============================================================= -->
 
 <script type="module"
         src="assets/js/main.js"></script>
+
 
 </body>
 
