@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Test CONFIG</title>
+</head>
+
+<body>
+
+<h3>Test config.js</h3>
+
+<script type="module">
+
+    import {
+        CONFIG,
+        getApiUrl,
+        getApiActionUrl,
+        getStorageKey
+    }
+    from "./assets/js/core/config.js";
+
+
+    console.log("=== TEST CONFIG ===");
+
+    console.log(
+        "API BASE URL =",
+        CONFIG.API.BASE_URL
+    );
+
+    console.log(
+        "LOGIN ACTION =",
+        CONFIG.API.ACTION.LOGIN
+    );
+
+    console.log(
+        "GET EXAMS ACTION =",
+        CONFIG.API.ACTION.GET_EXAMS
+    );
+
+    console.log(
+        "GET RESULTS ACTION =",
+        CONFIG.API.ACTION.GET_RESULTS
+    );
+
+    console.log(
+        "GET RESULT ACTION =",
+        CONFIG.API.ACTION.GET_RESULT
+    );
+
+    console.log(
+        "API URL =",
+        getApiUrl()
+    );
+
+    console.log(
+        "LOGIN URL =",
+        getApiActionUrl(
+            CONFIG.API.ACTION.LOGIN
+        )
+    );
+
+    console.log(
+        "TOKEN STORAGE KEY =",
+        getStorageKey("TOKEN")
+    );
+
+</script>
+
+</body>
+</html>
