@@ -1,198 +1,1192 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>StudentExam - Test API</title>
-<style>
-body{font-family:Arial,sans-serif;max-width:900px;margin:40px auto;padding:0 20px}
-button{padding:10px 16px;margin:4px;cursor:pointer}
-pre{background:#f5f5f5;padding:16px;border-radius:8px;white-space:pre-wrap;word-break:break-word}
-.ok{color:#087f23;font-weight:bold}.err{color:#c62828;font-weight:bold}
-</style>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <meta name="application-name"
+          content="StudentExam">
+
+    <title>StudentExam v2.0 — Test API</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            max-width: 1000px;
+
+            margin:
+                40px auto;
+
+            padding:
+                0 20px;
+
+            background:
+                #f8f9fa;
+
+            color:
+                #212529;
+        }
+
+        h1 {
+            margin-bottom:
+                8px;
+        }
+
+        .subtitle {
+            color:
+                #6c757d;
+
+            margin-bottom:
+                25px;
+        }
+
+        .card {
+            background:
+                #ffffff;
+
+            border:
+                1px solid #dee2e6;
+
+            border-radius:
+                10px;
+
+            padding:
+                20px;
+
+            margin-bottom:
+                20px;
+
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .button-group {
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            gap:
+                8px;
+        }
+
+        button {
+            border:
+                0;
+
+            border-radius:
+                6px;
+
+            padding:
+                10px 16px;
+
+            cursor:
+                pointer;
+
+            background:
+                #0d6efd;
+
+            color:
+                #ffffff;
+
+            font-size:
+                14px;
+        }
+
+        button:hover {
+            opacity:
+                0.9;
+        }
+
+        button.danger {
+            background:
+                #dc3545;
+        }
+
+        button.secondary {
+            background:
+                #6c757d;
+        }
+
+        button.success {
+            background:
+                #198754;
+        }
+
+        #status {
+            padding:
+                10px 14px;
+
+            border-radius:
+                6px;
+
+            margin-bottom:
+                15px;
+
+            font-weight:
+                bold;
+        }
+
+        #status.ok {
+            background:
+                #d1e7dd;
+
+            color:
+                #0f5132;
+        }
+
+        #status.err {
+            background:
+                #f8d7da;
+
+            color:
+                #842029;
+        }
+
+        #status.info {
+            background:
+                #cff4fc;
+
+            color:
+                #055160;
+        }
+
+        pre {
+            background:
+                #212529;
+
+            color:
+                #f8f9fa;
+
+            padding:
+                16px;
+
+            border-radius:
+                8px;
+
+            white-space:
+                pre-wrap;
+
+            word-break:
+                break-word;
+
+            overflow-x:
+                auto;
+
+            min-height:
+                180px;
+        }
+
+        .session-info {
+            font-size:
+                14px;
+
+            line-height:
+                1.7;
+        }
+
+        .session-token {
+            font-family:
+                monospace;
+
+            word-break:
+                break-all;
+        }
+
+    </style>
+
 </head>
+
+
 <body>
-<h2>StudentExam v2.0 — Test API thật</h2>
-<p>Test: GitHub Pages → Utils.js → Google Apps Script Web App</p>
 
-<button id="config">1. Test CONFIG</button>
-<button id="login">2. Login HS001</button>
-<button id="session">3. Check Session</button>
-<button id="exams">4. Get Exams</button>
-<button id="results">5. Get Results</button>
 
-<p id="status"></p>
-<pre id="output">Chưa chạy test.</pre>
+    <h1>
+        StudentExam v2.0
+    </h1>
 
-<script type="module">
-import { CONFIG, getApiUrl, getApiActionUrl }
-    from "./assets/js/core/config.js";
+    <div class="subtitle">
+        Test API thật — GitHub Pages → Utils.js → Google Apps Script
+    </div>
 
-import { Utils }
-    from "./assets/js/core/utils.js";
 
-const output = document.getElementById("output");
-const status = document.getElementById("status");
+    <!-- =========================================================
+         TEST ACTIONS
+         ========================================================= -->
 
-function show(data){
-    output.textContent =
-        typeof data === "string"
-        ? data
-        : JSON.stringify(data,null,2);
-}
+    <div class="card">
 
-function ok(msg){
-    status.className="ok";
-    status.textContent=msg;
-}
+        <h3>
+            API Tests
+        </h3>
 
-function err(msg){
-    status.className="err";
-    status.textContent=msg;
-}
+        <div class="button-group">
 
-function getToken(){
-    return Utils.getToken();
-}
+            <button id="btnTestConfig"
+                    type="button">
+                1. Test CONFIG
+            </button>
 
-/* TEST CONFIG */
-document.getElementById("config").onclick=function(){
-    show({
-        BASE_URL: CONFIG.API.BASE_URL,
-        LOGIN: CONFIG.API.ACTION.LOGIN,
-        CHECK_SESSION: CONFIG.API.ACTION.CHECK_SESSION,
-        GET_EXAMS: CONFIG.API.ACTION.GET_EXAMS,
-        GET_RESULTS: CONFIG.API.ACTION.GET_RESULTS,
-        GET_RESULT: CONFIG.API.ACTION.GET_RESULT,
-        API_URL: getApiUrl(),
-        LOGIN_URL: getApiActionUrl(CONFIG.API.ACTION.LOGIN)
-    });
-    ok("CONFIG PASS");
-};
 
-/* LOGIN */
-document.getElementById("login").onclick=async function(){
-    try{
-        show("Đang gọi login HS001...");
-        const result = await Utils.apiGet(
-            CONFIG.API.ACTION.LOGIN,
-            {studentId:"HS001"}
+            <button id="btnTestLogin"
+                    type="button">
+                2. Login HS001
+            </button>
+
+
+            <button id="btnTestSession"
+                    type="button">
+                3. Check Session
+            </button>
+
+
+            <button id="btnTestClasses"
+                    type="button">
+                4. Get Classes
+            </button>
+
+
+            <button id="btnTestStudents"
+                    type="button">
+                5. Get Students
+            </button>
+
+
+            <button id="btnTestExams"
+                    type="button">
+                6. Get Exams
+            </button>
+
+
+            <button id="btnTestResults"
+                    type="button">
+                7. Get Results
+            </button>
+
+
+            <button id="btnTestLogout"
+                    type="button"
+                    class="danger">
+                8. Logout
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         SESSION
+         ========================================================= -->
+
+    <div class="card">
+
+        <h3>
+            Current Session
+        </h3>
+
+        <div id="sessionInfo"
+             class="session-info">
+
+            Chưa kiểm tra session.
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         RESULT
+         ========================================================= -->
+
+    <div class="card">
+
+        <h3>
+            Test Result
+        </h3>
+
+        <div id="status"
+             class="info">
+
+            Chưa chạy test.
+
+        </div>
+
+        <pre id="output">Chưa chạy test.</pre>
+
+    </div>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+         ========================================================= -->
+
+    <script type="module">
+
+        import {
+            CONFIG,
+            getApiUrl,
+            getApiActionUrl
+        }
+        from "./assets/js/config.js";
+
+
+        import {
+            Utils
+        }
+        from "./assets/js/utils.js";
+
+
+        /* =====================================================
+         * DOM
+         * =================================================== */
+
+        const output =
+            document.getElementById(
+                "output"
+            );
+
+
+        const status =
+            document.getElementById(
+                "status"
+            );
+
+
+        const sessionInfo =
+            document.getElementById(
+                "sessionInfo"
+            );
+
+
+        /* =====================================================
+         * OUTPUT
+         * =================================================== */
+
+        function show(data) {
+
+            if (
+                typeof data === "string"
+            ) {
+
+                output.textContent =
+                    data;
+
+                return;
+
+            }
+
+            output.textContent =
+                JSON.stringify(
+                    data,
+                    null,
+                    2
+                );
+
+        }
+
+
+        /* =====================================================
+         * STATUS
+         * =================================================== */
+
+        function setStatus(
+            message,
+            type = "info"
+        ) {
+
+            status.className =
+                type;
+
+            status.textContent =
+                message;
+
+        }
+
+
+        /* =====================================================
+         * SESSION DISPLAY
+         * =================================================== */
+
+        function refreshSessionInfo() {
+
+            const session =
+                Utils.getSession();
+
+
+            const token =
+                Utils.getToken();
+
+
+            const student =
+                Utils.getCurrentStudent();
+
+
+            if (!session) {
+
+                sessionInfo.innerHTML =
+                    "Không có session.";
+
+                return;
+
+            }
+
+
+            sessionInfo.innerHTML = `
+
+                <strong>Session:</strong>
+                Có<br>
+
+                <strong>Token:</strong>
+                <span class="session-token">
+                    ${escapeHtml(token || "---")}
+                </span>
+                <br>
+
+                <strong>Student ID:</strong>
+                ${escapeHtml(
+                    student?.id || "---"
+                )}
+                <br>
+
+                <strong>Student Name:</strong>
+                ${escapeHtml(
+                    student?.name || "---"
+                )}
+                <br>
+
+                <strong>Class:</strong>
+                ${escapeHtml(
+                    student?.class || "---"
+                )}
+
+            `;
+
+        }
+
+
+        /* =====================================================
+         * HTML ESCAPE
+         * =================================================== */
+
+        function escapeHtml(
+            value
+        ) {
+
+            return String(
+                value ?? ""
+            )
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+        }
+
+
+        /* =====================================================
+         * TOKEN
+         * =================================================== */
+
+        function requireToken() {
+
+            const token =
+                Utils.getToken();
+
+
+            if (!token) {
+
+                show(
+                    "Chưa có session token.\n" +
+                    "Hãy Login HS001 trước."
+                );
+
+                setStatus(
+                    "Thiếu session token.",
+                    "err"
+                );
+
+                return null;
+
+            }
+
+
+            return token;
+
+        }
+
+
+        /* =====================================================
+         * API TEST HELPER
+         * =================================================== */
+
+        async function runTest(
+            title,
+            callback
+        ) {
+
+            try {
+
+                setStatus(
+                    `Đang test: ${title}...`,
+                    "info"
+                );
+
+
+                show(
+                    `Đang test ${title}...`
+                );
+
+
+                const result =
+                    await callback();
+
+
+                console.log(
+                    `${title} RESULT =`,
+                    result
+                );
+
+
+                show(
+                    result
+                );
+
+
+                setStatus(
+                    `${title} — PASS`,
+                    "ok"
+                );
+
+
+                refreshSessionInfo();
+
+
+                return result;
+
+            } catch (error) {
+
+                console.error(
+                    `${title} ERROR =`,
+                    error
+                );
+
+
+                show({
+
+                    error:
+                        error.message,
+
+                    stack:
+                        error.stack || ""
+
+                });
+
+
+                setStatus(
+                    `${title} — ERROR`,
+                    "err"
+                );
+
+
+                refreshSessionInfo();
+
+
+                return null;
+
+            }
+
+        }
+
+
+        /* =====================================================
+         * 1. TEST CONFIG
+         * =================================================== */
+
+        document
+            .getElementById(
+                "btnTestConfig"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    const data = {
+
+                        APP:
+                            CONFIG.APP,
+
+                        API:
+                            {
+
+                                BASE_URL:
+                                    CONFIG.API.BASE_URL,
+
+                                ACTION:
+                                    CONFIG.API.ACTION,
+
+                                TIMEOUT:
+                                    CONFIG.API.TIMEOUT,
+
+                                RETRY:
+                                    CONFIG.API.RETRY
+
+                            },
+
+                        ENV:
+                            CONFIG.ENV,
+
+                        SESSION:
+                            CONFIG.SESSION,
+
+                        STORAGE:
+                            CONFIG.STORAGE,
+
+                        API_URL:
+                            getApiUrl(),
+
+                        LOGIN_URL:
+                            getApiActionUrl(
+                                CONFIG
+                                    .API
+                                    .ACTION
+                                    .LOGIN
+                            )
+
+                    };
+
+
+                    show(data);
+
+
+                    setStatus(
+                        "CONFIG — PASS",
+                        "ok"
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+         * 2. LOGIN
+         * =================================================== */
+
+        document
+            .getElementById(
+                "btnTestLogin"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    runTest(
+                        "LOGIN HS001",
+                        async function() {
+
+                            /*
+                             * Dùng CONFIG.API.ACTION.LOGIN
+                             * tuyệt đối không hard-code
+                             * "login".
+                             */
+
+                            const response =
+                                await Utils.apiGet(
+
+                                    CONFIG
+                                        .API
+                                        .ACTION
+                                        .LOGIN,
+
+                                    {
+                                        studentId:
+                                            "HS001"
+                                    }
+
+                                );
+
+
+                            const data =
+                                Utils
+                                    .apiCheckResponse(
+                                        response
+                                    );
+
+
+                            if (
+                                !data
+                                ||
+                                !data.loginKey
+                            ) {
+
+                                throw new Error(
+                                    "Login không trả về Login Key."
+                                );
+
+                            }
+
+
+                            Utils.setSession({
+
+                                token:
+                                    data.loginKey,
+
+                                loginKey:
+                                    data.loginKey,
+
+                                student:
+                                    data.student
+                                    ||
+                                    null
+
+                            });
+
+
+                            return {
+
+                                success:
+                                    true,
+
+                                loginKey:
+                                    data.loginKey,
+
+                                student:
+                                    data.student
+                                    ||
+                                    null
+
+                            };
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+         * 3. CHECK SESSION
+         * =================================================== */
+
+        document
+            .getElementById(
+                "btnTestSession"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    runTest(
+                        "CHECK SESSION",
+                        async function() {
+
+                            const token =
+                                requireToken();
+
+
+                            if (!token) {
+
+                                throw new Error(
+                                    "Chưa đăng nhập."
+                                );
+
+                            }
+
+
+                            const response =
+                                await Utils.apiGet(
+
+                                    CONFIG
+                                        .API
+                                        .ACTION
+                                        .CHECK_SESSION,
+
+                                    {
+                                        token:
+                                            token
+                                    }
+
+                                );
+
+
+                            return (
+                                Utils
+                                    .apiCheckResponse(
+                                        response
+                                    )
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+         * 4. GET CLASSES
+         * =================================================== */
+
+        document
+            .getElementById(
+                "btnTestClasses"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    runTest(
+                        "GET CLASSES",
+                        async function() {
+
+                            const response =
+                                await Utils.apiGet(
+
+                                    CONFIG
+                                        .API
+                                        .ACTION
+                                        .GET_CLASSES
+
+                                );
+
+
+                            return (
+                                Utils
+                                    .apiCheckResponse(
+                                        response
+                                    )
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+         * 5. GET STUDENTS
+         * =================================================== */
+
+        document
+            .getElementById(
+                "btnTestStudents"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    runTest(
+                        "GET STUDENTS",
+                        async function() {
+
+                            const response =
+                                await Utils.apiGet(
+
+                                    CONFIG
+                                        .API
+                                        .ACTION
+                                        .GET_STUDENTS,
+
+                                    {
+
+                                        className:
+                                            "6A1"
+
+                                    }
+
+                                );
+
+
+                            return (
+                                Utils
+                                    .apiCheckResponse(
+                                        response
+                                    )
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+         * 6. GET EXAMS
+         * =================================================== */
+
+        document
+            .getElementById(
+                "btnTestExams"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    runTest(
+                        "GET EXAMS",
+                        async function() {
+
+                            const token =
+                                requireToken();
+
+
+                            if (!token) {
+
+                                throw new Error(
+                                    "Chưa đăng nhập."
+                                );
+
+                            }
+
+
+                            const response =
+                                await Utils.apiGet(
+
+                                    CONFIG
+                                        .API
+                                        .ACTION
+                                        .GET_EXAMS,
+
+                                    {
+
+                                        token:
+                                            token
+
+                                    }
+
+                                );
+
+
+                            return (
+                                Utils
+                                    .apiCheckResponse(
+                                        response
+                                    )
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+         * 7. GET RESULTS
+         * =================================================== */
+
+        document
+            .getElementById(
+                "btnTestResults"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    runTest(
+                        "GET RESULTS",
+                        async function() {
+
+                            const token =
+                                requireToken();
+
+
+                            if (!token) {
+
+                                throw new Error(
+                                    "Chưa đăng nhập."
+                                );
+
+                            }
+
+
+                            const response =
+                                await Utils.apiGet(
+
+                                    CONFIG
+                                        .API
+                                        .ACTION
+                                        .GET_RESULTS,
+
+                                    {
+
+                                        token:
+                                            token
+
+                                    }
+
+                                );
+
+
+                            return (
+                                Utils
+                                    .apiCheckResponse(
+                                        response
+                                    )
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+         * 8. LOGOUT
+         * =================================================== */
+
+        document
+            .getElementById(
+                "btnTestLogout"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    try {
+
+                        const result =
+                            Utils.logout();
+
+
+                        show({
+
+                            success:
+                                result,
+
+                            session:
+                                Utils
+                                    .getSession(),
+
+                            token:
+                                Utils
+                                    .getToken()
+
+                        });
+
+
+                        setStatus(
+                            "LOGOUT — PASS",
+                            "ok"
+                        );
+
+
+                        refreshSessionInfo();
+
+                    } catch (error) {
+
+                        console.error(
+                            error
+                        );
+
+
+                        show({
+
+                            error:
+                                error.message,
+
+                            stack:
+                                error.stack || ""
+
+                        });
+
+
+                        setStatus(
+                            "LOGOUT — ERROR",
+                            "err"
+                        );
+
+                    }
+
+                }
+            );
+
+
+        /* =====================================================
+         * INITIALIZE
+         * =================================================== */
+
+        console.log(
+            "===================================="
         );
 
-        console.log("LOGIN RESULT =",result);
-        show(result);
-
-        if(result && result.success && result.data){
-            Utils.setSession({
-                token: result.data.loginKey || result.data.token || "",
-                loginKey: result.data.loginKey || result.data.token || "",
-                student: result.data.student || null
-            });
-            ok("LOGIN API PASS — session đã lưu.");
-        }else{
-            err("LOGIN API trả về lỗi.");
-        }
-    }catch(e){
-        console.error(e);
-        show({error:e.message,stack:e.stack||""});
-        err("LOGIN API ERROR");
-    }
-};
-
-/* CHECK SESSION */
-document.getElementById("session").onclick=async function(){
-    try{
-        const token=getToken();
-
-        if(!token){
-            show("Chưa có token. Hãy Login HS001 trước.");
-            err("Thiếu session token.");
-            return;
-        }
-
-        show("Đang check session...");
-        const result=await Utils.apiGet(
-            CONFIG.API.ACTION.CHECK_SESSION,
-            {token:token}
+        console.log(
+            "StudentExam v2.0 — TEST API"
         );
 
-        console.log("SESSION RESULT =",result);
-        show(result);
-
-        result && result.success
-            ? ok("SESSION API PASS")
-            : err("SESSION API trả về lỗi.");
-    }catch(e){
-        console.error(e);
-        show({error:e.message,stack:e.stack||""});
-        err("SESSION API ERROR");
-    }
-};
-
-/* GET EXAMS */
-document.getElementById("exams").onclick=async function(){
-    try{
-        const token=getToken();
-
-        if(!token){
-            show("Chưa có token. Hãy Login HS001 trước.");
-            err("Thiếu session token.");
-            return;
-        }
-
-        show("Đang lấy danh sách bài kiểm tra...");
-        const result=await Utils.apiGet(
-            CONFIG.API.ACTION.GET_EXAMS,
-            {token:token}
+        console.log(
+            "===================================="
         );
 
-        console.log("EXAMS RESULT =",result);
-        show(result);
-
-        result && result.success
-            ? ok("GET EXAMS API PASS")
-            : err("GET EXAMS API trả về lỗi.");
-    }catch(e){
-        console.error(e);
-        show({error:e.message,stack:e.stack||""});
-        err("GET EXAMS API ERROR");
-    }
-};
-
-/* GET RESULTS */
-document.getElementById("results").onclick=async function(){
-    try{
-        const token=getToken();
-
-        if(!token){
-            show("Chưa có token. Hãy Login HS001 trước.");
-            err("Thiếu session token.");
-            return;
-        }
-
-        show("Đang lấy kết quả...");
-        const result=await Utils.apiGet(
-            CONFIG.API.ACTION.GET_RESULTS,
-            {token:token}
+        console.log(
+            "CONFIG:",
+            CONFIG
         );
 
-        console.log("RESULTS RESULT =",result);
-        show(result);
+        console.log(
+            "Utils:",
+            Utils
+        );
 
-        result && result.success
-            ? ok("GET RESULTS API PASS")
-            : err("GET RESULTS API trả về lỗi.");
-    }catch(e){
-        console.error(e);
-        show({error:e.message,stack:e.stack||""});
-        err("GET RESULTS API ERROR");
-    }
-};
+        console.log(
+            "Utils.apiGet:",
+            typeof Utils.apiGet
+        );
 
-console.log("=== TEST API PAGE LOADED ===");
-console.log("Utils.apiGet =", typeof Utils.apiGet);
-console.log("Utils.apiPost =", typeof Utils.apiPost);
-console.log("Utils.getToken =", typeof Utils.getToken);
-</script>
+        console.log(
+            "Utils.apiPost:",
+            typeof Utils.apiPost
+        );
+
+        console.log(
+            "Utils.getToken:",
+            typeof Utils.getToken
+        );
+
+        console.log(
+            "Utils.login:",
+            typeof Utils.login
+        );
+
+
+        refreshSessionInfo();
+
+    </script>
+
+
 </body>
+
 </html>
