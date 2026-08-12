@@ -5,13 +5,25 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
 
-    <meta name="application-name"
-          content="StudentExam">
+    <meta
+        name="application-name"
+        content="StudentExam"
+    >
 
-    <title>StudentExam v2.0 — Test API</title>
+    <meta
+        name="description"
+        content="StudentExam v2.0 - API Test"
+    >
+
+    <title>
+        StudentExam v2.0 — Test API
+    </title>
+
 
     <style>
 
@@ -19,41 +31,42 @@
             box-sizing: border-box;
         }
 
+
         body {
+
+            margin: 0;
+
+            padding: 30px 20px;
+
             font-family:
                 Arial,
                 Helvetica,
                 sans-serif;
 
-            max-width: 1000px;
-
-            margin:
-                40px auto;
-
-            padding:
-                0 20px;
-
             background:
-                #f8f9fa;
+                #f4f6f9;
 
             color:
                 #212529;
+
         }
 
-        h1 {
-            margin-bottom:
-                8px;
+
+        .container {
+
+            width: 100%;
+
+            max-width:
+                1100px;
+
+            margin:
+                0 auto;
+
         }
 
-        .subtitle {
-            color:
-                #6c757d;
-
-            margin-bottom:
-                25px;
-        }
 
         .card {
+
             background:
                 #ffffff;
 
@@ -63,17 +76,69 @@
             border-radius:
                 10px;
 
-            padding:
-                20px;
+            box-shadow:
+                0 2px 8px rgba(
+                    0,
+                    0,
+                    0,
+                    0.06
+                );
 
             margin-bottom:
                 20px;
 
-            box-shadow:
-                0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
-        .button-group {
+
+        .card-header {
+
+            padding:
+                16px 20px;
+
+            border-bottom:
+                1px solid #dee2e6;
+
+            font-size:
+                18px;
+
+            font-weight:
+                700;
+
+        }
+
+
+        .card-body {
+
+            padding:
+                20px;
+
+        }
+
+
+        h1 {
+
+            margin:
+                0 0 8px;
+
+            font-size:
+                26px;
+
+        }
+
+
+        .subtitle {
+
+            margin:
+                0;
+
+            color:
+                #6c757d;
+
+        }
+
+
+        .button-grid {
+
             display:
                 flex;
 
@@ -82,9 +147,12 @@
 
             gap:
                 8px;
+
         }
 
+
         button {
+
             border:
                 0;
 
@@ -92,91 +160,271 @@
                 6px;
 
             padding:
-                10px 16px;
+                11px 16px;
+
+            font-size:
+                14px;
 
             cursor:
                 pointer;
 
-            background:
-                #0d6efd;
-
             color:
                 #ffffff;
 
-            font-size:
-                14px;
+            background:
+                #0d6efd;
+
+            transition:
+                0.15s ease;
+
         }
+
 
         button:hover {
+
             opacity:
                 0.9;
+
         }
+
+
+        button:disabled {
+
+            opacity:
+                0.5;
+
+            cursor:
+                not-allowed;
+
+        }
+
 
         button.danger {
+
             background:
                 #dc3545;
+
         }
+
 
         button.secondary {
+
             background:
                 #6c757d;
+
         }
+
 
         button.success {
+
             background:
                 #198754;
+
         }
 
-        #status {
+
+        .test-number {
+
+            display:
+                inline-block;
+
+            margin-right:
+                5px;
+
+            font-weight:
+                700;
+
+        }
+
+
+        .status {
+
             padding:
-                10px 14px;
+                12px 16px;
 
             border-radius:
-                6px;
+                7px;
+
+            font-weight:
+                700;
 
             margin-bottom:
                 15px;
 
-            font-weight:
-                bold;
         }
 
-        #status.ok {
+
+        .status.idle {
+
+            background:
+                #e9ecef;
+
+            color:
+                #495057;
+
+        }
+
+
+        .status.running {
+
+            background:
+                #fff3cd;
+
+            color:
+                #664d03;
+
+        }
+
+
+        .status.success {
+
             background:
                 #d1e7dd;
 
             color:
                 #0f5132;
+
         }
 
-        #status.err {
+
+        .status.error {
+
             background:
                 #f8d7da;
 
             color:
                 #842029;
+
         }
 
-        #status.info {
+
+        .session-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(
+                        220px,
+                        1fr
+                    )
+                );
+
+            gap:
+                12px;
+
+        }
+
+
+        .session-item {
+
+            padding:
+                12px;
+
             background:
-                #cff4fc;
+                #f8f9fa;
+
+            border:
+                1px solid #e9ecef;
+
+            border-radius:
+                7px;
+
+        }
+
+
+        .session-label {
+
+            display:
+                block;
+
+            font-size:
+                12px;
 
             color:
-                #055160;
+                #6c757d;
+
+            margin-bottom:
+                5px;
+
         }
 
+
+        .session-value {
+
+            font-weight:
+                600;
+
+            word-break:
+                break-word;
+
+        }
+
+
+        .exam-box {
+
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            gap:
+                10px;
+
+            align-items:
+                center;
+
+        }
+
+
+        .exam-box input {
+
+            flex:
+                1 1 280px;
+
+            min-width:
+                220px;
+
+            padding:
+                10px 12px;
+
+            border:
+                1px solid #ced4da;
+
+            border-radius:
+                6px;
+
+            font-size:
+                14px;
+
+        }
+
+
         pre {
+
+            margin:
+                0;
+
+            padding:
+                18px;
+
+            min-height:
+                300px;
+
             background:
                 #212529;
 
             color:
                 #f8f9fa;
 
-            padding:
-                16px;
-
             border-radius:
                 8px;
+
+            overflow:
+                auto;
 
             white-space:
                 pre-wrap;
@@ -184,27 +432,73 @@
             word-break:
                 break-word;
 
-            overflow-x:
-                auto;
-
-            min-height:
-                180px;
-        }
-
-        .session-info {
-            font-size:
-                14px;
-
-            line-height:
-                1.7;
-        }
-
-        .session-token {
             font-family:
+                Consolas,
+                Monaco,
                 monospace;
 
-            word-break:
-                break-all;
+            font-size:
+                13px;
+
+            line-height:
+                1.5;
+
+        }
+
+
+        .hint {
+
+            margin-top:
+                10px;
+
+            font-size:
+                13px;
+
+            color:
+                #6c757d;
+
+        }
+
+
+        .footer-note {
+
+            color:
+                #6c757d;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.6;
+
+        }
+
+
+        @media (max-width: 576px) {
+
+            body {
+
+                padding:
+                    15px 10px;
+
+            }
+
+
+            .card-body {
+
+                padding:
+                    15px;
+
+            }
+
+
+            button {
+
+                width:
+                    100%;
+
+            }
+
         }
 
     </style>
@@ -215,976 +509,1489 @@
 <body>
 
 
-    <h1>
-        StudentExam v2.0
-    </h1>
-
-    <div class="subtitle">
-        Test API thật — GitHub Pages → Utils.js → Google Apps Script
-    </div>
+<div class="container">
 
 
-    <!-- =========================================================
-         TEST ACTIONS
-         ========================================================= -->
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
 
     <div class="card">
 
-        <h3>
+        <div class="card-body">
+
+            <h1>
+                StudentExam v2.0 — Test API
+            </h1>
+
+            <p class="subtitle">
+                GitHub Pages → CONFIG → Utils → Google Apps Script Web App
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         API TESTS
+         ===================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
             API Tests
-        </h3>
-
-        <div class="button-group">
-
-            <button id="btnTestConfig"
-                    type="button">
-                1. Test CONFIG
-            </button>
+        </div>
 
 
-            <button id="btnTestLogin"
-                    type="button">
-                2. Login HS001
-            </button>
+        <div class="card-body">
+
+            <div class="button-grid">
 
 
-            <button id="btnTestSession"
-                    type="button">
-                3. Check Session
-            </button>
-
-
-            <button id="btnTestClasses"
-                    type="button">
-                4. Get Classes
-            </button>
-
-
-            <button id="btnTestStudents"
-                    type="button">
-                5. Get Students
-            </button>
-
-
-            <button id="btnTestExams"
-                    type="button">
-                6. Get Exams
-            </button>
-
-
-            <button id="btnTestResults"
-                    type="button">
-                7. Get Results
-            </button>
-
-
-            <button id="btnTestLogout"
+                <button
+                    id="btnTestConfig"
                     type="button"
-                    class="danger">
-                8. Logout
-            </button>
+                >
+                    <span class="test-number">1.</span>
+                    Test CONFIG
+                </button>
+
+
+                <button
+                    id="btnLogin"
+                    type="button"
+                >
+                    <span class="test-number">2.</span>
+                    Login HS001
+                </button>
+
+
+                <button
+                    id="btnCheckSession"
+                    type="button"
+                >
+                    <span class="test-number">3.</span>
+                    Check Session
+                </button>
+
+
+                <button
+                    id="btnGetClasses"
+                    type="button"
+                >
+                    <span class="test-number">4.</span>
+                    Get Classes
+                </button>
+
+
+                <button
+                    id="btnGetStudents"
+                    type="button"
+                >
+                    <span class="test-number">5.</span>
+                    Get Students
+                </button>
+
+
+                <button
+                    id="btnGetExams"
+                    type="button"
+                >
+                    <span class="test-number">6.</span>
+                    Get Exams
+                </button>
+
+
+                <button
+                    id="btnGetExam"
+                    type="button"
+                >
+                    <span class="test-number">7.</span>
+                    Get Exam
+                </button>
+
+
+                <button
+                    id="btnGetResults"
+                    type="button"
+                >
+                    <span class="test-number">8.</span>
+                    Get Results
+                </button>
+
+
+                <button
+                    id="btnLogout"
+                    type="button"
+                    class="danger"
+                >
+                    <span class="test-number">9.</span>
+                    Logout
+                </button>
+
+
+            </div>
 
         </div>
 
     </div>
 
 
-    <!-- =========================================================
+    <!-- =====================================================
          SESSION
-         ========================================================= -->
+         ===================================================== -->
 
     <div class="card">
 
-        <h3>
+        <div class="card-header">
             Current Session
-        </h3>
+        </div>
 
-        <div id="sessionInfo"
-             class="session-info">
 
-            Chưa kiểm tra session.
+        <div class="card-body">
+
+            <div class="session-grid">
+
+
+                <div class="session-item">
+
+                    <span class="session-label">
+                        Login Status
+                    </span>
+
+                    <span
+                        id="sessionStatus"
+                        class="session-value"
+                    >
+                        Chưa đăng nhập
+                    </span>
+
+                </div>
+
+
+                <div class="session-item">
+
+                    <span class="session-label">
+                        Student ID
+                    </span>
+
+                    <span
+                        id="sessionStudentId"
+                        class="session-value"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+
+                <div class="session-item">
+
+                    <span class="session-label">
+                        Student Name
+                    </span>
+
+                    <span
+                        id="sessionStudentName"
+                        class="session-value"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+
+                <div class="session-item">
+
+                    <span class="session-label">
+                        Class
+                    </span>
+
+                    <span
+                        id="sessionClass"
+                        class="session-value"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+
+                <div class="session-item">
+
+                    <span class="session-label">
+                        Login Key / Token
+                    </span>
+
+                    <span
+                        id="sessionToken"
+                        class="session-value"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+
+                <div class="session-item">
+
+                    <span class="session-label">
+                        Expire
+                    </span>
+
+                    <span
+                        id="sessionExpire"
+                        class="session-value"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+
+            </div>
 
         </div>
 
     </div>
 
 
-    <!-- =========================================================
-         RESULT
-         ========================================================= -->
+    <!-- =====================================================
+         EXAM ID
+         ===================================================== -->
 
     <div class="card">
 
-        <h3>
-            Test Result
-        </h3>
-
-        <div id="status"
-             class="info">
-
-            Chưa chạy test.
-
+        <div class="card-header">
+            Get Exam
         </div>
 
-        <pre id="output">Chưa chạy test.</pre>
+
+        <div class="card-body">
+
+            <div class="exam-box">
+
+                <input
+                    id="examIdInput"
+                    type="text"
+                    placeholder="Mã bài kiểm tra, ví dụ: KT001"
+                    autocomplete="off"
+                >
+
+
+                <button
+                    id="btnUseFirstExam"
+                    type="button"
+                    class="secondary"
+                >
+                    Dùng bài đầu tiên
+                </button>
+
+
+                <button
+                    id="btnGetExamManual"
+                    type="button"
+                    class="success"
+                >
+                    Get Exam
+                </button>
+
+            </div>
+
+
+            <div class="hint">
+
+                Nếu đã chạy <strong>Get Exams</strong>,
+                hệ thống sẽ tự lấy mã bài đầu tiên.
+                Có thể nhập mã bài khác để test thủ công.
+
+            </div>
+
+        </div>
 
     </div>
 
 
-    <!-- =========================================================
-         JAVASCRIPT
-         ========================================================= -->
+    <!-- =====================================================
+         RESULT
+         ===================================================== -->
 
-    <script type="module">
+    <div class="card">
 
-        import {
-            CONFIG,
-            getApiUrl,
-            getApiActionUrl
-        }
-        from "./assets/js/config.js";
+        <div class="card-header">
+            Test Result
+        </div>
 
 
-        import {
-            Utils
-        }
-        from "./assets/js/utils.js";
+        <div class="card-body">
 
 
-        /* =====================================================
-         * DOM
-         * =================================================== */
-
-        const output =
-            document.getElementById(
-                "output"
-            );
+            <div
+                id="status"
+                class="status idle"
+            >
+                Chưa chạy test.
+            </div>
 
 
-        const status =
-            document.getElementById(
-                "status"
-            );
+            <pre id="output">Chưa chạy test.</pre>
 
 
-        const sessionInfo =
-            document.getElementById(
-                "sessionInfo"
-            );
+        </div>
+
+    </div>
 
 
-        /* =====================================================
-         * OUTPUT
-         * =================================================== */
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
 
-        function show(data) {
+    <div class="card">
 
-            if (
-                typeof data === "string"
-            ) {
+        <div class="card-body">
 
-                output.textContent =
-                    data;
+            <div class="footer-note">
 
-                return;
+                <strong>
+                    StudentExam v2.0
+                </strong>
 
-            }
-
-            output.textContent =
-                JSON.stringify(
-                    data,
-                    null,
-                    2
-                );
-
-        }
-
-
-        /* =====================================================
-         * STATUS
-         * =================================================== */
-
-        function setStatus(
-            message,
-            type = "info"
-        ) {
-
-            status.className =
-                type;
-
-            status.textContent =
-                message;
-
-        }
-
-
-        /* =====================================================
-         * SESSION DISPLAY
-         * =================================================== */
-
-        function refreshSessionInfo() {
-
-            const session =
-                Utils.getSession();
-
-
-            const token =
-                Utils.getToken();
-
-
-            const student =
-                Utils.getCurrentStudent();
-
-
-            if (!session) {
-
-                sessionInfo.innerHTML =
-                    "Không có session.";
-
-                return;
-
-            }
-
-
-            sessionInfo.innerHTML = `
-
-                <strong>Session:</strong>
-                Có<br>
-
-                <strong>Token:</strong>
-                <span class="session-token">
-                    ${escapeHtml(token || "---")}
-                </span>
                 <br>
 
-                <strong>Student ID:</strong>
-                ${escapeHtml(
-                    student?.id || "---"
-                )}
+                API Test Page chỉ dùng để kiểm tra
+                kết nối Frontend → Google Apps Script.
+
                 <br>
 
-                <strong>Student Name:</strong>
-                ${escapeHtml(
-                    student?.name || "---"
-                )}
+                Không hard-code API URL.
+                Tất cả URL và action lấy từ
+                <code>config.js</code>.
+
                 <br>
 
-                <strong>Class:</strong>
-                ${escapeHtml(
-                    student?.class || "---"
-                )}
+                Test Submit Exam chưa được đưa vào
+                luồng mặc định để tránh ghi kết quả
+                thật vào hệ thống.
 
-            `;
+            </div>
 
-        }
+        </div>
+
+    </div>
 
 
-        /* =====================================================
-         * HTML ESCAPE
-         * =================================================== */
+</div>
 
-        function escapeHtml(
-            value
-        ) {
 
-            return String(
-                value ?? ""
-            )
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-            .replace(
-                /</g,
-                "&lt;"
-            )
-            .replace(
-                />/g,
-                "&gt;"
-            )
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-            .replace(
-                /'/g,
-                "&#039;"
+<!-- =========================================================
+     APPLICATION
+     ========================================================= -->
+
+<script type="module">
+
+import {
+    CONFIG,
+    getApiUrl,
+    getApiActionUrl
+}
+from "./assets/js/config.js";
+
+
+import {
+    Utils
+}
+from "./assets/js/utils.js";
+
+
+/* =========================================================
+ * DOM
+ * ========================================================= */
+
+const output =
+    document.getElementById(
+        "output"
+    );
+
+
+const status =
+    document.getElementById(
+        "status"
+    );
+
+
+const sessionStatus =
+    document.getElementById(
+        "sessionStatus"
+    );
+
+
+const sessionStudentId =
+    document.getElementById(
+        "sessionStudentId"
+    );
+
+
+const sessionStudentName =
+    document.getElementById(
+        "sessionStudentName"
+    );
+
+
+const sessionClass =
+    document.getElementById(
+        "sessionClass"
+    );
+
+
+const sessionToken =
+    document.getElementById(
+        "sessionToken"
+    );
+
+
+const sessionExpire =
+    document.getElementById(
+        "sessionExpire"
+    );
+
+
+const examIdInput =
+    document.getElementById(
+        "examIdInput"
+    );
+
+
+/* =========================================================
+ * STATE
+ * ========================================================= */
+
+let lastExams = [];
+
+
+/* =========================================================
+ * OUTPUT
+ * ========================================================= */
+
+function show(data) {
+
+    if (
+        typeof data ===
+        "string"
+    ) {
+
+        output.textContent =
+            data;
+
+        return;
+
+    }
+
+
+    try {
+
+        output.textContent =
+            JSON.stringify(
+                data,
+                null,
+                2
             );
 
-        }
+    } catch (error) {
+
+        output.textContent =
+            String(data);
+
+    }
+
+}
 
 
-        /* =====================================================
-         * TOKEN
-         * =================================================== */
+/* =========================================================
+ * STATUS
+ * ========================================================= */
 
-        function requireToken() {
+function setStatus(
+    message,
+    type = "idle"
+) {
 
-            const token =
-                Utils.getToken();
+    status.className =
+        "status " + type;
 
+    status.textContent =
+        message;
 
-            if (!token) {
-
-                show(
-                    "Chưa có session token.\n" +
-                    "Hãy Login HS001 trước."
-                );
-
-                setStatus(
-                    "Thiếu session token.",
-                    "err"
-                );
-
-                return null;
-
-            }
+}
 
 
-            return token;
+/* =========================================================
+ * RUN TEST
+ * ========================================================= */
 
-        }
+async function runTest(
+    name,
+    callback
+) {
 
-
-        /* =====================================================
-         * API TEST HELPER
-         * =================================================== */
-
-        async function runTest(
-            title,
-            callback
-        ) {
-
-            try {
-
-                setStatus(
-                    `Đang test: ${title}...`,
-                    "info"
-                );
+    const start =
+        performance.now();
 
 
-                show(
-                    `Đang test ${title}...`
-                );
+    setStatus(
+        name +
+        " — ĐANG CHẠY...",
+        "running"
+    );
 
 
-                const result =
-                    await callback();
+    show(
+        "Đang thực hiện: " +
+        name +
+        "\n\n"
+    );
 
 
-                console.log(
-                    `${title} RESULT =`,
-                    result
-                );
+    try {
+
+        const result =
+            await callback();
 
 
-                show(
-                    result
-                );
+        const elapsed =
+            Math.round(
+                performance.now() -
+                start
+            );
 
 
-                setStatus(
-                    `${title} — PASS`,
-                    "ok"
-                );
+        setStatus(
+            name +
+            " — PASS (" +
+            elapsed +
+            " ms)",
+            "success"
+        );
 
 
-                refreshSessionInfo();
+        show(result);
 
 
-                return result;
-
-            } catch (error) {
-
-                console.error(
-                    `${title} ERROR =`,
-                    error
-                );
+        updateSessionInfo();
 
 
-                show({
+        return result;
 
-                    error:
-                        error.message,
+    } catch (error) {
 
-                    stack:
-                        error.stack || ""
-
-                });
-
-
-                setStatus(
-                    `${title} — ERROR`,
-                    "err"
-                );
+        const elapsed =
+            Math.round(
+                performance.now() -
+                start
+            );
 
 
-                refreshSessionInfo();
+        console.error(
+            name,
+            error
+        );
 
 
-                return null;
+        setStatus(
+            name +
+            " — ERROR (" +
+            elapsed +
+            " ms)",
+            "error"
+        );
 
-            }
 
-        }
+        show({
+
+            error:
+                error?.message ||
+                String(error),
+
+            stack:
+                error?.stack ||
+                ""
+
+        });
 
 
-        /* =====================================================
-         * 1. TEST CONFIG
-         * =================================================== */
+        updateSessionInfo();
 
-        document
-            .getElementById(
-                "btnTestConfig"
-            )
-            .addEventListener(
-                "click",
-                function() {
 
-                    const data = {
+        return null;
+
+    }
+
+}
+
+
+/* =========================================================
+ * SESSION HELPERS
+ * ========================================================= */
+
+function getCurrentSession() {
+
+    try {
+
+        return Utils.getSession();
+
+    } catch (error) {
+
+        console.error(
+            "getCurrentSession:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+function getCurrentToken() {
+
+    try {
+
+        return Utils.getToken();
+
+    } catch (error) {
+
+        console.error(
+            "getCurrentToken:",
+            error
+        );
+
+        return "";
+
+    }
+
+}
+
+
+function updateSessionInfo() {
+
+    const session =
+        getCurrentSession();
+
+
+    const token =
+        getCurrentToken();
+
+
+    if (
+        !session ||
+        !token
+    ) {
+
+        sessionStatus.textContent =
+            "Chưa đăng nhập";
+
+        sessionStudentId.textContent =
+            "--";
+
+        sessionStudentName.textContent =
+            "--";
+
+        sessionClass.textContent =
+            "--";
+
+        sessionToken.textContent =
+            "--";
+
+        sessionExpire.textContent =
+            "--";
+
+        return;
+
+    }
+
+
+    const student =
+        session.student ||
+        {};
+
+
+    sessionStatus.textContent =
+        "Đã đăng nhập";
+
+
+    sessionStudentId.textContent =
+        student.id ||
+        session.studentId ||
+        "--";
+
+
+    sessionStudentName.textContent =
+        student.name ||
+        "--";
+
+
+    sessionClass.textContent =
+        student.class ||
+        "--";
+
+
+    sessionToken.textContent =
+        token;
+
+
+    sessionExpire.textContent =
+        session.expireTime ||
+        "--";
+
+}
+
+
+/* =========================================================
+ * TOKEN CHECK
+ * ========================================================= */
+
+function requireToken() {
+
+    const token =
+        getCurrentToken();
+
+
+    if (!token) {
+
+        throw new Error(
+            "Chưa có session token. Hãy Login HS001 trước."
+        );
+
+    }
+
+
+    return token;
+
+}
+
+
+/* =========================================================
+ * EXAM ID EXTRACTION
+ * ========================================================= */
+
+function extractExamId(
+    exam
+) {
+
+    if (
+        !exam ||
+        typeof exam !== "object"
+    ) {
+
+        return "";
+
+    }
+
+
+    return (
+
+        exam.ma_bai ||
+
+        exam.examId ||
+
+        exam.examID ||
+
+        exam.maBai ||
+
+        exam.id ||
+
+        exam.code ||
+
+        ""
+
+    );
+
+}
+
+
+function extractExamList(
+    data
+) {
+
+    if (
+        Array.isArray(data)
+    ) {
+
+        return data;
+
+    }
+
+
+    if (
+        data &&
+        Array.isArray(
+            data.exams
+        )
+    ) {
+
+        return data.exams;
+
+    }
+
+
+    if (
+        data &&
+        Array.isArray(
+            data.items
+        )
+    ) {
+
+        return data.items;
+
+    }
+
+
+    if (
+        data &&
+        Array.isArray(
+            data.data
+        )
+    ) {
+
+        return data.data;
+
+    }
+
+
+    return [];
+
+}
+
+
+/* =========================================================
+ * 1. CONFIG
+ * ========================================================= */
+
+document
+    .getElementById(
+        "btnTestConfig"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            runTest(
+                "TEST CONFIG",
+                async function() {
+
+                    return {
 
                         APP:
                             CONFIG.APP,
 
-                        API:
-                            {
+                        API: {
 
-                                BASE_URL:
-                                    CONFIG.API.BASE_URL,
+                            BASE_URL:
+                                CONFIG.API.BASE_URL,
 
-                                ACTION:
-                                    CONFIG.API.ACTION,
+                            TIMEOUT:
+                                CONFIG.API.TIMEOUT,
 
-                                TIMEOUT:
-                                    CONFIG.API.TIMEOUT,
+                            RETRY:
+                                CONFIG.API.RETRY,
 
-                                RETRY:
-                                    CONFIG.API.RETRY
+                            ACTION:
+                                CONFIG.API.ACTION
 
-                            },
+                        },
 
                         ENV:
                             CONFIG.ENV,
-
-                        SESSION:
-                            CONFIG.SESSION,
-
-                        STORAGE:
-                            CONFIG.STORAGE,
 
                         API_URL:
                             getApiUrl(),
 
                         LOGIN_URL:
                             getApiActionUrl(
-                                CONFIG
-                                    .API
-                                    .ACTION
-                                    .LOGIN
+                                CONFIG.API.ACTION.LOGIN
                             )
 
                     };
 
+                }
+            );
 
-                    show(data);
+        }
+    );
 
 
-                    setStatus(
-                        "CONFIG — PASS",
-                        "ok"
-                    );
+/* =========================================================
+ * 2. LOGIN
+ * ========================================================= */
+
+document
+    .getElementById(
+        "btnLogin"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            runTest(
+                "LOGIN HS001",
+                async function() {
+
+                    const data =
+                        await Utils.login(
+                            "HS001"
+                        );
+
+
+                    updateSessionInfo();
+
+
+                    return data;
 
                 }
             );
 
-
-        /* =====================================================
-         * 2. LOGIN
-         * =================================================== */
-
-        document
-            .getElementById(
-                "btnTestLogin"
-            )
-            .addEventListener(
-                "click",
-                function() {
-
-                    runTest(
-                        "LOGIN HS001",
-                        async function() {
-
-                            /*
-                             * Dùng CONFIG.API.ACTION.LOGIN
-                             * tuyệt đối không hard-code
-                             * "login".
-                             */
-
-                            const response =
-                                await Utils.apiGet(
-
-                                    CONFIG
-                                        .API
-                                        .ACTION
-                                        .LOGIN,
-
-                                    {
-                                        studentId:
-                                            "HS001"
-                                    }
-
-                                );
+        }
+    );
 
 
-                            const data =
-                                Utils
-                                    .apiCheckResponse(
-                                        response
-                                    );
+/* =========================================================
+ * 3. CHECK SESSION
+ * ========================================================= */
+
+document
+    .getElementById(
+        "btnCheckSession"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            runTest(
+                "CHECK SESSION",
+                async function() {
+
+                    const token =
+                        requireToken();
 
 
-                            if (
-                                !data
-                                ||
-                                !data.loginKey
-                            ) {
+                    /*
+                     * Dùng action từ CONFIG.
+                     */
 
-                                throw new Error(
-                                    "Login không trả về Login Key."
-                                );
-
-                            }
-
-
-                            Utils.setSession({
-
+                    const response =
+                        await Utils.apiGet(
+                            CONFIG.API.ACTION.CHECK_SESSION,
+                            {
                                 token:
-                                    data.loginKey,
-
-                                loginKey:
-                                    data.loginKey,
-
-                                student:
-                                    data.student
-                                    ||
-                                    null
-
-                            });
-
-
-                            return {
-
-                                success:
-                                    true,
-
-                                loginKey:
-                                    data.loginKey,
-
-                                student:
-                                    data.student
-                                    ||
-                                    null
-
-                            };
-
-                        }
-                    );
-
-                }
-            );
-
-
-        /* =====================================================
-         * 3. CHECK SESSION
-         * =================================================== */
-
-        document
-            .getElementById(
-                "btnTestSession"
-            )
-            .addEventListener(
-                "click",
-                function() {
-
-                    runTest(
-                        "CHECK SESSION",
-                        async function() {
-
-                            const token =
-                                requireToken();
-
-
-                            if (!token) {
-
-                                throw new Error(
-                                    "Chưa đăng nhập."
-                                );
-
+                                    token
                             }
-
-
-                            const response =
-                                await Utils.apiGet(
-
-                                    CONFIG
-                                        .API
-                                        .ACTION
-                                        .CHECK_SESSION,
-
-                                    {
-                                        token:
-                                            token
-                                    }
-
-                                );
-
-
-                            return (
-                                Utils
-                                    .apiCheckResponse(
-                                        response
-                                    )
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-
-        /* =====================================================
-         * 4. GET CLASSES
-         * =================================================== */
-
-        document
-            .getElementById(
-                "btnTestClasses"
-            )
-            .addEventListener(
-                "click",
-                function() {
-
-                    runTest(
-                        "GET CLASSES",
-                        async function() {
-
-                            const response =
-                                await Utils.apiGet(
-
-                                    CONFIG
-                                        .API
-                                        .ACTION
-                                        .GET_CLASSES
-
-                                );
-
-
-                            return (
-                                Utils
-                                    .apiCheckResponse(
-                                        response
-                                    )
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-
-        /* =====================================================
-         * 5. GET STUDENTS
-         * =================================================== */
-
-        document
-            .getElementById(
-                "btnTestStudents"
-            )
-            .addEventListener(
-                "click",
-                function() {
-
-                    runTest(
-                        "GET STUDENTS",
-                        async function() {
-
-                            const response =
-                                await Utils.apiGet(
-
-                                    CONFIG
-                                        .API
-                                        .ACTION
-                                        .GET_STUDENTS,
-
-                                    {
-
-                                        className:
-                                            "6A1"
-
-                                    }
-
-                                );
-
-
-                            return (
-                                Utils
-                                    .apiCheckResponse(
-                                        response
-                                    )
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-
-        /* =====================================================
-         * 6. GET EXAMS
-         * =================================================== */
-
-        document
-            .getElementById(
-                "btnTestExams"
-            )
-            .addEventListener(
-                "click",
-                function() {
-
-                    runTest(
-                        "GET EXAMS",
-                        async function() {
-
-                            const token =
-                                requireToken();
-
-
-                            if (!token) {
-
-                                throw new Error(
-                                    "Chưa đăng nhập."
-                                );
-
-                            }
-
-
-                            const response =
-                                await Utils.apiGet(
-
-                                    CONFIG
-                                        .API
-                                        .ACTION
-                                        .GET_EXAMS,
-
-                                    {
-
-                                        token:
-                                            token
-
-                                    }
-
-                                );
-
-
-                            return (
-                                Utils
-                                    .apiCheckResponse(
-                                        response
-                                    )
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-
-        /* =====================================================
-         * 7. GET RESULTS
-         * =================================================== */
-
-        document
-            .getElementById(
-                "btnTestResults"
-            )
-            .addEventListener(
-                "click",
-                function() {
-
-                    runTest(
-                        "GET RESULTS",
-                        async function() {
-
-                            const token =
-                                requireToken();
-
-
-                            if (!token) {
-
-                                throw new Error(
-                                    "Chưa đăng nhập."
-                                );
-
-                            }
-
-
-                            const response =
-                                await Utils.apiGet(
-
-                                    CONFIG
-                                        .API
-                                        .ACTION
-                                        .GET_RESULTS,
-
-                                    {
-
-                                        token:
-                                            token
-
-                                    }
-
-                                );
-
-
-                            return (
-                                Utils
-                                    .apiCheckResponse(
-                                        response
-                                    )
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-
-        /* =====================================================
-         * 8. LOGOUT
-         * =================================================== */
-
-        document
-            .getElementById(
-                "btnTestLogout"
-            )
-            .addEventListener(
-                "click",
-                function() {
-
-                    try {
-
-                        const result =
-                            Utils.logout();
-
-
-                        show({
-
-                            success:
-                                result,
-
-                            session:
-                                Utils
-                                    .getSession(),
-
-                            token:
-                                Utils
-                                    .getToken()
-
-                        });
-
-
-                        setStatus(
-                            "LOGOUT — PASS",
-                            "ok"
                         );
 
 
-                        refreshSessionInfo();
-
-                    } catch (error) {
-
-                        console.error(
-                            error
+                    const data =
+                        Utils.apiCheckResponse(
+                            response
                         );
 
 
-                        show({
+                    return data;
 
-                            error:
-                                error.message,
+                }
+            );
 
-                            stack:
-                                error.stack || ""
-
-                        });
+        }
+    );
 
 
-                        setStatus(
-                            "LOGOUT — ERROR",
-                            "err"
-                        );
+/* =========================================================
+ * 4. GET CLASSES
+ * ========================================================= */
+
+document
+    .getElementById(
+        "btnGetClasses"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            runTest(
+                "GET CLASSES",
+                async function() {
+
+                    const token =
+                        getCurrentToken();
+
+
+                    const params = {};
+
+
+                    if (token) {
+
+                        params.token =
+                            token;
 
                     }
 
+
+                    const response =
+                        await Utils.apiGet(
+                            CONFIG.API.ACTION.GET_CLASSES,
+                            params
+                        );
+
+
+                    return Utils.apiCheckResponse(
+                        response
+                    );
+
                 }
             );
 
-
-        /* =====================================================
-         * INITIALIZE
-         * =================================================== */
-
-        console.log(
-            "===================================="
-        );
-
-        console.log(
-            "StudentExam v2.0 — TEST API"
-        );
-
-        console.log(
-            "===================================="
-        );
-
-        console.log(
-            "CONFIG:",
-            CONFIG
-        );
-
-        console.log(
-            "Utils:",
-            Utils
-        );
-
-        console.log(
-            "Utils.apiGet:",
-            typeof Utils.apiGet
-        );
-
-        console.log(
-            "Utils.apiPost:",
-            typeof Utils.apiPost
-        );
-
-        console.log(
-            "Utils.getToken:",
-            typeof Utils.getToken
-        );
-
-        console.log(
-            "Utils.login:",
-            typeof Utils.login
-        );
+        }
+    );
 
 
-        refreshSessionInfo();
+/* =========================================================
+ * 5. GET STUDENTS
+ * ========================================================= */
 
-    </script>
+document
+    .getElementById(
+        "btnGetStudents"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            runTest(
+                "GET STUDENTS",
+                async function() {
+
+                    const token =
+                        getCurrentToken();
+
+
+                    const params = {};
+
+
+                    if (token) {
+
+                        params.token =
+                            token;
+
+                    }
+
+
+                    const response =
+                        await Utils.apiGet(
+                            CONFIG.API.ACTION.GET_STUDENTS,
+                            params
+                        );
+
+
+                    return Utils.apiCheckResponse(
+                        response
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+ * 6. GET EXAMS
+ * ========================================================= */
+
+document
+    .getElementById(
+        "btnGetExams"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            runTest(
+                "GET EXAMS",
+                async function() {
+
+                    const data =
+                        await Utils.getExams();
+
+
+                    lastExams =
+                        extractExamList(
+                            data
+                        );
+
+
+                    /*
+                     * Tự lấy bài đầu tiên.
+                     */
+
+                    if (
+                        lastExams.length >
+                        0
+                    ) {
+
+                        const firstExam =
+                            lastExams[0];
+
+
+                        const firstExamId =
+                            extractExamId(
+                                firstExam
+                            );
+
+
+                        if (
+                            firstExamId
+                        ) {
+
+                            examIdInput.value =
+                                firstExamId;
+
+                        }
+
+                    }
+
+
+                    return {
+
+                        count:
+                            lastExams.length,
+
+                        firstExamId:
+                            lastExams.length
+                                ? extractExamId(
+                                    lastExams[0]
+                                )
+                                : "",
+
+                        data:
+                            data
+
+                    };
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+ * 7. GET EXAM
+ * ========================================================= */
+
+async function testGetExam(
+    manualId = ""
+) {
+
+    return runTest(
+        "GET EXAM",
+        async function() {
+
+            requireToken();
+
+
+            let examId =
+                Utils.Text.trim(
+                    manualId
+                );
+
+
+            if (!examId) {
+
+                examId =
+                    Utils.Text.trim(
+                        examIdInput.value
+                    );
+
+            }
+
+
+            if (!examId) {
+
+                if (
+                    lastExams.length >
+                    0
+                ) {
+
+                    examId =
+                        Utils.Text.trim(
+                            extractExamId(
+                                lastExams[0]
+                            )
+                        );
+
+                }
+
+            }
+
+
+            if (!examId) {
+
+                throw new Error(
+                    "Không tìm được mã bài kiểm tra. Hãy chạy Get Exams trước hoặc nhập examId."
+                );
+
+            }
+
+
+            examIdInput.value =
+                examId;
+
+
+            const data =
+                await Utils.getExam(
+                    examId
+                );
+
+
+            return {
+
+                examId:
+                    examId,
+
+                data:
+                    data
+
+            };
+
+        }
+    );
+
+}
+
+
+document
+    .getElementById(
+        "btnGetExam"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            testGetExam();
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "btnUseFirstExam"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            if (
+                !lastExams.length
+            ) {
+
+                setStatus(
+                    "Chưa có danh sách bài kiểm tra.",
+                    "error"
+                );
+
+                show(
+                    "Hãy chạy Get Exams trước."
+                );
+
+                return;
+
+            }
+
+
+            const examId =
+                extractExamId(
+                    lastExams[0]
+                );
+
+
+            if (!examId) {
+
+                setStatus(
+                    "Không xác định được examId.",
+                    "error"
+                );
+
+                show(
+                    lastExams[0]
+                );
+
+                return;
+
+            }
+
+
+            examIdInput.value =
+                examId;
+
+
+            setStatus(
+                "Đã chọn " +
+                examId +
+                ".",
+                "success"
+            );
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "btnGetExamManual"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            testGetExam(
+                examIdInput.value
+            );
+
+        }
+    );
+
+
+/* =========================================================
+ * 8. GET RESULTS
+ * ========================================================= */
+
+document
+    .getElementById(
+        "btnGetResults"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            runTest(
+                "GET RESULTS",
+                async function() {
+
+                    const data =
+                        await Utils.getResults();
+
+
+                    return data;
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+ * 9. LOGOUT
+ * ========================================================= */
+
+document
+    .getElementById(
+        "btnLogout"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            runTest(
+                "LOGOUT",
+                async function() {
+
+                    const result =
+                        Utils.logout();
+
+
+                    updateSessionInfo();
+
+
+                    return {
+
+                        success:
+                            result === true,
+
+                        message:
+                            result === true
+                                ? "Đã xóa session local."
+                                : "Logout thất bại."
+
+                    };
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+ * INITIALIZE
+ * ========================================================= */
+
+updateSessionInfo();
+
+
+console.log(
+    "========================================"
+);
+
+console.log(
+    "StudentExam v2.0 — Test API"
+);
+
+console.log(
+    "CONFIG loaded:",
+    typeof CONFIG
+);
+
+console.log(
+    "Utils loaded:",
+    typeof Utils
+);
+
+console.log(
+    "Utils.apiGet:",
+    typeof Utils.apiGet
+);
+
+console.log(
+    "Utils.apiPost:",
+    typeof Utils.apiPost
+);
+
+console.log(
+    "Utils.login:",
+    typeof Utils.login
+);
+
+console.log(
+    "Utils.getExams:",
+    typeof Utils.getExams
+);
+
+console.log(
+    "Utils.getExam:",
+    typeof Utils.getExam
+);
+
+console.log(
+    "Utils.getResults:",
+    typeof Utils.getResults
+);
+
+console.log(
+    "========================================"
+);
+
+</script>
 
 
 </body>
