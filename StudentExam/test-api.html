@@ -107,7 +107,7 @@
 
 
         /* =====================================================
-         * INPUT
+         * FORM
          * =================================================== */
 
         .form-row {
@@ -117,12 +117,28 @@
             align-items: center;
         }
 
-        input {
+        input,
+        select {
             padding: 10px 12px;
             border: 1px solid #ced4da;
             border-radius: 6px;
             font-size: 14px;
-            min-width: 180px;
+            min-width: 220px;
+            background: #fff;
+        }
+
+        select:focus,
+        input:focus {
+            outline: none;
+            border-color: #86b7fe;
+            box-shadow:
+                0 0 0 .2rem
+                rgba(13, 110, 253, .15);
+        }
+
+        .form-label {
+            font-weight: bold;
+            margin-right: 5px;
         }
 
 
@@ -286,11 +302,27 @@
         }
 
 
+        /* =====================================================
+         * SELECTION INFO
+         * =================================================== */
+
+        .selection-info {
+            margin-top: 10px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+
         @media (max-width: 700px) {
 
             .summary-grid {
                 grid-template-columns:
                     repeat(2, 1fr);
+            }
+
+            input,
+            select {
+                width: 100%;
             }
 
         }
@@ -347,8 +379,10 @@
                 1. Test CONFIG
             </button>
 
-            <button id="btnPing"
-                    class="success">
+            <button
+                id="btnPing"
+                class="success"
+            >
                 2. PING
             </button>
 
@@ -380,11 +414,69 @@
                 9. Get Results
             </button>
 
-            <button id="btnLogout"
-                    class="danger">
+            <button
+                id="btnLogout"
+                class="danger"
+            >
                 10. Logout
             </button>
 
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         CLASS / STUDENT TEST
+         =================================================== -->
+
+    <div class="card">
+
+        <h3>
+            Chọn lớp & học sinh
+        </h3>
+
+        <div class="form-row">
+
+            <label
+                class="form-label"
+                for="classSelect"
+            >
+                Lớp:
+            </label>
+
+            <select id="classSelect">
+
+                <option value="">
+                    -- Chưa tải danh sách lớp --
+                </option>
+
+            </select>
+
+
+            <button
+                id="btnLoadClasses"
+                class="success"
+            >
+                GET CLASSES
+            </button>
+
+
+            <button
+                id="btnLoadStudents"
+                class="warning"
+            >
+                GET STUDENTS
+            </button>
+
+        </div>
+
+
+        <div
+            id="selectionInfo"
+            class="selection-info"
+        >
+            Chưa chọn lớp.
         </div>
 
     </div>
@@ -542,39 +634,23 @@
 
                     <tr>
 
-                        <th>
-                            #
-                        </th>
+                        <th>#</th>
 
-                        <th>
-                            API
-                        </th>
+                        <th>API</th>
 
-                        <th>
-                            Method
-                        </th>
+                        <th>Method</th>
 
-                        <th>
-                            Latency
-                        </th>
+                        <th>Latency</th>
 
-                        <th>
-                            Status
-                        </th>
+                        <th>Status</th>
 
-                        <th>
-                            Thời gian
-                        </th>
+                        <th>Thời gian</th>
 
                     </tr>
 
                 </thead>
 
-                <tbody
-                    id="historyBody"
-                >
-
-                </tbody>
+                <tbody id="historyBody"></tbody>
 
             </table>
 
@@ -603,7 +679,7 @@
 
 <!-- =========================================================
      APPLICATION
-     ========================================================= -->
+     ======================================================= -->
 
 <script type="module">
 
@@ -635,16 +711,24 @@ const output =
         "output"
     );
 
-
 const globalStatus =
     document.getElementById(
         "globalStatus"
     );
 
-
 const historyBody =
     document.getElementById(
         "historyBody"
+    );
+
+const classSelect =
+    document.getElementById(
+        "classSelect"
+    );
+
+const selectionInfo =
+    document.getElementById(
+        "selectionInfo"
     );
 
 
@@ -662,7 +746,11 @@ const state = {
 
     error: 0,
 
-    totalLatency: 0
+    totalLatency: 0,
+
+    classes: [],
+
+    selectedClass: ""
 
 };
 
@@ -699,9 +787,7 @@ function setStatus(
 }
 
 
-function formatLatency(
-    ms
-) {
+function formatLatency(ms) {
 
     return (
         Math.round(ms) +
@@ -711,9 +797,7 @@ function formatLatency(
 }
 
 
-function latencyClass(
-    ms
-) {
+function latencyClass(ms) {
 
     if (ms < 1000) {
 
@@ -822,7 +906,6 @@ function addHistory(
 
     state.total++;
 
-
     state.totalLatency +=
         latency;
 
@@ -850,78 +933,77 @@ function renderHistory() {
     historyBody.innerHTML = "";
 
 
-    state.history
-        .forEach(
-            function(
-                item,
-                index
-            ) {
+    state.history.forEach(
+        function(
+            item,
+            index
+        ) {
 
-                const tr =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                const latencyCls =
-                    latencyClass(
-                        item.latency
-                    );
-
-
-                const statusBadge =
-                    item.success
-                        ? `
-                            <span class="badge badge-success">
-                                PASS
-                            </span>
-                          `
-                        : `
-                            <span class="badge badge-danger">
-                                ERROR
-                            </span>
-                          `;
-
-
-                tr.innerHTML = `
-
-                    <td>
-                        ${state.history.length - index}
-                    </td>
-
-                    <td>
-                        <strong>
-                            ${item.api}
-                        </strong>
-                    </td>
-
-                    <td>
-                        ${item.method}
-                    </td>
-
-                    <td>
-                        <span class="latency ${latencyCls}">
-                            ${formatLatency(item.latency)}
-                        </span>
-                    </td>
-
-                    <td>
-                        ${statusBadge}
-                    </td>
-
-                    <td>
-                        ${formatTime(item.time)}
-                    </td>
-
-                `;
-
-
-                historyBody.appendChild(
-                    tr
+            const tr =
+                document.createElement(
+                    "tr"
                 );
 
-            }
-        );
+
+            const latencyCls =
+                latencyClass(
+                    item.latency
+                );
+
+
+            const statusBadge =
+                item.success
+                    ? `
+                        <span class="badge badge-success">
+                            PASS
+                        </span>
+                      `
+                    : `
+                        <span class="badge badge-danger">
+                            ERROR
+                        </span>
+                      `;
+
+
+            tr.innerHTML = `
+
+                <td>
+                    ${state.history.length - index}
+                </td>
+
+                <td>
+                    <strong>
+                        ${item.api}
+                    </strong>
+                </td>
+
+                <td>
+                    ${item.method}
+                </td>
+
+                <td>
+                    <span class="latency ${latencyCls}">
+                        ${formatLatency(item.latency)}
+                    </span>
+                </td>
+
+                <td>
+                    ${statusBadge}
+                </td>
+
+                <td>
+                    ${formatTime(item.time)}
+                </td>
+
+            `;
+
+
+            historyBody.appendChild(
+                tr
+            );
+
+        }
+    );
 
 }
 
@@ -938,16 +1020,43 @@ function getToken() {
 
 
 /* =========================================================
- * GENERIC API TEST
+ * REQUIRE TOKEN
  * ======================================================= */
 
-/**
- * Chạy một API GET và đo latency.
- *
- * @param {string} label
- * @param {string} action
- * @param {Object} params
- */
+function requireToken(
+    label
+) {
+
+    const token =
+        getToken();
+
+
+    if (!token) {
+
+        show(
+            `Chưa có session token. Hãy Login HS001 trước.`
+        );
+
+
+        setStatus(
+            `${label} — thiếu token.`,
+            "warning"
+        );
+
+
+        return null;
+
+    }
+
+
+    return token;
+
+}
+
+
+/* =========================================================
+ * GENERIC API GET
+ * ======================================================= */
 
 async function testGet(
     label,
@@ -1067,7 +1176,380 @@ async function testGet(
 
 
 /* =========================================================
- * TEST CONFIG
+ * SAVE LOGIN SESSION
+ * ======================================================= */
+
+function saveLoginSession(
+    result
+) {
+
+    if (
+        !result ||
+        !result.success ||
+        !result.data
+    ) {
+
+        return false;
+
+    }
+
+
+    const data =
+        result.data;
+
+
+    const token =
+        data.loginKey ||
+        data.token ||
+        "";
+
+
+    if (!token) {
+
+        throw new Error(
+            "API không trả về Login Key."
+        );
+
+    }
+
+
+    Utils.setSession({
+
+        token,
+
+        loginKey:
+            token,
+
+        student:
+            data.student ||
+            null
+
+    });
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+ * RENDER CLASSES
+ * ======================================================= */
+
+function renderClasses(
+    classes
+) {
+
+    classSelect.innerHTML = "";
+
+
+    if (
+        !Array.isArray(classes) ||
+        classes.length === 0
+    ) {
+
+        classSelect.innerHTML = `
+
+            <option value="">
+                -- Không có lớp --
+            </option>
+
+        `;
+
+
+        state.classes = [];
+
+        state.selectedClass = "";
+
+        updateSelectionInfo();
+
+        return;
+
+    }
+
+
+    const placeholder =
+        document.createElement(
+            "option"
+        );
+
+
+    placeholder.value = "";
+
+    placeholder.textContent =
+        "-- Chọn lớp --";
+
+
+    classSelect.appendChild(
+        placeholder
+    );
+
+
+    classes.forEach(
+        function(
+            className
+        ) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                String(
+                    className
+                );
+
+
+            option.textContent =
+                String(
+                    className
+                );
+
+
+            classSelect.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    state.classes =
+        classes.map(
+            item =>
+                String(item)
+        );
+
+
+    state.selectedClass = "";
+
+    updateSelectionInfo();
+
+}
+
+
+/* =========================================================
+ * SELECT CLASS
+ * ======================================================= */
+
+classSelect.onchange =
+    function() {
+
+        state.selectedClass =
+            this.value.trim();
+
+
+        updateSelectionInfo();
+
+
+        if (
+            state.selectedClass
+        ) {
+
+            setStatus(
+                `Đã chọn lớp ${state.selectedClass}.`,
+                "success"
+            );
+
+        } else {
+
+            setStatus(
+                "Chưa chọn lớp.",
+                "idle"
+            );
+
+        }
+
+    };
+
+
+function updateSelectionInfo() {
+
+    if (
+        state.selectedClass
+    ) {
+
+        selectionInfo.textContent =
+            `Đang chọn lớp: ${state.selectedClass}`;
+
+    } else {
+
+        selectionInfo.textContent =
+            "Chưa chọn lớp.";
+
+    }
+
+}
+
+
+/* =========================================================
+ * GET CLASSES
+ * ======================================================= */
+
+async function runGetClasses(
+    autoSelectFirst = false
+) {
+
+    const token =
+        requireToken(
+            "GET CLASSES"
+        );
+
+
+    if (!token) {
+
+        return null;
+
+    }
+
+
+    const result =
+        await testGet(
+            "GET CLASSES",
+            CONFIG.API.ACTION.GET_CLASSES,
+            {
+                token
+            }
+        );
+
+
+    if (
+        result &&
+        result.success === true
+    ) {
+
+        const classes =
+            Array.isArray(
+                result.data
+            )
+                ? result.data
+                : [];
+
+
+        renderClasses(
+            classes
+        );
+
+
+        if (
+            autoSelectFirst &&
+            classes.length > 0
+        ) {
+
+            classSelect.value =
+                String(
+                    classes[0]
+                );
+
+
+            state.selectedClass =
+                String(
+                    classes[0]
+                );
+
+
+            updateSelectionInfo();
+
+        }
+
+    }
+
+
+    return result;
+
+}
+
+
+/* =========================================================
+ * GET STUDENTS
+ * ======================================================= */
+
+async function runGetStudents() {
+
+    const token =
+        requireToken(
+            "GET STUDENTS"
+        );
+
+
+    if (!token) {
+
+        return null;
+
+    }
+
+
+    let selectedClass =
+        classSelect.value.trim();
+
+
+    /*
+     * Nếu chưa có danh sách lớp,
+     * tải lớp trước.
+     */
+
+    if (!selectedClass) {
+
+        if (
+            state.classes.length === 0
+        ) {
+
+            await runGetClasses(
+                false
+            );
+
+        }
+
+
+        selectedClass =
+            classSelect.value.trim();
+
+    }
+
+
+    if (!selectedClass) {
+
+        show(
+            "Vui lòng chọn lớp trước khi GET STUDENTS."
+        );
+
+
+        setStatus(
+            "GET STUDENTS — chưa chọn lớp.",
+            "warning"
+        );
+
+
+        return null;
+
+    }
+
+
+    state.selectedClass =
+        selectedClass;
+
+
+    updateSelectionInfo();
+
+
+    return await testGet(
+        `GET STUDENTS — ${selectedClass}`,
+        CONFIG.API.ACTION.GET_STUDENTS,
+        {
+            token,
+
+            class:
+                selectedClass
+        }
+    );
+
+}
+
+
+/* =========================================================
+ * CONFIG
  * ======================================================= */
 
 document
@@ -1116,6 +1598,7 @@ document
                     error.message
             });
 
+
             setStatus(
                 "CONFIG — ERROR",
                 "error"
@@ -1137,14 +1620,10 @@ document
     .onclick =
     async function() {
 
-        const action =
-            CONFIG.API.ACTION.PING ||
-            "ping";
-
-
         await testGet(
             "PING",
-            action
+            CONFIG.API.ACTION.PING ||
+            "ping"
         );
 
     };
@@ -1175,43 +1654,10 @@ document
 
 
             if (
-                result &&
-                result.success &&
-                result.data
+                saveLoginSession(
+                    result
+                )
             ) {
-
-                const data =
-                    result.data;
-
-
-                const token =
-                    data.loginKey ||
-                    data.token ||
-                    "";
-
-
-                if (!token) {
-
-                    throw new Error(
-                        "API không trả về Login Key."
-                    );
-
-                }
-
-
-                Utils.setSession({
-
-                    token,
-
-                    loginKey:
-                        token,
-
-                    student:
-                        data.student ||
-                        null
-
-                });
-
 
                 setStatus(
                     "LOGIN HS001 — PASS — session đã lưu.",
@@ -1244,19 +1690,12 @@ document
     async function() {
 
         const token =
-            getToken();
+            requireToken(
+                "CHECK SESSION"
+            );
 
 
         if (!token) {
-
-            show(
-                "Chưa có session token. Hãy Login HS001 trước."
-            );
-
-            setStatus(
-                "CHECK SESSION — thiếu token.",
-                "warning"
-            );
 
             return;
 
@@ -1275,7 +1714,7 @@ document
 
 
 /* =========================================================
- * GET CLASSES
+ * GET CLASSES — MAIN BUTTON
  * ======================================================= */
 
 document
@@ -1285,32 +1724,26 @@ document
     .onclick =
     async function() {
 
-        const token =
-            getToken();
+        await runGetClasses(
+            false
+        );
+
+    };
 
 
-        if (!token) {
+/* =========================================================
+ * GET CLASSES — SELECT CONTROL
+ * ======================================================= */
 
-            show(
-                "Chưa có token. Hãy Login HS001 trước."
-            );
+document
+    .getElementById(
+        "btnLoadClasses"
+    )
+    .onclick =
+    async function() {
 
-            setStatus(
-                "GET CLASSES — thiếu token.",
-                "warning"
-            );
-
-            return;
-
-        }
-
-
-        await testGet(
-            "GET CLASSES",
-            CONFIG.API.ACTION.GET_CLASSES,
-            {
-                token
-            }
+        await runGetClasses(
+            false
         );
 
     };
@@ -1327,33 +1760,19 @@ document
     .onclick =
     async function() {
 
-        const token =
-            getToken();
+        await runGetStudents();
+
+    };
 
 
-        if (!token) {
+document
+    .getElementById(
+        "btnLoadStudents"
+    )
+    .onclick =
+    async function() {
 
-            show(
-                "Chưa có token. Hãy Login HS001 trước."
-            );
-
-            setStatus(
-                "GET STUDENTS — thiếu token.",
-                "warning"
-            );
-
-            return;
-
-        }
-
-
-        await testGet(
-            "GET STUDENTS",
-            CONFIG.API.ACTION.GET_STUDENTS,
-            {
-                token
-            }
-        );
+        await runGetStudents();
 
     };
 
@@ -1370,19 +1789,12 @@ document
     async function() {
 
         const token =
-            getToken();
+            requireToken(
+                "GET EXAMS"
+            );
 
 
         if (!token) {
-
-            show(
-                "Chưa có token. Hãy Login HS001 trước."
-            );
-
-            setStatus(
-                "GET EXAMS — thiếu token.",
-                "warning"
-            );
 
             return;
 
@@ -1407,19 +1819,12 @@ document
 async function runGetExam() {
 
     const token =
-        getToken();
+        requireToken(
+            "GET EXAM"
+        );
 
 
     if (!token) {
-
-        show(
-            "Chưa có token. Hãy Login HS001 trước."
-        );
-
-        setStatus(
-            "GET EXAM — thiếu token.",
-            "warning"
-        );
 
         return;
 
@@ -1441,10 +1846,12 @@ async function runGetExam() {
             "Vui lòng nhập examId."
         );
 
+
         setStatus(
             "GET EXAM — thiếu examId.",
             "warning"
         );
+
 
         return;
 
@@ -1492,19 +1899,12 @@ document
     async function() {
 
         const token =
-            getToken();
+            requireToken(
+                "GET RESULTS"
+            );
 
 
         if (!token) {
-
-            show(
-                "Chưa có token. Hãy Login HS001 trước."
-            );
-
-            setStatus(
-                "GET RESULTS — thiếu token.",
-                "warning"
-            );
 
             return;
 
@@ -1538,7 +1938,25 @@ document
             Utils.logout();
 
 
+            classSelect.innerHTML = `
+
+                <option value="">
+                    -- Chưa tải danh sách lớp --
+                </option>
+
+            `;
+
+
+            state.classes = [];
+
+            state.selectedClass = "";
+
+
+            updateSelectionInfo();
+
+
             show({
+
                 success:
                     true,
 
@@ -1563,6 +1981,7 @@ document
                     error.message
             });
 
+
             setStatus(
                 "LOGOUT — ERROR",
                 "error"
@@ -1574,7 +1993,7 @@ document
 
 
 /* =========================================================
- * RUN FULL DIAGNOSTIC
+ * FULL DIAGNOSTIC
  * ======================================================= */
 
 document
@@ -1627,52 +2046,20 @@ document
 
 
             if (
-                loginResult &&
-                loginResult.success &&
-                loginResult.data
+                !saveLoginSession(
+                    loginResult
+                )
             ) {
-
-                const data =
-                    loginResult.data;
-
-
-                const token =
-                    data.loginKey ||
-                    data.token ||
-                    "";
-
-
-                if (token) {
-
-                    Utils.setSession({
-
-                        token,
-
-                        loginKey:
-                            token,
-
-                        student:
-                            data.student ||
-                            null
-
-                    });
-
-                }
-
-            }
-
-
-            const token =
-                getToken();
-
-
-            if (!token) {
 
                 throw new Error(
                     "Không tạo được session sau LOGIN."
                 );
 
             }
+
+
+            const token =
+                getToken();
 
 
             /*
@@ -1692,40 +2079,81 @@ document
              * 4. GET CLASSES
              */
 
-            await testGet(
-                "GET CLASSES",
-                CONFIG.API.ACTION.GET_CLASSES,
-                {
-                    token
-                }
-            );
+            const classesResult =
+                await runGetClasses(
+                    true
+                );
+
+
+            const classes =
+                classesResult &&
+                classesResult.success &&
+                Array.isArray(
+                    classesResult.data
+                )
+                    ? classesResult.data
+                    : [];
 
 
             /*
              * 5. GET STUDENTS
+             *
+             * Chọn lớp đầu tiên.
              */
 
-            await testGet(
-                "GET STUDENTS",
-                CONFIG.API.ACTION.GET_STUDENTS,
-                {
-                    token
-                }
-            );
+            if (
+                classes.length > 0
+            ) {
+
+                const selectedClass =
+                    String(
+                        classes[0]
+                    );
+
+
+                classSelect.value =
+                    selectedClass;
+
+
+                state.selectedClass =
+                    selectedClass;
+
+
+                updateSelectionInfo();
+
+
+                await testGet(
+                    `GET STUDENTS — ${selectedClass}`,
+                    CONFIG.API.ACTION.GET_STUDENTS,
+                    {
+                        token,
+
+                        class:
+                            selectedClass
+                    }
+                );
+
+            } else {
+
+                setStatus(
+                    "GET CLASSES không có dữ liệu lớp.",
+                    "warning"
+                );
+
+            }
 
 
             /*
              * 6. GET EXAMS
              */
 
-            const exams =
-                await testGet(
-                    "GET EXAMS",
-                    CONFIG.API.ACTION.GET_EXAMS,
-                    {
-                        token
-                    }
-                );
+            await testGet(
+                "GET EXAMS",
+                CONFIG.API.ACTION.GET_EXAMS,
+                {
+                    token
+                }
+            );
 
 
             /*
@@ -1859,36 +2287,30 @@ console.log(
     "======================================"
 );
 
-
 console.log(
     "CONFIG:",
     CONFIG
 );
-
 
 console.log(
     "API URL:",
     getApiUrl()
 );
 
-
 console.log(
     "Utils.apiGet:",
     typeof Utils.apiGet
 );
-
 
 console.log(
     "Utils.apiPost:",
     typeof Utils.apiPost
 );
 
-
 console.log(
     "Utils.getToken:",
     typeof Utils.getToken
 );
-
 
 console.log(
     "Current token:",
