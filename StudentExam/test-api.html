@@ -711,20 +711,24 @@ const output =
         "output"
     );
 
+
 const globalStatus =
     document.getElementById(
         "globalStatus"
     );
+
 
 const historyBody =
     document.getElementById(
         "historyBody"
     );
 
+
 const classSelect =
     document.getElementById(
         "classSelect"
     );
+
 
 const selectionInfo =
     document.getElementById(
@@ -1079,6 +1083,15 @@ async function testGet(
     );
 
 
+    console.log(
+        `[API REQUEST] ${label}`,
+        {
+            action,
+            params
+        }
+    );
+
+
     try {
 
         const result =
@@ -1106,6 +1119,19 @@ async function testGet(
             latency,
             success,
             result?.message || ""
+        );
+
+
+        console.log(
+            `[API RESPONSE] ${label}`,
+            {
+                latency:
+                    formatLatency(
+                        latency
+                    ),
+
+                result
+            }
         );
 
 
@@ -1146,6 +1172,12 @@ async function testGet(
             latency,
             false,
             error.message
+        );
+
+
+        console.error(
+            `[API ERROR] ${label}`,
+            error
         );
 
 
@@ -1227,6 +1259,20 @@ function saveLoginSession(
     });
 
 
+    console.log(
+        "SESSION SAVED:",
+        {
+            token:
+                token
+                    ? "Có"
+                    : "Không",
+
+            student:
+                data.student || null
+        }
+    );
+
+
     return true;
 
 }
@@ -1243,30 +1289,9 @@ function renderClasses(
     classSelect.innerHTML = "";
 
 
-    if (
-        !Array.isArray(classes) ||
-        classes.length === 0
-    ) {
-
-        classSelect.innerHTML = `
-
-            <option value="">
-                -- Không có lớp --
-            </option>
-
-        `;
-
-
-        state.classes = [];
-
-        state.selectedClass = "";
-
-        updateSelectionInfo();
-
-        return;
-
-    }
-
+    /*
+     * Placeholder
+     */
 
     const placeholder =
         document.createElement(
@@ -1285,10 +1310,45 @@ function renderClasses(
     );
 
 
+    /*
+     * Không có lớp
+     */
+
+    if (
+        !Array.isArray(classes) ||
+        classes.length === 0
+    ) {
+
+        state.classes = [];
+
+        state.selectedClass = "";
+
+        updateSelectionInfo();
+
+        return;
+
+    }
+
+
+    /*
+     * Đổ danh sách lớp
+     */
+
     classes.forEach(
-        function(
-            className
-        ) {
+        function(className) {
+
+            const value =
+                String(
+                    className
+                ).trim();
+
+
+            if (!value) {
+
+                return;
+
+            }
+
 
             const option =
                 document.createElement(
@@ -1297,15 +1357,11 @@ function renderClasses(
 
 
             option.value =
-                String(
-                    className
-                );
+                value;
 
 
             option.textContent =
-                String(
-                    className
-                );
+                value;
 
 
             classSelect.appendChild(
@@ -1316,16 +1372,44 @@ function renderClasses(
     );
 
 
+    /*
+     * Lưu danh sách lớp
+
+     */
+
     state.classes =
-        classes.map(
-            item =>
-                String(item)
-        );
+        classes
+            .map(
+                item =>
+                    String(
+                        item
+                    ).trim()
+            )
+            .filter(
+                item =>
+                    item !== ""
+            );
 
 
     state.selectedClass = "";
 
     updateSelectionInfo();
+
+
+    console.log(
+        "CLASS SELECT OPTIONS:",
+        Array.from(
+            classSelect.options
+        ).map(
+            option => ({
+                text:
+                    option.textContent,
+
+                value:
+                    option.value
+            })
+        )
+    );
 
 }
 
@@ -1337,11 +1421,24 @@ function renderClasses(
 classSelect.onchange =
     function() {
 
+        /*
+         * Luôn lấy trực tiếp
+         * từ SELECT.
+         */
+
         state.selectedClass =
-            this.value.trim();
+            String(
+                this.value || ""
+            ).trim();
 
 
         updateSelectionInfo();
+
+
+        console.log(
+            "CLASS SELECTED:",
+            state.selectedClass
+        );
 
 
         if (
@@ -1410,49 +1507,87 @@ async function runGetClasses(
             "GET CLASSES",
             CONFIG.API.ACTION.GET_CLASSES,
             {
-                token
+                token:
+                    token
             }
         );
 
 
     if (
-        result &&
-        result.success === true
+        !result ||
+        result.success !== true
     ) {
 
-        const classes =
-            Array.isArray(
-                result.data
-            )
-                ? result.data
-                : [];
+        return result;
+
+    }
 
 
-        renderClasses(
-            classes
+    /*
+     * API expected:
+     *
+     * data: [
+     *   "6A1",
+     *   "7A1"
+     * ]
+     */
+
+    const classes =
+        Array.isArray(
+            result.data
+        )
+            ? result.data
+                .map(
+                    item =>
+                        String(
+                            item
+                        ).trim()
+                )
+                .filter(
+                    item =>
+                        item !== ""
+                )
+            : [];
+
+
+    console.log(
+        "GET CLASSES DATA:",
+        classes
+    );
+
+
+    renderClasses(
+        classes
+    );
+
+
+    /*
+     * Diagnostic có thể
+     * tự chọn lớp đầu tiên.
+     */
+
+    if (
+        autoSelectFirst &&
+        classes.length > 0
+    ) {
+
+        classSelect.value =
+            classes[0];
+
+
+        state.selectedClass =
+            String(
+                classSelect.value
+            ).trim();
+
+
+        updateSelectionInfo();
+
+
+        console.log(
+            "AUTO SELECT CLASS:",
+            classSelect.value
         );
-
-
-        if (
-            autoSelectFirst &&
-            classes.length > 0
-        ) {
-
-            classSelect.value =
-                String(
-                    classes[0]
-                );
-
-
-            state.selectedClass =
-                String(
-                    classes[0]
-                );
-
-
-            updateSelectionInfo();
-
-        }
 
     }
 
@@ -1481,39 +1616,55 @@ async function runGetStudents() {
     }
 
 
-    let selectedClass =
-        classSelect.value.trim();
+    /*
+     * =====================================================
+     * QUAN TRỌNG
+     *
+     * Không lấy state.selectedClass để gửi API.
+     *
+     * Lấy TRỰC TIẾP giá trị hiện tại của SELECT.
+     * =====================================================
+     */
+
+    const selectedClass =
+        String(
+            classSelect.value || ""
+        ).trim();
+
+
+    console.log(
+        "GET STUDENTS — SELECT VALUE:",
+        classSelect.value
+    );
+
+
+    console.log(
+        "GET STUDENTS — SELECTED CLASS:",
+        selectedClass
+    );
 
 
     /*
-     * Nếu chưa có danh sách lớp,
-     * tải lớp trước.
+     * Chưa chọn lớp
      */
 
     if (!selectedClass) {
 
-        if (
-            state.classes.length === 0
-        ) {
+        show({
 
-            await runGetClasses(
-                false
-            );
+            error:
+                "Vui lòng chọn lớp.",
 
-        }
+            selectValue:
+                classSelect.value,
 
+            selectedClass:
+                selectedClass,
 
-        selectedClass =
-            classSelect.value.trim();
+            availableClasses:
+                state.classes
 
-    }
-
-
-    if (!selectedClass) {
-
-        show(
-            "Vui lòng chọn lớp trước khi GET STUDENTS."
-        );
+        });
 
 
         setStatus(
@@ -1527,6 +1678,10 @@ async function runGetStudents() {
     }
 
 
+    /*
+     * Đồng bộ state
+     */
+
     state.selectedClass =
         selectedClass;
 
@@ -1534,15 +1689,66 @@ async function runGetStudents() {
     updateSelectionInfo();
 
 
+    /*
+     * =====================================================
+     * PAYLOAD GỬI API
+     * =====================================================
+     */
+
+    const params = {
+
+        token:
+            token,
+
+        class:
+            selectedClass
+
+    };
+
+
+    console.log(
+        "================================================"
+    );
+
+    console.log(
+        "GET STUDENTS REQUEST"
+    );
+
+    console.log(
+        "action:",
+        CONFIG.API.ACTION.GET_STUDENTS
+    );
+
+    console.log(
+        "params:",
+        params
+    );
+
+    console.log(
+        "token:",
+        token
+            ? "Có token"
+            : "Không có token"
+    );
+
+    console.log(
+        "class:",
+        selectedClass
+    );
+
+    console.log(
+        "================================================"
+    );
+
+
+    /*
+     * Gọi API
+     */
+
     return await testGet(
         `GET STUDENTS — ${selectedClass}`,
         CONFIG.API.ACTION.GET_STUDENTS,
-        {
-            token,
-
-            class:
-                selectedClass
-        }
+        params
     );
 
 }
@@ -1620,11 +1826,22 @@ document
     .onclick =
     async function() {
 
-        await testGet(
-            "PING",
-            CONFIG.API.ACTION.PING ||
-            "ping"
-        );
+        try {
+
+            await testGet(
+                "PING",
+                CONFIG.API.ACTION.PING ||
+                "ping"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "PING:",
+                error
+            );
+
+        }
 
     };
 
@@ -1702,13 +1919,24 @@ document
         }
 
 
-        await testGet(
-            "CHECK SESSION",
-            CONFIG.API.ACTION.CHECK_SESSION,
-            {
-                token
-            }
-        );
+        try {
+
+            await testGet(
+                "CHECK SESSION",
+                CONFIG.API.ACTION.CHECK_SESSION,
+                {
+                    token
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "CHECK SESSION:",
+                error
+            );
+
+        }
 
     };
 
@@ -1724,9 +1952,20 @@ document
     .onclick =
     async function() {
 
-        await runGetClasses(
-            false
-        );
+        try {
+
+            await runGetClasses(
+                false
+            );
+
+        } catch (error) {
+
+            console.error(
+                "GET CLASSES:",
+                error
+            );
+
+        }
 
     };
 
@@ -1742,15 +1981,26 @@ document
     .onclick =
     async function() {
 
-        await runGetClasses(
-            false
-        );
+        try {
+
+            await runGetClasses(
+                false
+            );
+
+        } catch (error) {
+
+            console.error(
+                "GET CLASSES:",
+                error
+            );
+
+        }
 
     };
 
 
 /* =========================================================
- * GET STUDENTS
+ * GET STUDENTS — MAIN BUTTON
  * ======================================================= */
 
 document
@@ -1760,10 +2010,25 @@ document
     .onclick =
     async function() {
 
-        await runGetStudents();
+        try {
+
+            await runGetStudents();
+
+        } catch (error) {
+
+            console.error(
+                "GET STUDENTS:",
+                error
+            );
+
+        }
 
     };
 
+
+/* =========================================================
+ * GET STUDENTS — SELECT CONTROL
+ * ======================================================= */
 
 document
     .getElementById(
@@ -1772,7 +2037,18 @@ document
     .onclick =
     async function() {
 
-        await runGetStudents();
+        try {
+
+            await runGetStudents();
+
+        } catch (error) {
+
+            console.error(
+                "GET STUDENTS:",
+                error
+            );
+
+        }
 
     };
 
@@ -1801,13 +2077,24 @@ document
         }
 
 
-        await testGet(
-            "GET EXAMS",
-            CONFIG.API.ACTION.GET_EXAMS,
-            {
-                token
-            }
-        );
+        try {
+
+            await testGet(
+                "GET EXAMS",
+                CONFIG.API.ACTION.GET_EXAMS,
+                {
+                    token
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "GET EXAMS:",
+                error
+            );
+
+        }
 
     };
 
@@ -1858,15 +2145,26 @@ async function runGetExam() {
     }
 
 
-    await testGet(
-        `GET EXAM ${examId}`,
-        CONFIG.API.ACTION.GET_EXAM,
-        {
-            token,
+    try {
 
-            examId
-        }
-    );
+        await testGet(
+            `GET EXAM ${examId}`,
+            CONFIG.API.ACTION.GET_EXAM,
+            {
+                token,
+
+                examId
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "GET EXAM:",
+            error
+        );
+
+    }
 
 }
 
@@ -1911,13 +2209,24 @@ document
         }
 
 
-        await testGet(
-            "GET RESULTS",
-            CONFIG.API.ACTION.GET_RESULTS,
-            {
-                token
-            }
-        );
+        try {
+
+            await testGet(
+                "GET RESULTS",
+                CONFIG.API.ACTION.GET_RESULTS,
+                {
+                    token
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "GET RESULTS:",
+                error
+            );
+
+        }
 
     };
 
@@ -1977,8 +2286,10 @@ document
         } catch (error) {
 
             show({
+
                 error:
                     error.message
+
             });
 
 
@@ -2062,6 +2373,15 @@ document
                 getToken();
 
 
+            if (!token) {
+
+                throw new Error(
+                    "Không có token sau LOGIN."
+                );
+
+            }
+
+
             /*
              * 3. CHECK SESSION
              */
@@ -2077,6 +2397,8 @@ document
 
             /*
              * 4. GET CLASSES
+             *
+             * Tự chọn lớp đầu tiên.
              */
 
             const classesResult =
@@ -2087,7 +2409,7 @@ document
 
             const classes =
                 classesResult &&
-                classesResult.success &&
+                classesResult.success === true &&
                 Array.isArray(
                     classesResult.data
                 )
@@ -2098,22 +2420,19 @@ document
             /*
              * 5. GET STUDENTS
              *
-             * Chọn lớp đầu tiên.
+             * QUAN TRỌNG:
+             * Lấy trực tiếp classSelect.value.
              */
 
+            const selectedClass =
+                String(
+                    classSelect.value || ""
+                ).trim();
+
+
             if (
-                classes.length > 0
+                selectedClass
             ) {
-
-                const selectedClass =
-                    String(
-                        classes[0]
-                    );
-
-
-                classSelect.value =
-                    selectedClass;
-
 
                 state.selectedClass =
                     selectedClass;
@@ -2122,22 +2441,47 @@ document
                 updateSelectionInfo();
 
 
+                const studentsParams = {
+
+                    token:
+                        token,
+
+                    class:
+                        selectedClass
+
+                };
+
+
+                console.log(
+                    "DIAGNOSTIC → GET STUDENTS:",
+                    studentsParams
+                );
+
+
                 await testGet(
                     `GET STUDENTS — ${selectedClass}`,
                     CONFIG.API.ACTION.GET_STUDENTS,
-                    {
-                        token,
-
-                        class:
-                            selectedClass
-                    }
+                    studentsParams
                 );
 
-            } else {
+            } else if (
+                classes.length === 0
+            ) {
+
+                console.warn(
+                    "Diagnostic: GET CLASSES không có lớp."
+                );
+
 
                 setStatus(
                     "GET CLASSES không có dữ liệu lớp.",
                     "warning"
+                );
+
+            } else {
+
+                throw new Error(
+                    "Không thể chọn lớp từ GET CLASSES."
                 );
 
             }
@@ -2287,30 +2631,36 @@ console.log(
     "======================================"
 );
 
+
 console.log(
     "CONFIG:",
     CONFIG
 );
+
 
 console.log(
     "API URL:",
     getApiUrl()
 );
 
+
 console.log(
     "Utils.apiGet:",
     typeof Utils.apiGet
 );
+
 
 console.log(
     "Utils.apiPost:",
     typeof Utils.apiPost
 );
 
+
 console.log(
     "Utils.getToken:",
     typeof Utils.getToken
 );
+
 
 console.log(
     "Current token:",
