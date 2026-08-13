@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>StudentExam — Vào kiểm tra</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+
+        body {
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f4f6f9 0%,
+                    #e9f2ff 100%
+                );
+
+            color: #212529;
+
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+
+        }
+
+
+        .container {
+
+            width: 100%;
+
+            max-width: 520px;
+
+        }
+
+
+        /* =====================================================
+         * CARD
+         * =================================================== */
+
+        .card {
+
+            background: #fff;
+
+            border-radius: 14px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(0, 0, 0, .10);
+
+        }
+
+
+        /* =====================================================
+         * HEADER
+         * =================================================== */
+
+        .header {
+
+            text-align: center;
+
+            margin-bottom: 28px;
+
+        }
+
+
+        .logo {
+
+            width: 72px;
+
+            height: 72px;
+
+            margin:
+                0 auto 15px;
+
+            border-radius: 50%;
+
+            background: #0d6efd;
+
+            color: #fff;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+        }
+
+
+        h1 {
+
+            margin: 0 0 8px;
+
+            font-size: 25px;
+
+        }
+
+
+        .subtitle {
+
+            margin: 0;
+
+            color: #6c757d;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* =====================================================
+         * STATUS
+         * =================================================== */
+
+        .status {
+
+            display: none;
+
+            padding: 12px 14px;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .status.show {
+
+            display: block;
+
+        }
+
+
+        .status.info {
+
+            background: #cff4fc;
+
+            color: #055160;
+
+        }
+
+
+        .status.success {
+
+            background: #d1e7dd;
+
+            color: #0f5132;
+
+        }
+
+
+        .status.warning {
+
+            background: #fff3cd;
+
+            color: #664d03;
+
+        }
+
+
+        .status.error {
+
+            background: #f8d7da;
+
+            color: #842029;
+
+        }
+
+
+        /* =====================================================
+         * FORM
+         * =================================================== */
+
+        .form-group {
+
+            margin-bottom: 18px;
+
+        }
+
+
+        .form-label {
+
+            display: block;
+
+            font-weight: bold;
+
+            font-size: 14px;
+
+            margin-bottom: 7px;
+
+        }
+
+
+        input,
+        select {
+
+            width: 100%;
+
+            padding: 12px 14px;
+
+            border: 1px solid #ced4da;
+
+            border-radius: 8px;
+
+            background: #fff;
+
+            color: #212529;
+
+            font-size: 15px;
+
+            transition:
+                border-color .15s,
+                box-shadow .15s;
+
+        }
+
+
+        input:focus,
+        select:focus {
+
+            outline: none;
+
+            border-color: #86b7fe;
+
+            box-shadow:
+                0 0 0 .2rem
+                rgba(
+                    13,
+                    110,
+                    253,
+                    .15
+                );
+
+        }
+
+
+        input.is-invalid,
+        select.is-invalid {
+
+            border-color: #dc3545;
+
+        }
+
+
+        .field-error {
+
+            display: none;
+
+            color: #dc3545;
+
+            font-size: 13px;
+
+            margin-top: 5px;
+
+        }
+
+
+        .field-error.show {
+
+            display: block;
+
+        }
+
+
+        /* =====================================================
+         * BUTTON
+         * =================================================== */
+
+        .btn {
+
+            width: 100%;
+
+            border: 0;
+
+            border-radius: 8px;
+
+            padding: 13px 16px;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                opacity .15s,
+                transform .05s;
+
+        }
+
+
+        .btn-primary {
+
+            background: #0d6efd;
+
+            color: #fff;
+
+        }
+
+
+        .btn:hover {
+
+            opacity: .92;
+
+        }
+
+
+        .btn:active {
+
+            transform: translateY(1px);
+
+        }
+
+
+        .btn:disabled {
+
+            opacity: .55;
+
+            cursor: not-allowed;
+
+        }
+
+
+        /* =====================================================
+         * LOADING
+         * =================================================== */
+
+        .btn-loading {
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
+
+        }
+
+
+        .btn.loading .btn-text {
+
+            display: none;
+
+        }
+
+
+        .btn.loading .btn-loading {
+
+            display: flex;
+
+        }
+
+
+        .spinner {
+
+            width: 17px;
+
+            height: 17px;
+
+            border:
+                2px solid
+                rgba(255, 255, 255, .45);
+
+            border-top-color: #fff;
+
+            border-radius: 50%;
+
+            animation:
+                spin .7s linear infinite;
+
+        }
+
+
+        @keyframes spin {
+
+            to {
+                transform: rotate(360deg);
+            }
+
+        }
+
+
+        /* =====================================================
+         * VERIFIED STUDENT
+         * =================================================== */
+
+        .student-info {
+
+            display: none;
+
+            margin-top: 20px;
+
+            padding: 16px;
+
+            border-radius: 9px;
+
+            background: #f8f9fa;
+
+            border: 1px solid #dee2e6;
+
+        }
+
+
+        .student-info.show {
+
+            display: block;
+
+        }
+
+
+        .student-info-title {
+
+            font-weight: bold;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .student-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 6px 0;
+
+            font-size: 14px;
+
+        }
+
+
+        .student-row-label {
+
+            color: #6c757d;
+
+        }
+
+
+        .student-row-value {
+
+            font-weight: bold;
+
+            text-align: right;
+
+        }
+
+
+        /* =====================================================
+         * EXAM AREA
+         * =================================================== */
+
+        .exam-area {
+
+            display: none;
+
+            margin-top: 25px;
+
+            padding-top: 25px;
+
+            border-top:
+                1px solid
+                #dee2e6;
+
+        }
+
+
+        .exam-area.show {
+
+            display: block;
+
+        }
+
+
+        .exam-title {
+
+            margin: 0 0 8px;
+
+            font-size: 18px;
+
+        }
+
+
+        .exam-placeholder {
+
+            padding: 16px;
+
+            border-radius: 8px;
+
+            background: #f8f9fa;
+
+            color: #6c757d;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* =====================================================
+         * FOOTER
+         * =================================================== */
+
+        .footer {
+
+            text-align: center;
+
+            margin-top: 18px;
+
+            color: #6c757d;
+
+            font-size: 12px;
+
+        }
+
+
+        /* =====================================================
+         * RESPONSIVE
+         * =================================================== */
+
+        @media (max-width: 500px) {
+
+            body {
+
+                padding: 12px;
+
+                align-items: flex-start;
+
+            }
+
+
+            .container {
+
+                margin-top: 20px;
+
+            }
+
+
+            .card {
+
+                padding: 22px 18px;
+
+            }
+
+
+            h1 {
+
+                font-size: 22px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <div class="card">
+
+
+        <!-- =================================================
+             HEADER
+             ================================================= -->
+
+        <div class="header">
+
+            <div class="logo">
+                SE
+            </div>
+
+            <h1>
+                StudentExam
+            </h1>
+
+            <p class="subtitle">
+                Nhập thông tin để xác thực và vào hệ thống kiểm tra.
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             STATUS
+             ================================================= -->
+
+        <div
+            id="status"
+            class="status"
+        ></div>
+
+
+        <!-- =================================================
+             VERIFY FORM
+             ================================================= -->
+
+        <form
+            id="verifyForm"
+            autocomplete="off"
+        >
+
+
+            <!-- HỌ TÊN -->
+
+            <div class="form-group">
+
+                <label
+                    class="form-label"
+                    for="studentName"
+                >
+                    Họ và tên
+                </label>
+
+                <input
+                    id="studentName"
+                    name="name"
+                    type="text"
+                    placeholder="Nhập họ và tên"
+                    autocomplete="name"
+                    maxlength="100"
+                >
+
+                <div
+                    id="nameError"
+                    class="field-error"
+                >
+                    Vui lòng nhập họ và tên.
+                </div>
+
+            </div>
+
+
+            <!-- LỚP -->
+
+            <div class="form-group">
+
+                <label
+                    class="form-label"
+                    for="studentClass"
+                >
+                    Lớp
+                </label>
+
+                <input
+                    id="studentClass"
+                    name="class"
+                    type="text"
+                    placeholder="Ví dụ: 6A1"
+                    maxlength="30"
+                >
+
+                <div
+                    id="classError"
+                    class="field-error"
+                >
+                    Vui lòng nhập lớp.
+                </div>
+
+            </div>
+
+
+            <!-- BUTTON -->
+
+            <button
+                id="btnVerify"
+                type="submit"
+                class="btn btn-primary"
+            >
+
+                <span class="btn-text">
+                    VÀO KIỂM TRA
+                </span>
+
+                <span class="btn-loading">
+
+                    <span class="spinner"></span>
+
+                    Đang xác thực...
+
+                </span>
+
+            </button>
+
+
+        </form>
+
+
+        <!-- =================================================
+             VERIFIED STUDENT
+             ================================================= -->
+
+        <div
+            id="studentInfo"
+            class="student-info"
+        >
+
+            <div class="student-info-title">
+                ✓ Xác thực thành công
+            </div>
+
+
+            <div class="student-row">
+
+                <span class="student-row-label">
+                    Mã học sinh
+                </span>
+
+                <span
+                    id="verifiedId"
+                    class="student-row-value"
+                >
+                    —
+                </span>
+
+            </div>
+
+
+            <div class="student-row">
+
+                <span class="student-row-label">
+                    Họ tên
+                </span>
+
+                <span
+                    id="verifiedName"
+                    class="student-row-value"
+                >
+                    —
+                </span>
+
+            </div>
+
+
+            <div class="student-row">
+
+                <span class="student-row-label">
+                    Lớp
+                </span>
+
+                <span
+                    id="verifiedClass"
+                    class="student-row-value"
+                >
+                    —
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             EXAM AREA
+             BƯỚC SAU SẼ TÍCH HỢP GET EXAMS
+             ================================================= -->
+
+        <div
+            id="examArea"
+            class="exam-area"
+        >
+
+            <h2 class="exam-title">
+                Bài kiểm tra
+            </h2>
+
+            <div class="exam-placeholder">
+
+                Xác thực thành công.
+                Danh sách bài kiểm tra sẽ được tải ở bước tiếp theo.
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="footer">
+
+        StudentExam v2.0
+
+    </div>
+
+
+</div>
+
+
+<!-- =========================================================
+     APPLICATION
+     ======================================================= -->
+
+<script type="module">
+
+
+/* =========================================================
+ * IMPORT
+ * ======================================================= */
+
+import {
+    CONFIG
+}
+from "../assets/js/config.js";
+
+
+import {
+    Utils
+}
+from "../assets/js/utils.js";
+
+
+/* =========================================================
+ * DOM
+ * ======================================================= */
+
+const verifyForm =
+    document.getElementById(
+        "verifyForm"
+    );
+
+
+const studentNameInput =
+    document.getElementById(
+        "studentName"
+    );
+
+
+const studentClassInput =
+    document.getElementById(
+        "studentClass"
+    );
+
+
+const btnVerify =
+    document.getElementById(
+        "btnVerify"
+    );
+
+
+const statusElement =
+    document.getElementById(
+        "status"
+    );
+
+
+const studentInfo =
+    document.getElementById(
+        "studentInfo"
+    );
+
+
+const examArea =
+    document.getElementById(
+        "examArea"
+    );
+
+
+/* =========================================================
+ * HELPERS
+ * ======================================================= */
+
+function showStatus(
+    message,
+    type = "info"
+) {
+
+    statusElement.textContent =
+        message;
+
+    statusElement.className =
+        "status show " +
+        type;
+
+}
+
+
+function hideStatus() {
+
+    statusElement.textContent =
+        "";
+
+    statusElement.className =
+        "status";
+
+}
+
+
+function setLoading(
+    loading
+) {
+
+    btnVerify.disabled =
+        loading;
+
+    btnVerify.classList.toggle(
+        "loading",
+        loading
+    );
+
+}
+
+
+function clearFieldErrors() {
+
+    studentNameInput.classList.remove(
+        "is-invalid"
+    );
+
+    studentClassInput.classList.remove(
+        "is-invalid"
+    );
+
+
+    document
+        .getElementById(
+            "nameError"
+        )
+        .classList.remove(
+            "show"
+        );
+
+
+    document
+        .getElementById(
+            "classError"
+        )
+        .classList.remove(
+            "show"
+        );
+
+}
+
+
+function validateForm() {
+
+    clearFieldErrors();
+
+
+    const name =
+        studentNameInput.value.trim();
+
+
+    const className =
+        studentClassInput.value.trim();
+
+
+    let valid =
+        true;
+
+
+    if (!name) {
+
+        studentNameInput.classList.add(
+            "is-invalid"
+        );
+
+        document
+            .getElementById(
+                "nameError"
+            )
+            .classList.add(
+                "show"
+            );
+
+        valid = false;
+
+    }
+
+
+    if (!className) {
+
+        studentClassInput.classList.add(
+            "is-invalid"
+        );
+
+        document
+            .getElementById(
+                "classError"
+            )
+            .classList.add(
+                "show"
+            );
+
+        valid = false;
+
+    }
+
+
+    return {
+
+        valid,
+
+        name,
+
+        className
+
+    };
+
+}
+
+
+/* =========================================================
+ * SAVE VERIFIED STUDENT
+ * ======================================================= */
+
+function saveVerifiedStudent(
+    student
+) {
+
+    if (
+        !student ||
+        typeof student !== "object"
+    ) {
+
+        return false;
+
+    }
+
+
+    /*
+     * Không tạo login token ở đây.
+     *
+     * verifyStudent chỉ xác thực
+     * học sinh có trong HOC_SINH.
+     */
+
+    const session = {
+
+        verified: true,
+
+        student: {
+
+            id:
+                student.id ||
+                "",
+
+            name:
+                student.name ||
+                "",
+
+            class:
+                student.class ||
+                ""
+
+        },
+
+        verifiedAt:
+            Date.now()
+
+    };
+
+
+    /*
+     * Lưu vào LOGIN storage thông qua
+     * Session API hiện tại.
+     */
+
+    return Utils.Session.set(
+        session
+    );
+
+}
+
+
+/* =========================================================
+ * RENDER VERIFIED STUDENT
+ * ======================================================= */
+
+function renderVerifiedStudent(
+    student
+) {
+
+    document.getElementById(
+        "verifiedId"
+    ).textContent =
+        student.id ||
+        "—";
+
+
+    document.getElementById(
+        "verifiedName"
+    ).textContent =
+        student.name ||
+        "—";
+
+
+    document.getElementById(
+        "verifiedClass"
+    ).textContent =
+        student.class ||
+        "—";
+
+
+    studentInfo.classList.add(
+        "show"
+    );
+
+
+    examArea.classList.add(
+        "show"
+    );
+
+}
+
+
+/* =========================================================
+ * VERIFY STUDENT
+ * ======================================================= */
+
+async function verifyStudent() {
+
+    const validation =
+        validateForm();
+
+
+    if (
+        !validation.valid
+    ) {
+
+        showStatus(
+            "Vui lòng nhập đầy đủ Họ tên và Lớp.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    const {
+
+        name,
+
+        className
+
+    } = validation;
+
+
+    setLoading(
+        true
+    );
+
+
+    hideStatus();
+
+
+    studentInfo.classList.remove(
+        "show"
+    );
+
+
+    examArea.classList.remove(
+        "show"
+    );
+
+
+    try {
+
+        /*
+         * Chỉ gọi verifyStudent.
+         *
+         * KHÔNG gọi getStudents().
+         */
+
+        const response =
+            await Utils.apiGet(
+                CONFIG.API.ACTION.VERIFY_STUDENT,
+                {
+
+                    name,
+
+                    class:
+                        className
+
+                }
+            );
+
+
+        /*
+         * Không dùng checkResponse()
+         * ở đây vì trường hợp học sinh
+         * không tồn tại cũng là một response
+         * hợp lệ của API.
+         */
+
+        if (
+            !response
+        ) {
+
+            throw new Error(
+                "API không trả về dữ liệu."
+            );
+
+        }
+
+
+        if (
+            response.success !== true
+        ) {
+
+            showStatus(
+                response.message ||
+                "Không xác thực được học sinh.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const data =
+            response.data || {};
+
+
+        if (
+            data.verified !== true ||
+            !data.student
+        ) {
+
+            showStatus(
+                "Không tìm thấy thông tin học sinh.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const student =
+            data.student;
+
+
+        /*
+         * Lưu học sinh đã xác thực.
+         */
+
+        const saved =
+            saveVerifiedStudent(
+                student
+            );
+
+
+        if (!saved) {
+
+            throw new Error(
+                "Không thể lưu thông tin xác thực học sinh."
+            );
+
+        }
+
+
+        /*
+         * Hiển thị thông tin.
+         */
+
+        renderVerifiedStudent(
+            student
+        );
+
+
+        showStatus(
+            "Xác thực học sinh thành công.",
+            "success"
+        );
+
+
+        console.log(
+            "VERIFY STUDENT:",
+            response
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "VERIFY STUDENT:",
+            error
+        );
+
+
+        showStatus(
+            error.message ||
+            "Không thể kết nối API.",
+            "error"
+        );
+
+    } finally {
+
+        setLoading(
+            false
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+ * FORM SUBMIT
+ * ======================================================= */
+
+verifyForm.addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+        verifyStudent();
+
+    }
+);
+
+
+/* =========================================================
+ * ENTER / INPUT
+ * ======================================================= */
+
+studentNameInput.addEventListener(
+    "input",
+    function() {
+
+        this.classList.remove(
+            "is-invalid"
+        );
+
+        document
+            .getElementById(
+                "nameError"
+            )
+            .classList.remove(
+                "show"
+            );
+
+    }
+);
+
+
+studentClassInput.addEventListener(
+    "input",
+    function() {
+
+        this.classList.remove(
+            "is-invalid"
+        );
+
+        document
+            .getElementById(
+                "classError"
+            )
+            .classList.remove(
+                "show"
+            );
+
+    }
+);
+
+
+/* =========================================================
+ * INITIAL
+ * ======================================================= */
+
+console.log(
+    "======================================"
+);
+
+console.log(
+    "StudentExam /kiemtra"
+);
+
+console.log(
+    "======================================"
+);
+
+console.log(
+    "CONFIG:",
+    CONFIG
+);
+
+console.log(
+    "API BASE URL:",
+    CONFIG.API.BASE_URL
+);
+
+console.log(
+    "VERIFY STUDENT ACTION:",
+    CONFIG.API.ACTION.VERIFY_STUDENT
+);
+
+console.log(
+    "Utils.apiGet:",
+    typeof Utils.apiGet
+);
+
+console.log(
+    "Current session:",
+    Utils.Session.get()
+);
+
+
+</script>
+
+
+</body>
+
+</html>
