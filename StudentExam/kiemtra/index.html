@@ -889,7 +889,6 @@
 
 <script type="module">
 
-
 /* =========================================================
  * IMPORT
  * ======================================================= */
@@ -965,7 +964,7 @@ const examArea =
 
 
 /* =========================================================
- * HELPERS
+ * STATUS
  * ======================================================= */
 
 function showStatus(
@@ -994,6 +993,10 @@ function hideStatus() {
 }
 
 
+/* =========================================================
+ * LOADING
+ * ======================================================= */
+
 function setLoading(
     loading
 ) {
@@ -1009,16 +1012,17 @@ function setLoading(
 }
 
 
+/* =========================================================
+ * FIELD ERRORS
+ * ======================================================= */
+
 function clearFieldErrors() {
 
     const fields = [
 
         studentIdInput,
-
         studentNameInput,
-
         studentClassInput,
-
         studentPasswordInput
 
     ];
@@ -1040,14 +1044,24 @@ function clearFieldErrors() {
         "nameError",
         "classError",
         "passwordError"
+
     ].forEach(
         function(id) {
 
-            document
-                .getElementById(id)
-                .classList.remove(
+            const element =
+                document.getElementById(
+                    id
+                );
+
+            if (
+                element
+            ) {
+
+                element.classList.remove(
                     "show"
                 );
+
+            }
 
         }
     );
@@ -1178,7 +1192,7 @@ function validateForm() {
 
 
 /* =========================================================
- * SAVE VERIFIED STUDENT
+ * SAVE STUDENT SESSION
  * ======================================================= */
 
 function saveVerifiedStudent(
@@ -1206,9 +1220,7 @@ function saveVerifiedStudent(
 
 
     /*
-     * Student Token do backend cấp.
-     *
-     * KHÔNG lưu password.
+     * Không lưu password.
      */
 
     const session = {
@@ -1222,16 +1234,22 @@ function saveVerifiedStudent(
         student: {
 
             id:
-                student.id ||
-                "",
+                Utils.Text.trim(
+                    student.id ||
+                    ""
+                ),
 
             name:
-                student.name ||
-                "",
+                Utils.Text.trim(
+                    student.name ||
+                    ""
+                ),
 
             class:
-                student.class ||
-                ""
+                Utils.Text.trim(
+                    student.class ||
+                    ""
+                )
 
         },
 
@@ -1252,7 +1270,7 @@ function saveVerifiedStudent(
 
 
 /* =========================================================
- * RENDER VERIFIED STUDENT
+ * RENDER STUDENT
  * ======================================================= */
 
 function renderVerifiedStudent(
@@ -1284,6 +1302,11 @@ function renderVerifiedStudent(
         "show"
     );
 
+
+    /*
+     * Hiện khu vực bài kiểm tra
+     * nhưng chưa tải danh sách đề.
+     */
 
     examArea.classList.add(
         "show"
@@ -1319,11 +1342,8 @@ async function verifyStudent() {
     const {
 
         studentId,
-
         name,
-
         className,
-
         password
 
     } = validation;
@@ -1349,8 +1369,13 @@ async function verifyStudent() {
 
     try {
 
-        /*
-         * Chỉ gọi verifyStudent.
+        /* =================================================
+         * VERIFY STUDENT API
+         * =================================================
+         *
+         * Chỉ gọi:
+         *
+         * verifyStudent
          *
          * KHÔNG gọi getStudents().
          */
@@ -1360,21 +1385,39 @@ async function verifyStudent() {
                 CONFIG.API.ACTION.VERIFY_STUDENT,
                 {
 
-                    studentId,
+                    studentId:
+                        studentId,
 
-                    name,
+                    name:
+                        name,
 
                     class:
                         className,
 
-                    password
+                    password:
+                        password
 
                 }
             );
 
 
+        /* =================================================
+         * DEBUG RESPONSE
+         * ================================================= */
+
+        console.log(
+            "VERIFY STUDENT RESPONSE:",
+            response
+        );
+
+
+        /*
+         * API không trả response
+         */
+
         if (
-            !response
+            !response ||
+            typeof response !== "object"
         ) {
 
             throw new Error(
@@ -1384,11 +1427,9 @@ async function verifyStudent() {
         }
 
 
-        /*
-         * Backend trả success=false
-         * khi mã / tên / lớp / mật khẩu
-         * không khớp.
-         */
+        /* =================================================
+         * API ERROR
+         * ================================================= */
 
         if (
             response.success !== true
@@ -1405,17 +1446,35 @@ async function verifyStudent() {
         }
 
 
+        /* =================================================
+         * RESPONSE DATA
+         * ================================================= */
+
         const data =
-            response.data || {};
+            response.data;
 
 
-        /*
-         * Phải có:
-         *
-         * verified === true
-         * student
-         * studentToken
-         */
+        console.log(
+            "VERIFY STUDENT DATA:",
+            data
+        );
+
+
+        if (
+            !data ||
+            typeof data !== "object"
+        ) {
+
+            throw new Error(
+                "API không trả về dữ liệu xác thực."
+            );
+
+        }
+
+
+        /* =================================================
+         * VERIFIED CHECK
+         * ================================================= */
 
         if (
             data.verified !== true
@@ -1431,52 +1490,83 @@ async function verifyStudent() {
         }
 
 
-        if (
-            !data.student
-        ) {
-
-            showStatus(
-                "API không trả về thông tin học sinh.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        if (
-            !data.studentToken
-        ) {
-
-            showStatus(
-                "API không trả về Student Token.",
-                "error"
-            );
-
-            return;
-
-        }
-
+        /* =================================================
+         * STUDENT
+         * ================================================= */
 
         const student =
             data.student;
 
 
+        if (
+            !student ||
+            typeof student !== "object"
+        ) {
+
+            throw new Error(
+                "API không trả về thông tin học sinh."
+            );
+
+        }
+
+
+        /* =================================================
+         * STUDENT TOKEN
+         * =================================================
+         *
+         * Backend hiện tại trả:
+         *
+         * data.studentToken
+         *
+         * Có thêm fallback để tương thích
+         * với session/token cũ nếu cần.
+         */
+
         const studentToken =
             Utils.Text.trim(
-                data.studentToken
+
+                data.studentToken ||
+
+                data.token ||
+
+                data.loginKey ||
+
+                ""
+
             );
 
 
-        /*
-         * Lưu session.
-         *
-         * Session chứa token,
-         * student information.
-         *
-         * Không lưu password.
-         */
+        console.log(
+            "STUDENT TOKEN:",
+            studentToken
+        );
+
+
+        if (
+            !studentToken
+        ) {
+
+            /*
+             * Hiện response ra console để
+             * dễ debug nếu backend thay đổi.
+             */
+
+            console.error(
+                "API RESPONSE KHÔNG CÓ STUDENT TOKEN:",
+                response
+            );
+
+
+            throw new Error(
+                "API không trả về Student Token."
+            );
+
+        }
+
+
+        /* =================================================
+         * SAVE SESSION
+         * ================================================= */
 
         const saved =
             saveVerifiedStudent(
@@ -1485,7 +1575,9 @@ async function verifyStudent() {
             );
 
 
-        if (!saved) {
+        if (
+            !saved
+        ) {
 
             throw new Error(
                 "Không thể lưu Student Session."
@@ -1494,18 +1586,34 @@ async function verifyStudent() {
         }
 
 
-        /*
-         * Xoá password khỏi ô nhập
-         * ngay sau khi xác thực thành công.
+        console.log(
+            "STUDENT SESSION:",
+            Utils.Session.get()
+        );
+
+
+        console.log(
+            "SAVED TOKEN:",
+            Utils.Session.getToken()
+        );
+
+
+        /* =================================================
+         * SECURITY
+         * =================================================
+         *
+         * Không lưu password.
+         * Xóa password khỏi form sau khi
+         * xác thực thành công.
          */
 
         studentPasswordInput.value =
             "";
 
 
-        /*
-         * Hiển thị thông tin học sinh.
-         */
+        /* =================================================
+         * RENDER
+         * ================================================= */
 
         renderVerifiedStudent(
             student
@@ -1518,28 +1626,10 @@ async function verifyStudent() {
         );
 
 
-        console.log(
-            "VERIFY STUDENT:",
-            response
-        );
-
-
-        console.log(
-            "STUDENT SESSION:",
-            Utils.Session.get()
-        );
-
-
-        console.log(
-            "STUDENT TOKEN:",
-            Utils.Session.getToken()
-        );
-
-
     } catch (error) {
 
         console.error(
-            "VERIFY STUDENT:",
+            "VERIFY STUDENT ERROR:",
             error
         );
 
@@ -1662,7 +1752,7 @@ studentPasswordInput.addEventListener(
 
 
 /* =========================================================
- * INITIAL
+ * INITIAL DEBUG
  * ======================================================= */
 
 console.log(
@@ -1698,10 +1788,14 @@ console.log(
 );
 
 console.log(
+    "Utils.Session:",
+    typeof Utils.Session
+);
+
+console.log(
     "Current session:",
     Utils.Session.get()
 );
-
 
 </script>
 
