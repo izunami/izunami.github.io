@@ -168,6 +168,9 @@ const config = {
 
             GET_STUDENTS:
                 "getStudents",
+            
+            VERIFY_STUDENT: 
+                "verifyStudent",
 
             FIND_STUDENT:
                 "findStudent",
