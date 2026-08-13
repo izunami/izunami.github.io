@@ -349,6 +349,19 @@ export class Utils {
         },
 
 
+        equalsIgnoreCase(
+            a,
+            b
+        ) {
+
+            return (
+                Utils.Text.lower(a) ===
+                Utils.Text.lower(b)
+            );
+
+        },
+
+
         safeJsonParse(
             value,
             fallback = null
@@ -883,10 +896,6 @@ export class Utils {
 
             }
 
-            /*
-             * Đồng bộ các key chuẩn của CONFIG.STORAGE.
-             */
-
             if (
                 session.token ||
                 session.loginKey
@@ -967,6 +976,7 @@ export class Utils {
                     Utils.Text.trim(
                         session.token ||
                         session.loginKey ||
+                        session.studentToken ||
                         ""
                     );
 
@@ -1478,7 +1488,9 @@ export class Utils {
         },
 
 
-        async getStudents(className = "") {
+        async getStudents(
+            className = ""
+        ) {
 
             const params = {};
 
@@ -1504,6 +1516,209 @@ export class Utils {
             return Utils.API.checkResponse(
                 response
             );
+
+        },
+
+
+        /*
+         * ====================================================
+         * VERIFY STUDENT
+         * ====================================================
+         *
+         * Dùng riêng cho luồng /kiemtra.
+         *
+         * Không gọi getStudents().
+         * Xác thực:
+         *
+         * - Mã học sinh
+         * - Họ tên
+         * - Lớp
+         * - Mật khẩu
+         *
+         * Backend trả về studentToken.
+         * Token được lưu vào Session.
+         */
+
+        async verifyStudent(
+            studentId,
+            name,
+            className,
+            password
+        ) {
+
+            const id =
+                Utils.Text.trim(
+                    studentId
+                );
+
+            const studentName =
+                Utils.Text.trim(
+                    name
+                );
+
+            const classValue =
+                Utils.Text.trim(
+                    className
+                );
+
+            const pass =
+                Utils.Text.trim(
+                    password
+                );
+
+
+            if (
+                !id
+            ) {
+
+                throw new Error(
+                    "Vui lòng nhập mã học sinh."
+                );
+
+            }
+
+
+            if (
+                !studentName
+            ) {
+
+                throw new Error(
+                    "Vui lòng nhập họ tên."
+                );
+
+            }
+
+
+            if (
+                !classValue
+            ) {
+
+                throw new Error(
+                    "Vui lòng chọn lớp."
+                );
+
+            }
+
+
+            if (
+                !pass
+            ) {
+
+                throw new Error(
+                    "Vui lòng nhập mật khẩu."
+                );
+
+            }
+
+
+            const response =
+                await Utils.API.get(
+                    CONFIG.API.ACTION.VERIFY_STUDENT,
+                    {
+
+                        studentId:
+                            id,
+
+                        name:
+                            studentName,
+
+                        class:
+                            classValue,
+
+                        password:
+                            pass
+
+                    }
+                );
+
+
+            const data =
+                Utils.API.checkResponse(
+                    response
+                );
+
+
+            if (
+                !data ||
+                data.verified !== true
+            ) {
+
+                throw new Error(
+                    "Xác thực học sinh thất bại."
+                );
+
+            }
+
+
+            const studentToken =
+                Utils.Text.trim(
+                    data.studentToken ||
+                    data.token ||
+                    data.loginKey ||
+                    ""
+                );
+
+
+            if (
+                !studentToken
+            ) {
+
+                throw new Error(
+                    "API không trả về Student Token."
+                );
+
+            }
+
+
+            const session = {
+
+                token:
+                    studentToken,
+
+                studentToken:
+                    studentToken,
+
+                loginKey:
+                    studentToken,
+
+                student:
+                    data.student ||
+                    {
+
+                        id:
+                            id,
+
+                        name:
+                            studentName,
+
+                        class:
+                            classValue
+
+                    },
+
+                class:
+                    (
+                        data.student &&
+                        data.student.class
+                    ) ||
+                    classValue,
+
+                loginTime:
+                    Date.now(),
+
+                passwordUpdated:
+                    data.passwordUpdated ||
+                    ""
+
+            };
+
+
+            Utils.Session.set(
+                session
+            );
+
+
+            return data;
 
         },
 
@@ -1655,10 +1870,12 @@ export class Utils {
                 await Utils.API.get(
                     CONFIG.API.ACTION.GET_EXAM,
                     {
+
                         token,
 
                         examId:
                             id
+
                     }
                 );
 
@@ -1835,10 +2052,12 @@ export class Utils {
                 await Utils.API.get(
                     CONFIG.API.ACTION.GET_RESULT,
                     {
+
                         token,
 
                         resultId:
                             id
+
                     }
                 );
 
@@ -1950,6 +2169,7 @@ export class Utils {
             return new Intl.DateTimeFormat(
                 CONFIG.DATE.LOCALE,
                 {
+
                     timeZone:
                         CONFIG.DATE.TIMEZONE,
 
@@ -1961,6 +2181,7 @@ export class Utils {
 
                     year:
                         "numeric"
+
                 }
             ).format(value);
 
@@ -1989,6 +2210,7 @@ export class Utils {
             return new Intl.DateTimeFormat(
                 CONFIG.DATE.LOCALE,
                 {
+
                     timeZone:
                         CONFIG.DATE.TIMEZONE,
 
@@ -2012,6 +2234,7 @@ export class Utils {
 
                     hour12:
                         false
+
                 }
             ).format(value);
 
@@ -2022,7 +2245,7 @@ export class Utils {
 
     /* ========================================================
      * SESSION ERROR HANDLING
-     * ====================================================== */
+     * ======================================================== */
 
     static handleSessionExpired(
         response
@@ -2087,10 +2310,11 @@ export class Utils {
 
     /* ========================================================
      * BACKWARD-COMPATIBILITY ALIASES
+     * ========================================================
      *
      * Chỉ giữ các alias cần thiết để tránh
      * làm hỏng module cũ trong quá trình chuyển đổi.
-     * ====================================================== */
+     * ======================================================== */
 
     static getSession() {
 
