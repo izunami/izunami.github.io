@@ -66,10 +66,6 @@
         }
 
 
-        /* =====================================================
-         * CARD
-         * =================================================== */
-
         .card {
 
             background: #fff;
@@ -84,10 +80,6 @@
 
         }
 
-
-        /* =====================================================
-         * HEADER
-         * =================================================== */
 
         .header {
 
@@ -170,9 +162,7 @@
 
 
         .status.show {
-
             display: block;
-
         }
 
 
@@ -247,15 +237,13 @@
 
             border-radius: 8px;
 
-            background: #fff;
-
-            color: #212529;
-
             font-size: 15px;
 
+            outline: none;
+
             transition:
-                border-color .15s,
-                box-shadow .15s;
+                border-color .15s ease,
+                box-shadow .15s ease;
 
         }
 
@@ -263,24 +251,16 @@
         input:focus,
         select:focus {
 
-            outline: none;
-
             border-color: #86b7fe;
 
             box-shadow:
                 0 0 0 .2rem
-                rgba(
-                    13,
-                    110,
-                    253,
-                    .15
-                );
+                rgba(13, 110, 253, .15);
 
         }
 
 
-        input.is-invalid,
-        select.is-invalid {
+        input.is-invalid {
 
             border-color: #dc3545;
 
@@ -291,11 +271,11 @@
 
             display: none;
 
+            margin-top: 6px;
+
             color: #dc3545;
 
             font-size: 13px;
-
-            margin-top: 5px;
 
         }
 
@@ -315,11 +295,11 @@
 
             width: 100%;
 
+            padding: 12px 16px;
+
             border: 0;
 
             border-radius: 8px;
-
-            padding: 13px 16px;
 
             font-size: 15px;
 
@@ -328,8 +308,8 @@
             cursor: pointer;
 
             transition:
-                opacity .15s,
-                transform .05s;
+                opacity .15s ease,
+                transform .1s ease;
 
         }
 
@@ -352,33 +332,23 @@
 
         .btn:active {
 
-            transform: translateY(1px);
+            transform: scale(.99);
 
         }
 
 
         .btn:disabled {
 
-            opacity: .55;
+            opacity: .7;
 
             cursor: not-allowed;
 
         }
 
 
-        /* =====================================================
-         * LOADING
-         * =================================================== */
-
         .btn-loading {
 
             display: none;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 8px;
 
         }
 
@@ -392,22 +362,29 @@
 
         .btn.loading .btn-loading {
 
-            display: flex;
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
 
         }
 
 
         .spinner {
 
-            width: 17px;
+            width: 15px;
 
-            height: 17px;
+            height: 15px;
 
             border:
                 2px solid
-                rgba(255, 255, 255, .45);
+                rgba(255,255,255,.4);
 
-            border-top-color: #fff;
+            border-top-color:
+                #fff;
 
             border-radius: 50%;
 
@@ -427,22 +404,20 @@
 
 
         /* =====================================================
-         * VERIFIED STUDENT
+         * STUDENT INFO
          * =================================================== */
 
         .student-info {
 
             display: none;
 
-            margin-top: 20px;
+            margin-top: 24px;
 
-            padding: 16px;
+            padding-top: 20px;
 
-            border-radius: 9px;
-
-            background: #f8f9fa;
-
-            border: 1px solid #dee2e6;
+            border-top:
+                1px solid
+                #dee2e6;
 
         }
 
@@ -456,9 +431,13 @@
 
         .student-info-title {
 
+            margin-bottom: 15px;
+
+            font-size: 16px;
+
             font-weight: bold;
 
-            margin-bottom: 10px;
+            color: #198754;
 
         }
 
@@ -471,9 +450,11 @@
 
             gap: 15px;
 
-            padding: 6px 0;
+            padding: 9px 0;
 
-            font-size: 14px;
+            border-bottom:
+                1px solid
+                #f0f0f0;
 
         }
 
@@ -481,6 +462,8 @@
         .student-row-label {
 
             color: #6c757d;
+
+            font-size: 14px;
 
         }
 
@@ -502,9 +485,9 @@
 
             display: none;
 
-            margin-top: 25px;
+            margin-top: 24px;
 
-            padding-top: 25px;
+            padding-top: 20px;
 
             border-top:
                 1px solid
@@ -655,6 +638,36 @@
         >
 
 
+            <!-- MÃ HỌC SINH -->
+
+            <div class="form-group">
+
+                <label
+                    class="form-label"
+                    for="studentId"
+                >
+                    Mã học sinh
+                </label>
+
+                <input
+                    id="studentId"
+                    name="studentId"
+                    type="text"
+                    placeholder="Ví dụ: HS001"
+                    autocomplete="username"
+                    maxlength="50"
+                >
+
+                <div
+                    id="studentIdError"
+                    class="field-error"
+                >
+                    Vui lòng nhập mã học sinh.
+                </div>
+
+            </div>
+
+
             <!-- HỌ TÊN -->
 
             <div class="form-group">
@@ -709,6 +722,36 @@
                     class="field-error"
                 >
                     Vui lòng nhập lớp.
+                </div>
+
+            </div>
+
+
+            <!-- MẬT KHẨU -->
+
+            <div class="form-group">
+
+                <label
+                    class="form-label"
+                    for="studentPassword"
+                >
+                    Mật khẩu
+                </label>
+
+                <input
+                    id="studentPassword"
+                    name="password"
+                    type="password"
+                    placeholder="Nhập mật khẩu"
+                    autocomplete="current-password"
+                    maxlength="100"
+                >
+
+                <div
+                    id="passwordError"
+                    class="field-error"
+                >
+                    Vui lòng nhập mật khẩu.
                 </div>
 
             </div>
@@ -806,7 +849,6 @@
 
         <!-- =================================================
              EXAM AREA
-             BƯỚC SAU SẼ TÍCH HỢP GET EXAMS
              ================================================= -->
 
         <div
@@ -843,7 +885,7 @@
 
 <!-- =========================================================
      APPLICATION
-     ======================================================= -->
+     ========================================================= -->
 
 <script type="module">
 
@@ -874,6 +916,12 @@ const verifyForm =
     );
 
 
+const studentIdInput =
+    document.getElementById(
+        "studentId"
+    );
+
+
 const studentNameInput =
     document.getElementById(
         "studentName"
@@ -883,6 +931,12 @@ const studentNameInput =
 const studentClassInput =
     document.getElementById(
         "studentClass"
+    );
+
+
+const studentPasswordInput =
+    document.getElementById(
+        "studentPassword"
     );
 
 
@@ -957,38 +1011,61 @@ function setLoading(
 
 function clearFieldErrors() {
 
-    studentNameInput.classList.remove(
-        "is-invalid"
+    const fields = [
+
+        studentIdInput,
+
+        studentNameInput,
+
+        studentClassInput,
+
+        studentPasswordInput
+
+    ];
+
+
+    fields.forEach(
+        function(field) {
+
+            field.classList.remove(
+                "is-invalid"
+            );
+
+        }
     );
 
-    studentClassInput.classList.remove(
-        "is-invalid"
+
+    [
+        "studentIdError",
+        "nameError",
+        "classError",
+        "passwordError"
+    ].forEach(
+        function(id) {
+
+            document
+                .getElementById(id)
+                .classList.remove(
+                    "show"
+                );
+
+        }
     );
-
-
-    document
-        .getElementById(
-            "nameError"
-        )
-        .classList.remove(
-            "show"
-        );
-
-
-    document
-        .getElementById(
-            "classError"
-        )
-        .classList.remove(
-            "show"
-        );
 
 }
 
 
+/* =========================================================
+ * VALIDATE FORM
+ * ======================================================= */
+
 function validateForm() {
 
     clearFieldErrors();
+
+
+    const studentId =
+        studentIdInput.value.trim();
 
 
     const name =
@@ -999,8 +1076,31 @@ function validateForm() {
         studentClassInput.value.trim();
 
 
+    const password =
+        studentPasswordInput.value;
+
+
     let valid =
         true;
+
+
+    if (!studentId) {
+
+        studentIdInput.classList.add(
+            "is-invalid"
+        );
+
+        document
+            .getElementById(
+                "studentIdError"
+            )
+            .classList.add(
+                "show"
+            );
+
+        valid = false;
+
+    }
 
 
     if (!name) {
@@ -1041,13 +1141,36 @@ function validateForm() {
     }
 
 
+    if (!password) {
+
+        studentPasswordInput.classList.add(
+            "is-invalid"
+        );
+
+        document
+            .getElementById(
+                "passwordError"
+            )
+            .classList.add(
+                "show"
+            );
+
+        valid = false;
+
+    }
+
+
     return {
 
         valid,
 
+        studentId,
+
         name,
 
-        className
+        className,
+
+        password
 
     };
 
@@ -1059,7 +1182,8 @@ function validateForm() {
  * ======================================================= */
 
 function saveVerifiedStudent(
-    student
+    student,
+    studentToken
 ) {
 
     if (
@@ -1072,16 +1196,28 @@ function saveVerifiedStudent(
     }
 
 
+    if (
+        !studentToken
+    ) {
+
+        return false;
+
+    }
+
+
     /*
-     * Không tạo login token ở đây.
+     * Student Token do backend cấp.
      *
-     * verifyStudent chỉ xác thực
-     * học sinh có trong HOC_SINH.
+     * KHÔNG lưu password.
      */
 
     const session = {
 
-        verified: true,
+        token:
+            studentToken,
+
+        loginKey:
+            studentToken,
 
         student: {
 
@@ -1099,16 +1235,14 @@ function saveVerifiedStudent(
 
         },
 
+        verified:
+            true,
+
         verifiedAt:
             Date.now()
 
     };
 
-
-    /*
-     * Lưu vào LOGIN storage thông qua
-     * Session API hiện tại.
-     */
 
     return Utils.Session.set(
         session
@@ -1173,7 +1307,7 @@ async function verifyStudent() {
     ) {
 
         showStatus(
-            "Vui lòng nhập đầy đủ Họ tên và Lớp.",
+            "Vui lòng nhập đầy đủ thông tin.",
             "warning"
         );
 
@@ -1184,9 +1318,13 @@ async function verifyStudent() {
 
     const {
 
+        studentId,
+
         name,
 
-        className
+        className,
+
+        password
 
     } = validation;
 
@@ -1222,21 +1360,18 @@ async function verifyStudent() {
                 CONFIG.API.ACTION.VERIFY_STUDENT,
                 {
 
+                    studentId,
+
                     name,
 
                     class:
-                        className
+                        className,
+
+                    password
 
                 }
             );
 
-
-        /*
-         * Không dùng checkResponse()
-         * ở đây vì trường hợp học sinh
-         * không tồn tại cũng là một response
-         * hợp lệ của API.
-         */
 
         if (
             !response
@@ -1248,6 +1383,12 @@ async function verifyStudent() {
 
         }
 
+
+        /*
+         * Backend trả success=false
+         * khi mã / tên / lớp / mật khẩu
+         * không khớp.
+         */
 
         if (
             response.success !== true
@@ -1268,13 +1409,48 @@ async function verifyStudent() {
             response.data || {};
 
 
+        /*
+         * Phải có:
+         *
+         * verified === true
+         * student
+         * studentToken
+         */
+
         if (
-            data.verified !== true ||
+            data.verified !== true
+        ) {
+
+            showStatus(
+                "Xác thực học sinh không thành công.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (
             !data.student
         ) {
 
             showStatus(
-                "Không tìm thấy thông tin học sinh.",
+                "API không trả về thông tin học sinh.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !data.studentToken
+        ) {
+
+            showStatus(
+                "API không trả về Student Token.",
                 "error"
             );
 
@@ -1287,27 +1463,48 @@ async function verifyStudent() {
             data.student;
 
 
+        const studentToken =
+            Utils.Text.trim(
+                data.studentToken
+            );
+
+
         /*
-         * Lưu học sinh đã xác thực.
+         * Lưu session.
+         *
+         * Session chứa token,
+         * student information.
+         *
+         * Không lưu password.
          */
 
         const saved =
             saveVerifiedStudent(
-                student
+                student,
+                studentToken
             );
 
 
         if (!saved) {
 
             throw new Error(
-                "Không thể lưu thông tin xác thực học sinh."
+                "Không thể lưu Student Session."
             );
 
         }
 
 
         /*
-         * Hiển thị thông tin.
+         * Xoá password khỏi ô nhập
+         * ngay sau khi xác thực thành công.
+         */
+
+        studentPasswordInput.value =
+            "";
+
+
+        /*
+         * Hiển thị thông tin học sinh.
          */
 
         renderVerifiedStudent(
@@ -1324,6 +1521,18 @@ async function verifyStudent() {
         console.log(
             "VERIFY STUDENT:",
             response
+        );
+
+
+        console.log(
+            "STUDENT SESSION:",
+            Utils.Session.get()
+        );
+
+
+        console.log(
+            "STUDENT TOKEN:",
+            Utils.Session.getToken()
         );
 
 
@@ -1369,8 +1578,28 @@ verifyForm.addEventListener(
 
 
 /* =========================================================
- * ENTER / INPUT
+ * INPUT EVENTS
  * ======================================================= */
+
+studentIdInput.addEventListener(
+    "input",
+    function() {
+
+        this.classList.remove(
+            "is-invalid"
+        );
+
+        document
+            .getElementById(
+                "studentIdError"
+            )
+            .classList.remove(
+                "show"
+            );
+
+    }
+);
+
 
 studentNameInput.addEventListener(
     "input",
@@ -1403,6 +1632,26 @@ studentClassInput.addEventListener(
         document
             .getElementById(
                 "classError"
+            )
+            .classList.remove(
+                "show"
+            );
+
+    }
+);
+
+
+studentPasswordInput.addEventListener(
+    "input",
+    function() {
+
+        this.classList.remove(
+            "is-invalid"
+        );
+
+        document
+            .getElementById(
+                "passwordError"
             )
             .classList.remove(
                 "show"
