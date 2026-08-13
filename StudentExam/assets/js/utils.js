@@ -1539,225 +1539,55 @@ export class Utils {
          * Token được lưu vào Session.
          */
 
-        async verifyStudent(
-            studentId,
-            name,
-            className,
-            password
-        ) {
+async verifyStudent(
+    studentId,
+    name,
+    className,
+    password
+) {
 
-            const id =
-                Utils.Text.trim(
-                    studentId
-                );
+    const response =
+        await Utils.API.get(
+            CONFIG.API.ACTION.VERIFY_STUDENT,
+            {
+                studentId:
+                    Utils.Text.trim(
+                        studentId
+                    ),
 
-            const studentName =
-                Utils.Text.trim(
-                    name
-                );
-
-            const classValue =
-                Utils.Text.trim(
-                    className
-                );
-
-            const pass =
-                Utils.Text.trim(
-                    password
-                );
-
-
-            if (
-                !id
-            ) {
-
-                throw new Error(
-                    "Vui lòng nhập mã học sinh."
-                );
-
-            }
-
-
-            if (
-                !studentName
-            ) {
-
-                throw new Error(
-                    "Vui lòng nhập họ tên."
-                );
-
-            }
-
-
-            if (
-                !classValue
-            ) {
-
-                throw new Error(
-                    "Vui lòng chọn lớp."
-                );
-
-            }
-
-
-            if (
-                !pass
-            ) {
-
-                throw new Error(
-                    "Vui lòng nhập mật khẩu."
-                );
-
-            }
-
-
-            const response =
-                await Utils.API.get(
-                    CONFIG.API.ACTION.VERIFY_STUDENT,
-                    {
-
-                        studentId:
-                            id,
-
-                        name:
-                            studentName,
-
-                        class:
-                            classValue,
-
-                        password:
-                            pass
-
-                    }
-                );
-
-
-            const data =
-                Utils.API.checkResponse(
-                    response
-                );
-
-
-            if (
-                !data ||
-                data.verified !== true
-            ) {
-
-                throw new Error(
-                    "Xác thực học sinh thất bại."
-                );
-
-            }
-
-
-            const studentToken =
-                Utils.Text.trim(
-                    data.studentToken ||
-                    data.token ||
-                    data.loginKey ||
-                    ""
-                );
-
-
-            if (
-                !studentToken
-            ) {
-
-                throw new Error(
-                    "API không trả về Student Token."
-                );
-
-            }
-
-
-            const session = {
-
-                token:
-                    studentToken,
-
-                studentToken:
-                    studentToken,
-
-                loginKey:
-                    studentToken,
-
-                student:
-                    data.student ||
-                    {
-
-                        id:
-                            id,
-
-                        name:
-                            studentName,
-
-                        class:
-                            classValue
-
-                    },
+                name:
+                    Utils.Text.trim(
+                        name
+                    ),
 
                 class:
-                    (
-                        data.student &&
-                        data.student.class
-                    ) ||
-                    classValue,
+                    Utils.Text.trim(
+                        className
+                    ),
 
-                loginTime:
-                    Date.now(),
-
-                passwordUpdated:
-                    data.passwordUpdated ||
-                    ""
-
-            };
-
-
-            Utils.Session.set(
-                session
-            );
-
-
-            return data;
-
-        },
-
-
-        async findStudent(
-            studentId
-        ) {
-
-            const id =
-                Utils.Text.trim(
-                    studentId
-                );
-
-            if (
-                !id
-            ) {
-
-                throw new Error(
-                    "Thiếu mã học sinh."
-                );
-
+                password:
+                    Utils.Text.trim(
+                        password
+                    )
             }
+        );
 
-            const response =
-                await Utils.API.get(
-                    CONFIG.API.ACTION.FIND_STUDENT,
-                    {
-                        studentId:
-                            id
-                    }
-                );
+    /*
+     * API.checkResponse() trả về
+     * chính xác response.data
+     *
+     * => {
+     *      verified: true,
+     *      studentToken: "...",
+     *      student: {...}
+     *    }
+     */
 
-            return Utils.API.checkResponse(
-                response
-            );
+    return Utils.API.checkResponse(
+        response
+    );
 
-        }
-
-    };
+},
 
 
     /* ========================================================
