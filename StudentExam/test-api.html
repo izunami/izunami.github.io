@@ -1316,47 +1316,56 @@ document
     };
 
 
-/* =========================================================
- * GET STUDENTS
- * ======================================================= */
+/* GET STUDENTS */
+document.getElementById("students").onclick = async function() {
 
-document
-    .getElementById(
-        "btnStudents"
-    )
-    .onclick =
-    async function() {
+    try {
 
-        const token =
-            getToken();
-
+        const token = Utils.getToken();
 
         if (!token) {
 
-            show(
-                "Chưa có token. Hãy Login HS001 trước."
-            );
-
-            setStatus(
-                "GET STUDENTS — thiếu token.",
-                "warning"
-            );
-
+            show("Chưa có token. Hãy Login HS001 trước.");
+            err("Thiếu session token.");
             return;
 
         }
 
+        show("Đang lấy danh sách học sinh lớp 6A1...");
 
-        await testGet(
-            "GET STUDENTS",
+        const result = await Utils.apiGet(
             CONFIG.API.ACTION.GET_STUDENTS,
             {
-                token
+                token: token,
+                class: "6A1"
             }
         );
 
-    };
+        console.log("GET STUDENTS RESULT =", result);
 
+        show(result);
+
+        result && result.success
+            ? ok("GET STUDENTS API PASS")
+            : err(
+                result?.message ||
+                "GET STUDENTS API trả về lỗi."
+            );
+
+    } catch (e) {
+
+        console.error(e);
+
+        show({
+            error: e.message,
+            stack: e.stack || ""
+        });
+
+        err("GET STUDENTS API ERROR");
+
+    }
+
+};
 
 /* =========================================================
  * GET EXAMS
