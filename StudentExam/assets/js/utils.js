@@ -1468,128 +1468,163 @@ export class Utils {
     };
 
 
-    /* ========================================================
-     * STUDENT API
-     * ====================================================== */
+/* ========================================================
+ * STUDENT API
+ * ====================================================== */
 
-    static Student = {
+static Student = {
 
-        async getClasses() {
+    async getClasses() {
 
-            const response =
-                await Utils.API.get(
-                    CONFIG.API.ACTION.GET_CLASSES
-                );
-
-            return Utils.API.checkResponse(
-                response
+        const response =
+            await Utils.API.get(
+                CONFIG.API.ACTION.GET_CLASSES
             );
 
-        },
+        return Utils.API.checkResponse(
+            response
+        );
+
+    },
 
 
-        async getStudents(
-            className = ""
+    async getStudents(
+        className = ""
+    ) {
+
+        const params = {};
+
+        if (
+            Utils.Text.isNotEmpty(
+                className
+            )
         ) {
 
-            const params = {};
-
-            if (
-                Utils.Text.isNotEmpty(
+            params.class =
+                Utils.Text.trim(
                     className
-                )
-            ) {
-
-                params.class =
-                    Utils.Text.trim(
-                        className
-                    );
-
-            }
-
-            const response =
-                await Utils.API.get(
-                    CONFIG.API.ACTION.GET_STUDENTS,
-                    params
                 );
 
-            return Utils.API.checkResponse(
-                response
+        }
+
+        const response =
+            await Utils.API.get(
+                CONFIG.API.ACTION.GET_STUDENTS,
+                params
             );
 
-        },
+        return Utils.API.checkResponse(
+            response
+        );
+
+    },
+
+
+    /* ====================================================
+     * VERIFY STUDENT
+     * ================================================== */
+
+    async verifyStudent(
+        studentId,
+        name,
+        className,
+        password
+    ) {
+
+        const response =
+            await Utils.API.get(
+                CONFIG.API.ACTION.VERIFY_STUDENT,
+                {
+
+                    studentId:
+                        Utils.Text.trim(
+                            studentId
+                        ),
+
+                    name:
+                        Utils.Text.trim(
+                            name
+                        ),
+
+                    class:
+                        Utils.Text.trim(
+                            className
+                        ),
+
+                    password:
+                        Utils.Text.trim(
+                            password
+                        )
+
+                }
+            );
 
 
         /*
-         * ====================================================
-         * VERIFY STUDENT
-         * ====================================================
+         * Backend trả:
          *
-         * Dùng riêng cho luồng /kiemtra.
+         * {
+         *     success: true,
+         *     data: {
+         *         verified: true,
+         *         studentToken: "...",
+         *         student: {
+         *             id: "...",
+         *             name: "...",
+         *             class: "..."
+         *         }
+         *     }
+         * }
          *
-         * Không gọi getStudents().
-         * Xác thực:
-         *
-         * - Mã học sinh
-         * - Họ tên
-         * - Lớp
-         * - Mật khẩu
-         *
-         * Backend trả về studentToken.
-         * Token được lưu vào Session.
+         * API.checkResponse()
+         * sẽ trả trực tiếp response.data
          */
 
-async verifyStudent(
-    studentId,
-    name,
-    className,
-    password
-) {
-
-    const response =
-        await Utils.API.get(
-            CONFIG.API.ACTION.VERIFY_STUDENT,
-            {
-                studentId:
-                    Utils.Text.trim(
-                        studentId
-                    ),
-
-                name:
-                    Utils.Text.trim(
-                        name
-                    ),
-
-                class:
-                    Utils.Text.trim(
-                        className
-                    ),
-
-                password:
-                    Utils.Text.trim(
-                        password
-                    )
-            }
+        return Utils.API.checkResponse(
+            response
         );
 
-    /*
-     * API.checkResponse() trả về
-     * chính xác response.data
-     *
-     * => {
-     *      verified: true,
-     *      studentToken: "...",
-     *      student: {...}
-     *    }
-     */
+    }
 
-    return Utils.API.checkResponse(
-        response
-    );
-
-},
+};   // ← QUAN TRỌNG: đóng static Student
 
 
+/* ========================================================
+ * DASHBOARD API
+ * ====================================================== */
+
+static Dashboard = {
+
+    async get() {
+
+        const token =
+            Utils.Session.getToken();
+
+        if (
+            !token
+        ) {
+
+            throw new Error(
+                CONFIG.MESSAGE.SESSION_EXPIRED
+            );
+
+        }
+
+        const response =
+            await Utils.API.get(
+                CONFIG.API.ACTION.GET_DASHBOARD,
+                {
+                    token
+                }
+            );
+
+        return Utils.API.checkResponse(
+            response
+        );
+
+    }
+
+};
     /* ========================================================
      * DASHBOARD API
      * ====================================================== */
