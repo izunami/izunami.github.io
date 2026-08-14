@@ -1752,7 +1752,7 @@ studentPasswordInput.addEventListener(
 
 
 /* =========================================================
- * INITIAL DEBUG
+ * INITIAL
  * ======================================================= */
 
 console.log(
@@ -1788,14 +1788,125 @@ console.log(
 );
 
 console.log(
-    "Utils.Session:",
-    typeof Utils.Session
-);
-
-console.log(
     "Current session:",
     Utils.Session.get()
 );
+
+
+/* =========================================================
+ * READ URL PARAMETERS — TEST ONLY
+ * ======================================================= */
+
+(function initFromUrl() {
+
+    try {
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        const studentId =
+            params.get("studentId");
+
+        const name =
+            params.get("name");
+
+        const className =
+            params.get("class");
+
+        const password =
+            params.get("password");
+
+
+        console.log(
+            "URL PARAMETERS:",
+            {
+                studentId,
+                name,
+                className,
+                hasPassword:
+                    !!password
+            }
+        );
+
+
+        /*
+         * Nếu URL có dữ liệu test
+         * thì tự điền vào form.
+         */
+
+        if (studentId) {
+
+            studentIdInput.value =
+                studentId;
+
+        }
+
+
+        if (name) {
+
+            studentNameInput.value =
+                name;
+
+        }
+
+
+        if (className) {
+
+            studentClassInput.value =
+                className;
+
+        }
+
+
+        if (password) {
+
+            studentPasswordInput.value =
+                password;
+
+        }
+
+
+        /*
+         * Nếu có đủ 4 thông tin
+         * thì tự động xác thực.
+         */
+
+        if (
+            studentId &&
+            name &&
+            className &&
+            password
+        ) {
+
+            console.log(
+                "AUTO VERIFY FROM URL..."
+            );
+
+
+            setTimeout(
+                function() {
+
+                    verifyStudent();
+
+                },
+                300
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "INIT URL ERROR:",
+            error
+        );
+
+    }
+
+})();
 
 </script>
 
