@@ -890,19 +890,77 @@
 <script type="module">
 
 /* =========================================================
- * IMPORT
+ * BOOT
  * ======================================================= */
 
-import {
-    CONFIG
-}
-from "../assets/js/config.js";
+console.log("StudentExam /kiemtra: BOOT");
 
 
-import {
-    Utils
+/* =========================================================
+ * IMPORT CONFIG + UTILS
+ * ======================================================= */
+
+let CONFIG;
+let Utils;
+
+
+try {
+
+    const configModule =
+        await import("../assets/js/config.js");
+
+    const utilsModule =
+        await import("../assets/js/utils.js");
+
+
+    CONFIG =
+        configModule.CONFIG;
+
+    Utils =
+        utilsModule.Utils;
+
+
+    console.log(
+        "CONFIG LOADED:",
+        CONFIG
+    );
+
+
+    console.log(
+        "UTILS LOADED:",
+        Utils
+    );
+
+
+} catch (error) {
+
+    console.error(
+        "IMPORT ERROR:",
+        error
+    );
+
+
+    const statusElement =
+        document.getElementById(
+            "status"
+        );
+
+
+    if (statusElement) {
+
+        statusElement.textContent =
+            "Không thể tải CONFIG / Utils: " +
+            error.message;
+
+        statusElement.className =
+            "status show error";
+
+    }
+
+
+    throw error;
+
 }
-from "../assets/js/utils.js";
 
 
 /* =========================================================
@@ -1053,9 +1111,7 @@ function clearFieldErrors() {
                     id
                 );
 
-            if (
-                element
-            ) {
+            if (element) {
 
                 element.classList.remove(
                     "show"
@@ -1177,13 +1233,9 @@ function validateForm() {
     return {
 
         valid,
-
         studentId,
-
         name,
-
         className,
-
         password
 
     };
@@ -1192,7 +1244,7 @@ function validateForm() {
 
 
 /* =========================================================
- * SAVE STUDENT SESSION
+ * SAVE SESSION
  * ======================================================= */
 
 function saveVerifiedStudent(
@@ -1219,10 +1271,6 @@ function saveVerifiedStudent(
     }
 
 
-    /*
-     * Không lưu password.
-     */
-
     const session = {
 
         token:
@@ -1235,20 +1283,17 @@ function saveVerifiedStudent(
 
             id:
                 Utils.Text.trim(
-                    student.id ||
-                    ""
+                    student.id || ""
                 ),
 
             name:
                 Utils.Text.trim(
-                    student.name ||
-                    ""
+                    student.name || ""
                 ),
 
             class:
                 Utils.Text.trim(
-                    student.class ||
-                    ""
+                    student.class || ""
                 )
 
         },
@@ -1270,7 +1315,7 @@ function saveVerifiedStudent(
 
 
 /* =========================================================
- * RENDER STUDENT
+ * RENDER VERIFIED STUDENT
  * ======================================================= */
 
 function renderVerifiedStudent(
@@ -1280,33 +1325,25 @@ function renderVerifiedStudent(
     document.getElementById(
         "verifiedId"
     ).textContent =
-        student.id ||
-        "—";
+        student.id || "—";
 
 
     document.getElementById(
         "verifiedName"
     ).textContent =
-        student.name ||
-        "—";
+        student.name || "—";
 
 
     document.getElementById(
         "verifiedClass"
     ).textContent =
-        student.class ||
-        "—";
+        student.class || "—";
 
 
     studentInfo.classList.add(
         "show"
     );
 
-
-    /*
-     * Hiện khu vực bài kiểm tra
-     * nhưng chưa tải danh sách đề.
-     */
 
     examArea.classList.add(
         "show"
@@ -1320,6 +1357,11 @@ function renderVerifiedStudent(
  * ======================================================= */
 
 async function verifyStudent() {
+
+    console.log(
+        "VERIFY STUDENT START"
+    );
+
 
     const validation =
         validateForm();
@@ -1349,6 +1391,18 @@ async function verifyStudent() {
     } = validation;
 
 
+    console.log(
+        "VERIFY INPUT:",
+        {
+            studentId,
+            name,
+            className,
+            hasPassword:
+                !!password
+        }
+    );
+
+
     setLoading(
         true
     );
@@ -1369,16 +1423,27 @@ async function verifyStudent() {
 
     try {
 
+        console.log(
+            "API BASE URL:",
+            CONFIG.API.BASE_URL
+        );
+
+
+        console.log(
+            "VERIFY ACTION:",
+            CONFIG.API.ACTION.VERIFY_STUDENT
+        );
+
+
+        console.log(
+            "Utils.apiGet:",
+            typeof Utils.apiGet
+        );
+
+
         /* =================================================
-         * VERIFY STUDENT API
-         * =================================================
-         *
-         * Chỉ gọi:
-         *
-         * verifyStudent
-         *
-         * KHÔNG gọi getStudents().
-         */
+         * CALL BACKEND
+         * ================================================= */
 
         const response =
             await Utils.apiGet(
@@ -1401,19 +1466,15 @@ async function verifyStudent() {
             );
 
 
-        /* =================================================
-         * DEBUG RESPONSE
-         * ================================================= */
-
         console.log(
-            "VERIFY STUDENT RESPONSE:",
+            "VERIFY RESPONSE:",
             response
         );
 
 
-        /*
-         * API không trả response
-         */
+        /* =================================================
+         * RESPONSE CHECK
+         * ================================================= */
 
         if (
             !response ||
@@ -1426,10 +1487,6 @@ async function verifyStudent() {
 
         }
 
-
-        /* =================================================
-         * API ERROR
-         * ================================================= */
 
         if (
             response.success !== true
@@ -1446,61 +1503,27 @@ async function verifyStudent() {
         }
 
 
-        /* =================================================
-         * RESPONSE DATA
-         * ================================================= */
-
         const data =
-            response.data;
+            response.data || {};
 
-
-        console.log(
-            "VERIFY STUDENT DATA:",
-            data
-        );
-
-
-        if (
-            !data ||
-            typeof data !== "object"
-        ) {
-
-            throw new Error(
-                "API không trả về dữ liệu xác thực."
-            );
-
-        }
-
-
-        /* =================================================
-         * VERIFIED CHECK
-         * ================================================= */
 
         if (
             data.verified !== true
         ) {
 
-            showStatus(
-                "Xác thực học sinh không thành công.",
-                "error"
+            throw new Error(
+                "Xác thực học sinh không thành công."
             );
-
-            return;
 
         }
 
-
-        /* =================================================
-         * STUDENT
-         * ================================================= */
 
         const student =
             data.student;
 
 
         if (
-            !student ||
-            typeof student !== "object"
+            !student
         ) {
 
             throw new Error(
@@ -1512,25 +1535,14 @@ async function verifyStudent() {
 
         /* =================================================
          * STUDENT TOKEN
-         * =================================================
-         *
-         * Backend hiện tại trả:
-         *
-         * data.studentToken
-         *
-         * Có thêm fallback để tương thích
-         * với session/token cũ nếu cần.
-         */
+         * ================================================= */
 
         const studentToken =
             Utils.Text.trim(
 
                 data.studentToken ||
-
                 data.token ||
-
                 data.loginKey ||
-
                 ""
 
             );
@@ -1545,17 +1557,6 @@ async function verifyStudent() {
         if (
             !studentToken
         ) {
-
-            /*
-             * Hiện response ra console để
-             * dễ debug nếu backend thay đổi.
-             */
-
-            console.error(
-                "API RESPONSE KHÔNG CÓ STUDENT TOKEN:",
-                response
-            );
-
 
             throw new Error(
                 "API không trả về Student Token."
@@ -1587,25 +1588,20 @@ async function verifyStudent() {
 
 
         console.log(
-            "STUDENT SESSION:",
+            "SESSION SAVED:",
             Utils.Session.get()
         );
 
 
         console.log(
-            "SAVED TOKEN:",
+            "SESSION TOKEN:",
             Utils.Session.getToken()
         );
 
 
         /* =================================================
-         * SECURITY
-         * =================================================
-         *
-         * Không lưu password.
-         * Xóa password khỏi form sau khi
-         * xác thực thành công.
-         */
+         * REMOVE PASSWORD
+         * ================================================= */
 
         studentPasswordInput.value =
             "";
@@ -1629,7 +1625,7 @@ async function verifyStudent() {
     } catch (error) {
 
         console.error(
-            "VERIFY STUDENT ERROR:",
+            "VERIFY ERROR:",
             error
         );
 
@@ -1752,52 +1748,15 @@ studentPasswordInput.addEventListener(
 
 
 /* =========================================================
- * INITIAL
+ * URL TEST
  * ======================================================= */
 
-console.log(
-    "======================================"
-);
+function initFromUrl() {
 
-console.log(
-    "StudentExam /kiemtra"
-);
+    console.log(
+        "INIT FROM URL START"
+    );
 
-console.log(
-    "======================================"
-);
-
-console.log(
-    "CONFIG:",
-    CONFIG
-);
-
-console.log(
-    "API BASE URL:",
-    CONFIG.API.BASE_URL
-);
-
-console.log(
-    "VERIFY STUDENT ACTION:",
-    CONFIG.API.ACTION.VERIFY_STUDENT
-);
-
-console.log(
-    "Utils.apiGet:",
-    typeof Utils.apiGet
-);
-
-console.log(
-    "Current session:",
-    Utils.Session.get()
-);
-
-
-/* =========================================================
- * READ URL PARAMETERS — TEST ONLY
- * ======================================================= */
-
-(function initFromUrl() {
 
     try {
 
@@ -1808,34 +1767,47 @@ console.log(
 
 
         const studentId =
-            params.get("studentId");
+            params.get(
+                "studentId"
+            );
+
 
         const name =
-            params.get("name");
+            params.get(
+                "name"
+            );
+
 
         const className =
-            params.get("class");
+            params.get(
+                "class"
+            );
+
 
         const password =
-            params.get("password");
+            params.get(
+                "password"
+            );
 
 
         console.log(
             "URL PARAMETERS:",
             {
+
                 studentId,
                 name,
                 className,
+
                 hasPassword:
                     !!password
+
             }
         );
 
 
-        /*
-         * Nếu URL có dữ liệu test
-         * thì tự điền vào form.
-         */
+        /* =================================================
+         * FILL FORM
+         * ================================================= */
 
         if (studentId) {
 
@@ -1869,10 +1841,9 @@ console.log(
         }
 
 
-        /*
-         * Nếu có đủ 4 thông tin
-         * thì tự động xác thực.
-         */
+        /* =================================================
+         * AUTO VERIFY
+         * ================================================= */
 
         if (
             studentId &&
@@ -1882,7 +1853,7 @@ console.log(
         ) {
 
             console.log(
-                "AUTO VERIFY FROM URL..."
+                "AUTO VERIFY FROM URL"
             );
 
 
@@ -1904,12 +1875,72 @@ console.log(
             error
         );
 
+
+        showStatus(
+            "Lỗi đọc tham số URL: " +
+            error.message,
+            "error"
+        );
+
     }
 
-})();
+}
+
+
+/* =========================================================
+ * INITIAL
+ * ======================================================= */
+
+console.log(
+    "======================================"
+);
+
+console.log(
+    "StudentExam /kiemtra READY"
+);
+
+console.log(
+    "======================================"
+);
+
+
+console.log(
+    "CONFIG:",
+    CONFIG
+);
+
+
+console.log(
+    "API BASE URL:",
+    CONFIG.API.BASE_URL
+);
+
+
+console.log(
+    "VERIFY STUDENT ACTION:",
+    CONFIG.API.ACTION.VERIFY_STUDENT
+);
+
+
+console.log(
+    "Utils.apiGet:",
+    typeof Utils.apiGet
+);
+
+
+console.log(
+    "CURRENT SESSION:",
+    Utils.Session.get()
+);
+
+
+/* =========================================================
+ * START URL TEST
+ * ======================================================= */
+
+initFromUrl();
 
 </script>
-
 
 </body>
 
