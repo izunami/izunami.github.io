@@ -8,7 +8,7 @@ const MODEL_LIST = [
   { name: 'Mỹ Tâm (mytam)', value: 'mytam' },
   { name: 'Ngọc Ngạn (ngocngan)', value: 'ngocngan' },
   { name: 'Việt Thảo (vietthao)', value: 'vietthao' },
-  { name: 'Bàn Mai (banmai)', value: 'banmai' },
+  { name: 'Ban Mai (banmai)', value: 'banmai' },
   { name: 'Mai Phương (maiphuong)', value: 'maiphuong' },
   { name: 'Mạnh Dũng (manhdung)', value: 'manhdung' },
   { name: 'Minh Khang (minhkhang)', value: 'minhkhang' },
