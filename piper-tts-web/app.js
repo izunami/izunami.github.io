@@ -12,7 +12,7 @@ const MODEL_LIST = [
   { name: 'Mỹ Tâm (mytam)', path: './model/mytam.onnx.json' },
   { name: 'Ngọc Ngạn (ngocngan)', path: './model/ngocngan.onnx.json' },
   { name: 'Việt Thảo (vietthao)', path: './model/vietthao.onnx.json' },
-  { name: 'Ban Mai (banmai)', path: './model/banmai.onnx.json' },
+  { name: 'Bàn Mai (banmai)', path: './model/banmai.onnx.json' },
   { name: 'Mai Phương (maiphuong)', path: './model/maiphuong.onnx.json' },
   { name: 'Mạnh Dũng (manhdung)', path: './model/manhdung.onnx.json' },
   { name: 'Minh Khang (minhkhang)', path: './model/minhkhang.onnx.json' },
@@ -80,20 +80,21 @@ function setStatus(state, text) {
   }
 }
 
-// 1. Khởi tạo Module WebAssembly Phonemizer
+// 1. Khởi tạo WASM Phonemizer (không làm treo nút bấm)
 async function initWasmPhonemizer() {
   try {
-    log("Đang nạp bộ dịch âm tiết WebAssembly (eSpeak-NG WASM)...");
+    log("Đang kết nối module âm tiết WebAssembly (eSpeak-NG WASM)...");
     await initialize();
     await setVoice("vi");
     isPhonemizerReady = true;
     log("Nạp thành công module WASM Phonemizer!");
   } catch (err) {
-    log(`Lỗi nạp WASM Phonemizer: ${err.message}`, "error");
+    log(`Lưu ý: WASM Phonemizer nạp chưa hoàn tất (${err.message}). Hệ thống tự động dùng bộ dịch thay thế.`, "warn");
+    isPhonemizerReady = false;
   }
 }
 
-// 2. Khởi tạo Dropdown Mô hình
+// 2. Nạp danh sách mô hình vào Dropdown
 function populateModelDropdown() {
   if (!modelSelect) return;
   modelSelect.innerHTML = '';
@@ -132,7 +133,9 @@ async function loadModelFromPath(jsonPath) {
     
     log(`Đã nạp xong mô hình [${jsonPath.split('/').pop().replace('.onnx.json', '')}]!`);
     setStatus('success', 'Client Engine Sẵn Sàng');
-    if (speakBtn && isPhonemizerReady) speakBtn.disabled = false;
+    
+    // Đã nạp xong model ONNX -> MỞ KHÓA NÚT BẤM NGAY LẬP TỨC
+    if (speakBtn) speakBtn.disabled = false;
   } catch (err) {
     log(`LỖI NẠP MODEL: ${err.message}`, "error");
     setStatus('error', 'Lỗi nạp model');
@@ -163,7 +166,7 @@ async function loadModelFromFiles(onnxFile, jsonFile) {
     log("Nạp mô hình từ máy tính thành công!");
 
     setStatus('success', 'Model từ máy (Sẵn sàng)');
-    if (speakBtn && isPhonemizerReady) speakBtn.disabled = false;
+    if (speakBtn) speakBtn.disabled = false;
   } catch (err) {
     log(`Lỗi nạp file: ${err.message}`, "error");
     setStatus('error', 'Lỗi file');
@@ -217,24 +220,34 @@ function setupSpeakerSelect(config) {
   }
 }
 
-// 5. CHUYỂN ĐỔI CHỮ TIẾNG VIỆT SANG PHONEME IDs CHUẨN ĐỂ ĐƯA VÀO ONNX
+// 5. CHUYỂN ĐỔI TIẾNG VIỆT SANG PHONEME IDs (Hỗ trợ Fallback an toàn)
 async function textToPhonemeIds(text, config) {
   const idMap = config.phoneme_id_map;
   if (!idMap) return [];
 
-  // Sử dụng eSpeak WASM để dịch chữ Tiếng Việt -> Ký tự âm tiết IPA
-  const voiceLang = config.espeak?.voice || "vi";
-  await setVoice(voiceLang);
-  const sentenceResults = await getPhonemes(text);
-
   let phonemesString = "";
-  if (Array.isArray(sentenceResults)) {
-    phonemesString = sentenceResults.map(s => s.phonemes).join(" ");
-  } else if (typeof sentenceResults === "string") {
-    phonemesString = sentenceResults;
-  }
 
-  log(`Âm tiết IPA thu được: "${phonemesString}"`);
+  // Nếu WASM đã sẵn sàng -> Dùng eSpeak WASM
+  if (isPhonemizerReady) {
+    try {
+      const voiceLang = config.espeak?.voice || "vi";
+      await setVoice(voiceLang);
+      const sentenceResults = await getPhonemes(text);
+
+      if (Array.isArray(sentenceResults)) {
+        phonemesString = sentenceResults.map(s => s.phonemes).join(" ");
+      } else if (typeof sentenceResults === "string") {
+        phonemesString = sentenceResults;
+      }
+      log(`Âm tiết IPA (eSpeak WASM): "${phonemesString}"`);
+    } catch(e) {
+      log(`Chuyển sang bộ map ký tự fallback...`, "warn");
+      phonemesString = text.normalize('NFC').toLowerCase();
+    }
+  } else {
+    // Fallback: Dùng trực tiếp chuỗi ký tự Unicode Tiếng Việt
+    phonemesString = text.normalize('NFC').toLowerCase();
+  }
 
   const ids = [];
 
@@ -290,7 +303,7 @@ function pcmToWav(pcmData, sampleRate = 22050) {
   return new Blob([view], { type: 'audio/wav' });
 }
 
-// Event Listeners
+// Event Listeners UI
 if (modelSelect) {
   modelSelect.addEventListener('change', async (e) => {
     const selectedPath = e.target.value;
@@ -360,7 +373,7 @@ if (btnLoadCustom) {
   });
 }
 
-// 7. Thực thi Tạo Giọng Đọc Trực Tiếp Trong Trình Duyệt
+// 7. Thực thi Tạo Giọng Đọc
 if (speakBtn) {
   speakBtn.addEventListener('click', async () => {
     const text = textInput ? textInput.value.trim() : '';
@@ -370,13 +383,12 @@ if (speakBtn) {
       speakBtn.disabled = true;
       log(`Đang xử lý câu: "${text}"...`);
 
-      // 1. Chuyển chữ Tiếng Việt -> Phoneme IDs
       const phonemeIds = await textToPhonemeIds(text, modelConfig);
       if (phonemeIds.length === 0) {
         throw new Error("Không thể tạo ID âm tiết từ văn bản nhập vào!");
       }
 
-      log(`Tạo mảng Phoneme IDs (Độ dài: ${phonemeIds.length})`);
+      log(`Mảng Phoneme IDs được tạo (Độ dài: ${phonemeIds.length})`);
 
       const inputSequence = new BigInt64Array(phonemeIds.map(id => BigInt(id)));
       const tensorInput = new ort.Tensor('int64', inputSequence, [1, inputSequence.length]);
@@ -395,14 +407,12 @@ if (speakBtn) {
         feeds.sid = new ort.Tensor('int64', BigInt64Array.from([BigInt(selectedSpeakerId)]), [1]);
       }
 
-      // 2. Chạy ONNX Runtime Web Inference
       const startTime = performance.now();
       const results = await session.run(feeds);
       const duration = (performance.now() - startTime).toFixed(0);
 
       log(`Suy luận ONNX hoàn tất trong ${duration}ms!`);
 
-      // 3. Chuyển dữ liệu Float32 sang WAV và phát
       const audioData = results.output.data;
       const sampleRate = modelConfig.audio?.sample_rate || 22050;
       const wavBlob = pcmToWav(audioData, sampleRate);
@@ -419,10 +429,10 @@ if (speakBtn) {
   });
 }
 
-// Khởi chạy khi load trang
+// Khởi chạy khi load xong trang
 window.addEventListener('DOMContentLoaded', async () => {
   populateModelDropdown();
-  await initWasmPhonemizer();
+  initWasmPhonemizer(); // Chạy ngầm, không dùng await để tránh làm nghẽn luồng nạp Model
   if (MODEL_LIST.length > 0) {
     await loadModelFromPath(MODEL_LIST[0].path);
   }
