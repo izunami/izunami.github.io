@@ -2,34 +2,30 @@ let session = null;
 let modelConfig = null;
 let currentModelPath = null;
 
-// 1. Danh sách tất cả các file cấu hình quét được từ thư mục ./model/ của bạn
-const POSSIBLE_JSON_PATHS = [
-  './model/banmai.onnx.json',
-  './model/calmwoman3688.onnx.json',
-  './model/chieuthanh.onnx.json',
-  './model/cuc.onnx.json',
-  './model/deepman3909.onnx.json',
-  './model/duyoryx3175.onnx.json',
-  './model/lacphi.onnx.json',
-  './model/maiphuong.onnx.json',
-  './model/manhdung.onnx.json',
-  './model/minhkhang.onnx.json',
-  './model/minhquang.onnx.json',
-  './model/mytam.onnx.json',
-  './model/ngochuyen.onnx.json',
-  './model/ngochuyennew.onnx.json',
-  './model/ngocngan.onnx.json',
-  './model/phuongtrang.onnx.json',
-  './model/taian.onnx.json',
-  './model/thanhphuongviettel.onnx.json',
-  './model/thientam.onnx.json',
-  './model/tranthanh.onnx.json',
-  './model/vi_VN-vais1000-medium.onnx.json',
-  './model/vietthao.onnx.json',
-  // Tên dự phòng mặc định
-  './model/voice.onnx.json',
-  './model/model.onnx.json',
-  './model/config.json'
+// 1. Danh sách tất cả các mô hình có trong thư mục ./model/
+const MODEL_LIST = [
+  { name: 'Bàn Mai (banmai)', path: './model/banmai.onnx.json' },
+  { name: 'Calm Woman (calmwoman3688)', path: './model/calmwoman3688.onnx.json' },
+  { name: 'Chiêu Thành (chieuthanh)', path: './model/chieuthanh.onnx.json' },
+  { name: 'Cúc (cuc)', path: './model/cuc.onnx.json' },
+  { name: 'Deep Man (deepman3909)', path: './model/deepman3909.onnx.json' },
+  { name: 'Duy Oryx (duyoryx3175)', path: './model/duyoryx3175.onnx.json' },
+  { name: 'Lạc Phi (lacphi)', path: './model/lacphi.onnx.json' },
+  { name: 'Mai Phương (maiphuong)', path: './model/maiphuong.onnx.json' },
+  { name: 'Mạnh Dũng (manhdung)', path: './model/manhdung.onnx.json' },
+  { name: 'Minh Khang (minhkhang)', path: './model/minhkhang.onnx.json' },
+  { name: 'Minh Quang (minhquang)', path: './model/minhquang.onnx.json' },
+  { name: 'Mỹ Tâm (mytam)', path: './model/mytam.onnx.json' },
+  { name: 'Ngọc Huyền (ngochuyen)', path: './model/ngochuyen.onnx.json' },
+  { name: 'Ngọc Huyền Mới (ngochuyennew)', path: './model/ngochuyennew.onnx.json' },
+  { name: 'Ngọc Ngạn (ngocngan)', path: './model/ngocngan.onnx.json' },
+  { name: 'Phương Trang (phuongtrang)', path: './model/phuongtrang.onnx.json' },
+  { name: 'Thái An (taian)', path: './model/taian.onnx.json' },
+  { name: 'Thanh Phương Viettel (thanhphuongviettel)', path: './model/thanhphuongviettel.onnx.json' },
+  { name: 'Thiện Tâm (thientam)', path: './model/thientam.onnx.json' },
+  { name: 'Trấn Thành (tranthanh)', path: './model/tranthanh.onnx.json' },
+  { name: 'VAIS 1000 Medium (vi_VN)', path: './model/vi_VN-vais1000-medium.onnx.json' },
+  { name: 'Việt Thảo (vietthao)', path: './model/vietthao.onnx.json' }
 ];
 
 // UI Elements
@@ -52,19 +48,22 @@ const speakBtn = document.getElementById('speak-btn');
 const audioPlayer = document.getElementById('audio-player');
 const logContainer = document.getElementById('log-container');
 
-// Hàm xuất log ra terminal console trên giao diện
+// Hàm xuất log
 function log(msg, type = 'info') {
   const time = new Date().toLocaleTimeString();
   let colorClass = 'text-emerald-400';
   if (type === 'error') colorClass = 'text-red-400';
   if (type === 'warn') colorClass = 'text-amber-400';
 
-  logContainer.innerHTML += `<div class="${colorClass}">[${time}] ${msg}</div>`;
-  logContainer.scrollTop = logContainer.scrollHeight;
+  if (logContainer) {
+    logContainer.innerHTML += `<div class="${colorClass}">[${time}] ${msg}</div>`;
+    logContainer.scrollTop = logContainer.scrollHeight;
+  }
 }
 
-// Cập nhật thẻ trạng thái hệ thống
+// Cập nhật thẻ trạng thái
 function setStatus(state, text) {
+  if (!statusText) return;
   statusText.innerText = text;
   if (state === 'success') {
     statusBadge.className = "px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-2";
@@ -78,69 +77,42 @@ function setStatus(state, text) {
   }
 }
 
-// 2. Tự động Quét tất cả các Mô hình có sẵn trong thư mục ./model/
-async function scanAndInitModels() {
-  log("Đang quét các file mô hình trong thư mục ./model/...");
-  setStatus('warning', 'Đang quét mô hình...');
+// 2. Tải danh sách Model vào Menu Chọn ngay lập tức
+function populateModelDropdown() {
+  if (!modelSelect) return;
 
-  const foundModels = [];
+  modelSelect.innerHTML = '';
+  MODEL_LIST.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.path;
+    opt.innerText = m.name;
+    modelSelect.appendChild(opt);
+  });
 
-  for (const path of POSSIBLE_JSON_PATHS) {
-    try {
-      const res = await fetch(path, { method: 'HEAD' });
-      if (res.ok) {
-        // Lấy tên mô hình từ tên file (Ví dụ: ./model/tranthanh.onnx.json -> tranthanh)
-        const fileName = path.split('/').pop().replace('.onnx.json', '');
-        foundModels.push({ name: fileName, path: path });
-      }
-    } catch (e) {
-      // Bỏ qua nếu file không tồn tại
-    }
-  }
-
-  if (foundModels.length === 0) {
-    log("Không tìm thấy mô hình mặc định trong ./model/. Hãy nạp thủ công bằng khung bên dưới.", "warn");
-    setStatus('warning', 'Chờ nạp mô hình...');
-    return;
-  }
-
-  log(`Đã quét thấy ${foundModels.length} mô hình giọng nói!`);
-
-  // Cập nhật danh sách vào Dropdown Chọn Model (nếu thẻ #model-select tồn tại)
-  if (modelSelect) {
-    modelSelect.innerHTML = '';
-    foundModels.forEach(m => {
-      const opt = document.createElement('option');
-      opt.value = m.path;
-      opt.innerText = `Mô hình: ${m.name}`;
-      modelSelect.appendChild(opt);
-    });
-    modelSelect.disabled = false;
-  }
-
-  // Tự động nạp mô hình đầu tiên tìm được
-  await loadModelFromPath(foundModels[0].path);
+  // Mở khóa menu chọn mô hình ngay lập tức để người dùng bấm chọn được
+  modelSelect.disabled = false;
+  log("Đã kích hoạt danh sách chọn mô hình.");
 }
 
-// 3. Nạp Mô hình cụ thể từ Đường dẫn URL/Thư mục
+// 3. Hàm Nạp Mô Hình cụ thể
 async function loadModelFromPath(jsonPath) {
   try {
-    speakBtn.disabled = true;
+    if (speakBtn) speakBtn.disabled = true;
     setStatus('warning', 'Đang nạp ONNX Model...');
-    log(`Bắt đầu nạp cấu hình: ${jsonPath}...`);
+    log(`Bắt đầu nạp file cấu hình: ${jsonPath}...`);
 
     const configRes = await fetch(jsonPath);
-    if (!configRes.ok) throw new Error(`Không tải được file ${jsonPath}`);
+    if (!configRes.ok) {
+      throw new Error(`Không tìm thấy file ${jsonPath}. Kiểm tra lại thư mục ./model/`);
+    }
     modelConfig = await configRes.json();
 
     updateMetadataUI(modelConfig);
     setupSpeakerSelect(modelConfig);
 
-    // Suy ra file ONNX tương ứng (ví dụ: ./model/mytam.onnx.json -> ./model/mytam.onnx)
     const onnxPath = jsonPath.replace('.json', '');
-    log(`Đang nạp file trọng số ONNX: ${onnxPath} (Có thể mất vài giây)...`);
+    log(`Đang nạp file mô hình ONNX: ${onnxPath}...`);
 
-    // Giải phóng bộ nhớ session cũ nếu có
     if (session) {
       try { await session.release(); } catch(e) {}
     }
@@ -148,19 +120,19 @@ async function loadModelFromPath(jsonPath) {
     session = await ort.InferenceSession.create(onnxPath);
     currentModelPath = jsonPath;
     
-    log(`Đã nạp thành công mô hình [${jsonPath.split('/').pop().replace('.onnx.json', '')}]!`);
+    log(`Nạp thành công mô hình [${jsonPath.split('/').pop().replace('.onnx.json', '')}]!`);
     setStatus('success', 'Sẵn sàng phát âm');
-    speakBtn.disabled = false;
+    if (speakBtn) speakBtn.disabled = false;
   } catch (err) {
-    log(`Lỗi khi nạp mô hình từ ${jsonPath}: ${err.message}`, "error");
-    setStatus('error', 'Lỗi nạp mô hình');
+    log(`LỖI: ${err.message}`, "error");
+    setStatus('error', 'Không nạp được model');
   }
 }
 
-// 4. Nạp Mô hình Trực tiếp từ File chọn từ Máy tính
+// 4. Nạp Mô Hình Trực Tiếp từ File Chọn Trên Máy
 async function loadModelFromFiles(onnxFile, jsonFile) {
   try {
-    speakBtn.disabled = true;
+    if (speakBtn) speakBtn.disabled = true;
     setStatus('warning', 'Đang đọc file từ máy...');
     log(`Đang đọc file JSON từ máy: ${jsonFile.name}...`);
 
@@ -181,7 +153,7 @@ async function loadModelFromFiles(onnxFile, jsonFile) {
     log("Đã nạp thành công mô hình thủ công từ máy tính!");
 
     setStatus('success', 'Sẵn sàng (Model từ máy)');
-    speakBtn.disabled = false;
+    if (speakBtn) speakBtn.disabled = false;
   } catch (err) {
     log(`Lỗi nạp file từ máy: ${err.message}`, "error");
     setStatus('error', 'Lỗi file từ máy');
@@ -211,7 +183,7 @@ function setupSpeakerSelect(config) {
 
   if (numSpeakers > 1) {
     speakerSelect.disabled = false;
-    if (speakerInfo) speakerInfo.innerText = `Mô hình này hỗ trợ ${numSpeakers} giọng đọc khác nhau.`;
+    if (speakerInfo) speakerInfo.innerText = `Mô hình này chứa ${numSpeakers} giọng đọc khác nhau.`;
 
     if (Object.keys(speakerMap).length > 0) {
       for (const [name, id] of Object.entries(speakerMap)) {
@@ -224,17 +196,17 @@ function setupSpeakerSelect(config) {
       for (let i = 0; i < numSpeakers; i++) {
         const opt = document.createElement('option');
         opt.value = i;
-        opt.innerText = `Giọng đọc số ${i + 1} (Speaker ID: ${i})`;
+        opt.innerText = `Giọng đọc số ${i + 1} (ID: ${i})`;
         speakerSelect.appendChild(opt);
       }
     }
   } else {
     const opt = document.createElement('option');
     opt.value = "0";
-    opt.innerText = "Giọng mặc định (Single Speaker)";
+    opt.innerText = "Giọng mặc định (Mô hình đơn giọng)";
     speakerSelect.appendChild(opt);
-    speakerSelect.disabled = true;
-    if (speakerInfo) speakerInfo.innerText = "Mô hình đơn giọng.";
+    speakerSelect.disabled = true; // Khóa lại vì mô hình chỉ có 1 giọng
+    if (speakerInfo) speakerInfo.innerText = "Mô hình này là đơn giọng (Single Speaker).";
   }
 }
 
@@ -246,19 +218,17 @@ function textToPhonemeIds(text, config) {
   const ids = [];
   const normalizedText = text.normalize('NFC').toLowerCase();
 
-  // Token bắt đầu (BOS - Beginning of Sentence)
   if (idMap["^"]) ids.push(...idMap["^"]);
 
   for (const char of normalizedText) {
     if (idMap[char]) {
       ids.push(...idMap[char]);
-      if (idMap["_"]) ids.push(...idMap["_"]); // Token đệm PAD
+      if (idMap["_"]) ids.push(...idMap["_"]);
     } else if (idMap[" "]) {
       ids.push(...idMap[" "]);
     }
   }
 
-  // Token kết thúc (EOS - End of Sentence)
   if (idMap["$"]) ids.push(...idMap["$"]);
 
   return ids;
@@ -298,7 +268,7 @@ function pcmToWav(pcmData, sampleRate = 22050) {
   return new Blob([view], { type: 'audio/wav' });
 }
 
-// Event Listeners UI
+// Lắng nghe sự kiện người dùng chọn Model từ Menu
 if (modelSelect) {
   modelSelect.addEventListener('change', async (e) => {
     const selectedPath = e.target.value;
@@ -340,7 +310,7 @@ const btnSample = document.getElementById('btn-sample');
 if (btnSample) {
   btnSample.addEventListener('click', () => {
     if (textInput) {
-      textInput.value = "Xin chào, đây là ứng dụng Piper TTS chạy trực tiếp trên GitHub Pages với nhiều giọng đọc Tiếng Việt.";
+      textInput.value = "Xin chào, đây là ứng dụng Piper TTS chạy trực tiếp trên trình duyệt.";
       textInput.dispatchEvent(new Event('input'));
     }
   });
@@ -368,7 +338,7 @@ if (btnLoadCustom) {
   });
 }
 
-// 8. Thực thi Tổng Hợp & Tạo Giọng Đọc
+// 8. Thực thi Tạo Giọng Đọc
 if (speakBtn) {
   speakBtn.addEventListener('click', async () => {
     const text = textInput ? textInput.value.trim() : '';
@@ -395,11 +365,9 @@ if (speakBtn) {
         scales: new ort.Tensor('float32', Float32Array.from([noiseScale, lengthScale, 0.8]), [3])
       };
 
-      // Nếu mô hình là Multi-Speaker -> Truyền Tensor sid
       if (modelConfig.num_speakers && modelConfig.num_speakers > 1 && speakerSelect) {
         const selectedSpeakerId = parseInt(speakerSelect.value) || 0;
         feeds.sid = new ort.Tensor('int64', BigInt64Array.from([BigInt(selectedSpeakerId)]), [1]);
-        log(`Sử dụng Speaker ID: ${selectedSpeakerId}`);
       }
 
       const startTime = performance.now();
@@ -424,5 +392,11 @@ if (speakBtn) {
   });
 }
 
-// Khởi chạy tự động khi ứng dụng tải xong
-window.addEventListener('DOMContentLoaded', scanAndInitModels);
+// Khởi tạo ngay khi load xong trang
+window.addEventListener('DOMContentLoaded', async () => {
+  populateModelDropdown();
+  // Nạp mặc định model đầu tiên
+  if (MODEL_LIST.length > 0) {
+    await loadModelFromPath(MODEL_LIST[0].path);
+  }
+});
