@@ -1,54 +1,46 @@
-let session = null;
-let modelConfig = null;
-let currentModelPath = null;
+// ⚠️ LƯU Ý QUAN TRỌNG: Thay đường link bên dưới bằng link Web Service thật trên Render của bạn!
+// (Giữ lại đoạn "/tts" ở cuối)
+const RENDER_API_URL = "https://piper-tts-53tr.onrender.com/tts";
 
-// 1. Danh sách tất cả các mô hình có trong thư mục ./model/
+// Danh sách các mô hình giọng đọc để hiển thị trên Dropdown
 const MODEL_LIST = [
-  { name: 'Bàn Mai (banmai)', path: './model/banmai.onnx.json' },
-  { name: 'Calm Woman (calmwoman3688)', path: './model/calmwoman3688.onnx.json' },
-  { name: 'Chiêu Thành (chieuthanh)', path: './model/chieuthanh.onnx.json' },
-  { name: 'Cúc (cuc)', path: './model/cuc.onnx.json' },
-  { name: 'Deep Man (deepman3909)', path: './model/deepman3909.onnx.json' },
-  { name: 'Duy Oryx (duyoryx3175)', path: './model/duyoryx3175.onnx.json' },
-  { name: 'Lạc Phi (lacphi)', path: './model/lacphi.onnx.json' },
-  { name: 'Mai Phương (maiphuong)', path: './model/maiphuong.onnx.json' },
-  { name: 'Mạnh Dũng (manhdung)', path: './model/manhdung.onnx.json' },
-  { name: 'Minh Khang (minhkhang)', path: './model/minhkhang.onnx.json' },
-  { name: 'Minh Quang (minhquang)', path: './model/minhquang.onnx.json' },
-  { name: 'Mỹ Tâm (mytam)', path: './model/mytam.onnx.json' },
-  { name: 'Ngọc Huyền (ngochuyen)', path: './model/ngochuyen.onnx.json' },
-  { name: 'Ngọc Huyền Mới (ngochuyennew)', path: './model/ngochuyennew.onnx.json' },
-  { name: 'Ngọc Ngạn (ngocngan)', path: './model/ngocngan.onnx.json' },
-  { name: 'Phương Trang (phuongtrang)', path: './model/phuongtrang.onnx.json' },
-  { name: 'Thái An (taian)', path: './model/taian.onnx.json' },
-  { name: 'Thanh Phương Viettel (thanhphuongviettel)', path: './model/thanhphuongviettel.onnx.json' },
-  { name: 'Thiện Tâm (thientam)', path: './model/thientam.onnx.json' },
-  { name: 'Trấn Thành (tranthanh)', path: './model/tranthanh.onnx.json' },
-  { name: 'VAIS 1000 Medium (vi_VN)', path: './model/vi_VN-vais1000-medium.onnx.json' },
-  { name: 'Việt Thảo (vietthao)', path: './model/vietthao.onnx.json' }
+  { name: 'Trấn Thành (tranthanh)', value: 'tranthanh' },
+  { name: 'Mỹ Tâm (mytam)', value: 'mytam' },
+  { name: 'Ngọc Ngạn (ngocngan)', value: 'ngocngan' },
+  { name: 'Việt Thảo (vietthao)', value: 'vietthao' },
+  { name: 'Bàn Mai (banmai)', value: 'banmai' },
+  { name: 'Mai Phương (maiphuong)', value: 'maiphuong' },
+  { name: 'Mạnh Dũng (manhdung)', value: 'manhdung' },
+  { name: 'Minh Khang (minhkhang)', value: 'minhkhang' },
+  { name: 'Minh Quang (minhquang)', value: 'minhquang' },
+  { name: 'Ngọc Huyền (ngochuyen)', value: 'ngochuyen' },
+  { name: 'Ngọc Huyền Mới (ngochuyennew)', value: 'ngochuyennew' },
+  { name: 'Phương Trang (phuongtrang)', value: 'phuongtrang' },
+  { name: 'Thái An (taian)', value: 'taian' },
+  { name: 'Thanh Phương Viettel (thanhphuongviettel)', value: 'thanhphuongviettel' },
+  { name: 'Thiện Tâm (thientam)', value: 'thientam' },
+  { name: 'Chiêu Thành (chieuthanh)', value: 'chieuthanh' },
+  { name: 'Cúc (cuc)', value: 'cuc' },
+  { name: 'Lạc Phi (lacphi)', value: 'lacphi' },
+  { name: 'Calm Woman (calmwoman3688)', value: 'calmwoman3688' },
+  { name: 'Deep Man (deepman3909)', value: 'deepman3909' },
+  { name: 'Duy Oryx (duyoryx3175)', value: 'duyoryx3175' },
+  { name: 'VAIS 1000 Medium (vi_VN-vais1000-medium)', value: 'vi_VN-vais1000-medium' }
 ];
 
-// UI Elements
+// DOM Elements
 const statusBadge = document.getElementById('status-badge');
 const statusDot = document.getElementById('status-dot');
 const statusText = document.getElementById('status-text');
 
 const modelSelect = document.getElementById('model-select');
-const speakerSelect = document.getElementById('speaker-select');
-const speakerInfo = document.getElementById('speaker-info');
-
-const lengthScaleSlider = document.getElementById('length-scale-slider');
-const lengthScaleVal = document.getElementById('length-scale-val');
-const noiseScaleSlider = document.getElementById('noise-scale-slider');
-const noiseScaleVal = document.getElementById('noise-scale-val');
-
 const textInput = document.getElementById('text-input');
 const charCount = document.getElementById('char-count');
 const speakBtn = document.getElementById('speak-btn');
 const audioPlayer = document.getElementById('audio-player');
 const logContainer = document.getElementById('log-container');
 
-// Hàm xuất log
+// Hàm xuất log ra màn hình console
 function log(msg, type = 'info') {
   const time = new Date().toLocaleTimeString();
   let colorClass = 'text-emerald-400';
@@ -61,10 +53,11 @@ function log(msg, type = 'info') {
   }
 }
 
-// Cập nhật thẻ trạng thái
+// Cập nhật trạng thái Badge trên Header
 function setStatus(state, text) {
-  if (!statusText) return;
+  if (!statusText || !statusBadge) return;
   statusText.innerText = text;
+
   if (state === 'success') {
     statusBadge.className = "px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-2";
     if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-emerald-400";
@@ -77,219 +70,55 @@ function setStatus(state, text) {
   }
 }
 
-// 2. Tải danh sách Model vào Menu Chọn ngay lập tức
-function populateModelDropdown() {
+// 1. Khởi tạo danh sách mô hình giọng đọc
+function initModelDropdown() {
   if (!modelSelect) return;
 
   modelSelect.innerHTML = '';
   MODEL_LIST.forEach(m => {
     const opt = document.createElement('option');
-    opt.value = m.path;
+    opt.value = m.value;
     opt.innerText = m.name;
     modelSelect.appendChild(opt);
   });
 
-  // Mở khóa menu chọn mô hình ngay lập tức để người dùng bấm chọn được
   modelSelect.disabled = false;
-  log("Đã kích hoạt danh sách chọn mô hình.");
+  log("Đã khởi tạo danh sách mô hình giọng đọc.");
 }
 
-// 3. Hàm Nạp Mô Hình cụ thể
-async function loadModelFromPath(jsonPath) {
+// 2. Kiểm tra kết nối tới Render Backend API
+async function checkServerStatus() {
+  log("Đang kết nối tới Server Render API...");
+  setStatus('warning', 'Đang kiểm tra Server...');
+
   try {
-    if (speakBtn) speakBtn.disabled = true;
-    setStatus('warning', 'Đang nạp ONNX Model...');
-    log(`Bắt đầu nạp file cấu hình: ${jsonPath}...`);
+    // Gọi đường dẫn root / của server Render
+    const rootUrl = RENDER_API_URL.replace('/tts', '/');
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 giây timeout
 
-    const configRes = await fetch(jsonPath);
-    if (!configRes.ok) {
-      throw new Error(`Không tìm thấy file ${jsonPath}. Kiểm tra lại thư mục ./model/`);
-    }
-    modelConfig = await configRes.json();
+    const res = await fetch(rootUrl, { signal: controller.signal });
+    clearTimeout(timeoutId);
 
-    updateMetadataUI(modelConfig);
-    setupSpeakerSelect(modelConfig);
-
-    const onnxPath = jsonPath.replace('.json', '');
-    log(`Đang nạp file mô hình ONNX: ${onnxPath}...`);
-
-    if (session) {
-      try { await session.release(); } catch(e) {}
-    }
-
-    session = await ort.InferenceSession.create(onnxPath);
-    currentModelPath = jsonPath;
-    
-    log(`Nạp thành công mô hình [${jsonPath.split('/').pop().replace('.onnx.json', '')}]!`);
-    setStatus('success', 'Sẵn sàng phát âm');
-    if (speakBtn) speakBtn.disabled = false;
-  } catch (err) {
-    log(`LỖI: ${err.message}`, "error");
-    setStatus('error', 'Không nạp được model');
-  }
-}
-
-// 4. Nạp Mô Hình Trực Tiếp từ File Chọn Trên Máy
-async function loadModelFromFiles(onnxFile, jsonFile) {
-  try {
-    if (speakBtn) speakBtn.disabled = true;
-    setStatus('warning', 'Đang đọc file từ máy...');
-    log(`Đang đọc file JSON từ máy: ${jsonFile.name}...`);
-
-    const jsonText = await jsonFile.text();
-    modelConfig = JSON.parse(jsonText);
-
-    updateMetadataUI(modelConfig);
-    setupSpeakerSelect(modelConfig);
-
-    log(`Đang nạp file ONNX binary: ${onnxFile.name}...`);
-    const onnxArrayBuffer = await onnxFile.arrayBuffer();
-
-    if (session) {
-      try { await session.release(); } catch(e) {}
-    }
-
-    session = await ort.InferenceSession.create(onnxArrayBuffer);
-    log("Đã nạp thành công mô hình thủ công từ máy tính!");
-
-    setStatus('success', 'Sẵn sàng (Model từ máy)');
-    if (speakBtn) speakBtn.disabled = false;
-  } catch (err) {
-    log(`Lỗi nạp file từ máy: ${err.message}`, "error");
-    setStatus('error', 'Lỗi file từ máy');
-  }
-}
-
-// Cập nhật Thông số Metadata
-function updateMetadataUI(config) {
-  const sampleRateEl = document.getElementById('meta-samplerate');
-  const phonemesEl = document.getElementById('meta-phonemes');
-
-  if (sampleRateEl && config.audio?.sample_rate) {
-    sampleRateEl.innerText = `${config.audio.sample_rate.toLocaleString()} Hz`;
-  }
-  if (phonemesEl && config.phoneme_id_map) {
-    phonemesEl.innerText = `${Object.keys(config.phoneme_id_map).length} tokens`;
-  }
-}
-
-// 5. Cấu hình Dropdown Chọn Giọng Đọc (Multi-Speaker Support)
-function setupSpeakerSelect(config) {
-  if (!speakerSelect) return;
-
-  speakerSelect.innerHTML = '';
-  const numSpeakers = config.num_speakers || 1;
-  const speakerMap = config.speaker_id_map || {};
-
-  if (numSpeakers > 1) {
-    speakerSelect.disabled = false;
-    if (speakerInfo) speakerInfo.innerText = `Mô hình này chứa ${numSpeakers} giọng đọc khác nhau.`;
-
-    if (Object.keys(speakerMap).length > 0) {
-      for (const [name, id] of Object.entries(speakerMap)) {
-        const opt = document.createElement('option');
-        opt.value = id;
-        opt.innerText = `${name} (ID: ${id})`;
-        speakerSelect.appendChild(opt);
-      }
+    if (res.ok) {
+      log("Kết nối tới Server Backend Render thành công! Sẵn sàng xử lý Tiếng Việt.");
+      setStatus('success', 'Server Sẵn Sàng');
+      if (speakBtn) speakBtn.disabled = false;
     } else {
-      for (let i = 0; i < numSpeakers; i++) {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.innerText = `Giọng đọc số ${i + 1} (ID: ${i})`;
-        speakerSelect.appendChild(opt);
-      }
+      throw new Error(`Server phản hồi mã lỗi: ${res.status}`);
     }
-  } else {
-    const opt = document.createElement('option');
-    opt.value = "0";
-    opt.innerText = "Giọng mặc định (Mô hình đơn giọng)";
-    speakerSelect.appendChild(opt);
-    speakerSelect.disabled = true; // Khóa lại vì mô hình chỉ có 1 giọng
-    if (speakerInfo) speakerInfo.innerText = "Mô hình này là đơn giọng (Single Speaker).";
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      log("Server Render đang 'thức dậy' (cold start có thể mất 30-50s lần đầu tiên). Hãy bấm nút đọc để kích hoạt!", "warn");
+    } else {
+      log(`Chưa thể kết nối tới Server API: ${err.message}`, "warn");
+    }
+    setStatus('warning', 'Server đang khởi động...');
+    if (speakBtn) speakBtn.disabled = false; // Vẫn cho bấm để kích hoạt Cold Start
   }
 }
 
-// 6. Ánh xạ Chuỗi Tiếng Việt sang Mảng Phoneme IDs
-function textToPhonemeIds(text, config) {
-  const idMap = config.phoneme_id_map;
-  if (!idMap) return [];
-
-  const ids = [];
-  const normalizedText = text.normalize('NFC').toLowerCase();
-
-  if (idMap["^"]) ids.push(...idMap["^"]);
-
-  for (const char of normalizedText) {
-    if (idMap[char]) {
-      ids.push(...idMap[char]);
-      if (idMap["_"]) ids.push(...idMap["_"]);
-    } else if (idMap[" "]) {
-      ids.push(...idMap[" "]);
-    }
-  }
-
-  if (idMap["$"]) ids.push(...idMap["$"]);
-
-  return ids;
-}
-
-// 7. Chuyển PCM Float32 sang File WAV Blob
-function pcmToWav(pcmData, sampleRate = 22050) {
-  const buffer = new ArrayBuffer(44 + pcmData.length * 2);
-  const view = new DataView(buffer);
-
-  const writeString = (offset, string) => {
-    for (let i = 0; i < string.length; i++) {
-      view.setUint8(offset + i, string.charCodeAt(i));
-    }
-  };
-
-  writeString(0, 'RIFF');
-  view.setUint32(4, 36 + pcmData.length * 2, true);
-  writeString(8, 'WAVE');
-  writeString(12, 'fmt ');
-  view.setUint32(16, 16, true);
-  view.setUint16(20, 1, true); 
-  view.setUint16(22, 1, true); 
-  view.setUint32(24, sampleRate, true);
-  view.setUint32(28, sampleRate * 2, true);
-  view.setUint16(32, 2, true);
-  view.setUint16(34, 16, true);
-  writeString(36, 'data');
-  view.setUint32(40, pcmData.length * 2, true);
-
-  let offset = 44;
-  for (let i = 0; i < pcmData.length; i++, offset += 2) {
-    const s = Math.max(-1, Math.min(1, pcmData[i]));
-    view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-  }
-
-  return new Blob([view], { type: 'audio/wav' });
-}
-
-// Lắng nghe sự kiện người dùng chọn Model từ Menu
-if (modelSelect) {
-  modelSelect.addEventListener('change', async (e) => {
-    const selectedPath = e.target.value;
-    if (selectedPath && selectedPath !== currentModelPath) {
-      await loadModelFromPath(selectedPath);
-    }
-  });
-}
-
-if (lengthScaleSlider) {
-  lengthScaleSlider.addEventListener('input', (e) => {
-    if (lengthScaleVal) lengthScaleVal.innerText = `${e.target.value}x`;
-  });
-}
-
-if (noiseScaleSlider) {
-  noiseScaleSlider.addEventListener('input', (e) => {
-    if (noiseScaleVal) noiseScaleVal.innerText = e.target.value;
-  });
-}
-
+// 3. Xử lý Đếm số từ/ký tự
 if (textInput) {
   textInput.addEventListener('input', () => {
     const val = textInput.value;
@@ -298,6 +127,7 @@ if (textInput) {
   });
 }
 
+// 4. Các nút thao tác phụ
 const btnClear = document.getElementById('btn-clear');
 if (btnClear) {
   btnClear.addEventListener('click', () => {
@@ -310,7 +140,7 @@ const btnSample = document.getElementById('btn-sample');
 if (btnSample) {
   btnSample.addEventListener('click', () => {
     if (textInput) {
-      textInput.value = "Xin chào, đây là ứng dụng Piper TTS chạy trực tiếp trên trình duyệt.";
+      textInput.value = "Xin chào các bạn, đây là ứng dụng chuyển đổi văn bản thành giọng nói Tiếng Việt chuẩn 100%.";
       textInput.dispatchEvent(new Event('input'));
     }
   });
@@ -323,80 +153,65 @@ if (btnClearLog) {
   });
 }
 
-const btnLoadCustom = document.getElementById('btn-load-custom');
-if (btnLoadCustom) {
-  btnLoadCustom.addEventListener('click', () => {
-    const jsonFile = document.getElementById('input-json')?.files[0];
-    const onnxFile = document.getElementById('input-onnx')?.files[0];
-
-    if (!jsonFile || !onnxFile) {
-      alert("Vui lòng chọn đầy đủ cả 2 file (.json và .onnx)!");
-      return;
-    }
-
-    loadModelFromFiles(onnxFile, jsonFile);
-  });
-}
-
-// 8. Thực thi Tạo Giọng Đọc
+// 5. Thực thi Tổng Hợp & Tạo Giọng Đọc Tiếng Việt qua Render API
 if (speakBtn) {
   speakBtn.addEventListener('click', async () => {
     const text = textInput ? textInput.value.trim() : '';
-    if (!text || !session || !modelConfig) return;
+    if (!text) {
+      alert("Vui lòng nhập văn bản Tiếng Việt cần chuyển thành giọng nói!");
+      return;
+    }
+
+    // Lấy tên mô hình đang được chọn
+    let selectedModel = 'tranthanh';
+    if (modelSelect && modelSelect.value) {
+      selectedModel = modelSelect.value.split('/').pop().replace('.onnx.json', '').replace('.onnx', '');
+    }
 
     try {
       speakBtn.disabled = true;
-      log(`Đang xử lý đọc câu: "${text}"`);
+      setStatus('warning', 'Đang xử lý âm thanh...');
+      log(`Gửi yêu cầu: "${text}" [Model: ${selectedModel}]...`);
 
-      const phonemeIds = textToPhonemeIds(text, modelConfig);
-      if (phonemeIds.length === 0) {
-        throw new Error("Không thể tạo ID âm tiết từ văn bản nhập vào!");
-      }
-
-      const inputSequence = new BigInt64Array(phonemeIds.map(id => BigInt(id)));
-      const tensorInput = new ort.Tensor('int64', inputSequence, [1, inputSequence.length]);
-
-      const lengthScale = lengthScaleSlider ? parseFloat(lengthScaleSlider.value) : 1.0;
-      const noiseScale = noiseScaleSlider ? parseFloat(noiseScaleSlider.value) : 0.667;
-
-      const feeds = {
-        input: tensorInput,
-        input_lengths: new ort.Tensor('int64', BigInt64Array.from([BigInt(inputSequence.length)]), [1]),
-        scales: new ort.Tensor('float32', Float32Array.from([noiseScale, lengthScale, 0.8]), [3])
-      };
-
-      if (modelConfig.num_speakers && modelConfig.num_speakers > 1 && speakerSelect) {
-        const selectedSpeakerId = parseInt(speakerSelect.value) || 0;
-        feeds.sid = new ort.Tensor('int64', BigInt64Array.from([BigInt(selectedSpeakerId)]), [1]);
-      }
-
+      // Khởi tạo URL gọi API
+      const fullUrl = `${RENDER_API_URL}?text=${encodeURIComponent(text)}&model=${encodeURIComponent(selectedModel)}`;
+      
       const startTime = performance.now();
-      const results = await session.run(feeds);
+      const response = await fetch(fullUrl);
+
+      if (!response.ok) {
+        let errorMsg = "Lỗi không xác định từ Server";
+        try {
+          const errData = await response.json();
+          errorMsg = errData.detail || errorMsg;
+        } catch(e) {}
+        throw new Error(errorMsg);
+      }
+
       const duration = (performance.now() - startTime).toFixed(0);
+      log(`Tạo giọng đọc Tiếng Việt thành công trong ${duration}ms!`);
 
-      log(`Suy luận ONNX hoàn tất trong ${duration}ms`);
-
-      const audioData = results.output.data;
-      const sampleRate = modelConfig.audio?.sample_rate || 22050;
-      const wavBlob = pcmToWav(audioData, sampleRate);
+      // Nhận luồng dữ liệu file WAV từ Backend Render
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
 
       if (audioPlayer) {
-        audioPlayer.src = URL.createObjectURL(wavBlob);
+        audioPlayer.src = audioUrl;
         audioPlayer.play();
       }
+
+      setStatus('success', 'Đã tạo giọng đọc');
     } catch (err) {
-      log(`LỖI TỔNG HỢP: ${err.message}`, 'error');
+      log(`LỖI TẠO GIỌNG ĐỌC: ${err.message}`, 'error');
+      setStatus('error', 'Lỗi kết nối Server');
     } finally {
       speakBtn.disabled = false;
     }
   });
 }
 
-// Khởi tạo ngay khi load xong trang
-window.addEventListener('DOMContentLoaded', async () => {
-  populateModelDropdown();
-  // Nạp mặc định model đầu tiên
-  if (MODEL_LIST.length > 0) {
-    await loadModelFromPath(MODEL_LIST[0].path);
-  }
+// Khởi chạy khi trang tải xong
+window.addEventListener('DOMContentLoaded', () => {
+  initModelDropdown();
+  checkServerStatus();
 });
