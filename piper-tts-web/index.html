@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Piper TTS Studio - Client-Side WASM Engine</title>
+  <title>Piper TTS Studio - Offline WASM Engine</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -44,25 +44,23 @@
         </div>
         <div>
           <h1 class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">Piper TTS Studio</h1>
-          <p class="text-xs text-slate-400">100% WebAssembly Client-Side Neural TTS Engine</p>
+          <p class="text-xs text-slate-400">Pure Client-Side WebAssembly Neural Speech Synthesizer</p>
         </div>
       </div>
 
       <!-- Status Badge -->
       <div id="status-badge" class="px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-2">
         <span id="status-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-        <span id="status-text">Đang tải WASM Phonemizer...</span>
+        <span id="status-text">Đang khởi tạo WebAssembly...</span>
       </div>
     </div>
   </header>
 
-  <!-- Main Grid Layout -->
+  <!-- Main Layout -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
     <!-- Left Column (4 cols) -->
     <div class="lg:col-span-4 flex flex-col gap-6">
-      
-      <!-- Cấu hình Giọng Nói -->
       <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
         <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
           <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
@@ -70,30 +68,22 @@
         </h2>
 
         <div class="space-y-4">
-          <!-- Chọn Mô Hình Giọng Đọc -->
+          <!-- Chọn Model -->
           <div>
             <label class="block text-xs font-medium text-slate-300 mb-1">Chọn Mô Hình Giọng Đọc (Model)</label>
             <div class="relative">
               <select id="model-select" disabled class="w-full bg-dark-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition disabled:opacity-50 appearance-none font-medium">
                 <option value="">Đang tải danh sách...</option>
               </select>
-              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-              </div>
             </div>
           </div>
 
-          <!-- Chọn Speaker (Multi-Speaker) -->
+          <!-- Chọn Speaker -->
           <div>
             <label class="block text-xs font-medium text-slate-300 mb-1">Chọn Giọng Đọc (Speaker)</label>
-            <div class="relative">
-              <select id="speaker-select" disabled class="w-full bg-dark-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition disabled:opacity-50 appearance-none">
-                <option value="0">Giọng mặc định</option>
-              </select>
-              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-              </div>
-            </div>
+            <select id="speaker-select" disabled class="w-full bg-dark-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition disabled:opacity-50">
+              <option value="0">Giọng mặc định</option>
+            </select>
             <p id="speaker-info" class="text-[11px] text-slate-500 mt-1">Đang cập nhật...</p>
           </div>
 
@@ -104,50 +94,23 @@
                 <span class="text-slate-300 font-medium">Tốc độ đọc (Speed)</span>
                 <span id="length-scale-val" class="text-blue-400 font-mono">1.0x</span>
               </div>
-              <input id="length-scale-slider" type="range" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full accent-blue-500 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer">
+              <input id="length-scale-slider" type="range" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full accent-blue-500 bg-slate-800 h-1.5 rounded-lg cursor-pointer">
             </div>
 
             <div>
               <div class="flex justify-between text-xs mb-1">
-                <span class="text-slate-300 font-medium">Độ biến thiên / Cảm xúc (Noise)</span>
+                <span class="text-slate-300 font-medium">Độ biến thiên (Noise)</span>
                 <span id="noise-scale-val" class="text-blue-400 font-mono">0.667</span>
               </div>
-              <input id="noise-scale-slider" type="range" min="0.1" max="1.0" step="0.05" value="0.667" class="w-full accent-blue-500 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer">
+              <input id="noise-scale-slider" type="range" min="0.1" max="1.0" step="0.05" value="0.667" class="w-full accent-blue-500 bg-slate-800 h-1.5 rounded-lg cursor-pointer">
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Nạp Model Thủ Công -->
-      <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-          <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-          Nạp File Thủ Công Từ Máy
-        </h2>
-        
-        <div class="space-y-3 text-xs">
-          <div>
-            <label class="block text-slate-400 mb-1">1. File cấu hình (.json)</label>
-            <input type="file" id="input-json" accept=".json" class="w-full text-slate-300 bg-dark-950 border border-slate-800 rounded-lg p-2 text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:bg-slate-800 file:text-slate-300 hover:file:bg-slate-700">
-          </div>
-          
-          <div>
-            <label class="block text-slate-400 mb-1">2. File mô hình (.onnx)</label>
-            <input type="file" id="input-onnx" accept=".onnx" class="w-full text-slate-300 bg-dark-950 border border-slate-800 rounded-lg p-2 text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:bg-slate-800 file:text-slate-300 hover:file:bg-slate-700">
-          </div>
-
-          <button id="btn-load-custom" class="w-full mt-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg font-medium transition">
-            Nạp Hai File Đã Chọn
-          </button>
         </div>
       </div>
 
       <!-- Metadata -->
       <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          Thông Số Mô Hình
-        </h2>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">Thông Số Mô Hình</h2>
         <div class="space-y-2 text-xs">
           <div class="flex justify-between py-1 border-b border-slate-800/50"><span class="text-slate-400">Tần số mẫu:</span><span id="meta-samplerate" class="font-mono text-slate-200">-- Hz</span></div>
           <div class="flex justify-between py-1 border-b border-slate-800/50"><span class="text-slate-400">Tổng số Tokens:</span><span id="meta-phonemes" class="font-mono text-slate-200">--</span></div>
@@ -158,57 +121,46 @@
     <!-- Right Column (8 cols) -->
     <div class="lg:col-span-8 flex flex-col gap-6">
 
-      <!-- Text Input Card -->
+      <!-- Text Input -->
       <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col">
         <div class="flex items-center justify-between mb-3">
-          <label for="text-input" class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-            Văn Bản Đầu Vào Tiếng Việt
-          </label>
+          <label for="text-input" class="text-xs font-semibold uppercase tracking-wider text-slate-400">Văn Bản Đầu Vào Tiếng Việt</label>
           <div class="flex gap-2 text-xs">
-            <button id="btn-sample" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Thử câu mẫu</button>
-            <button id="btn-clear" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Xóa</button>
+            <button id="btn-sample" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Thử câu mẫu</button>
+            <button id="btn-clear" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Xóa</button>
           </div>
         </div>
 
-        <textarea id="text-input" rows="5" class="w-full bg-dark-950 border border-slate-800 rounded-xl p-4 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition resize-y font-normal text-sm leading-relaxed" placeholder="Nhập câu văn tiếng Việt cần đọc..."></textarea>
+        <textarea id="text-input" rows="5" class="w-full bg-dark-950 border border-slate-800 rounded-xl p-4 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition font-normal text-sm leading-relaxed" placeholder="Nhập văn bản tiếng Việt cần đọc..."></textarea>
 
         <div class="mt-4 flex items-center justify-between">
           <span id="char-count" class="text-xs text-slate-500 font-mono">0 ký tự | 0 từ</span>
           <button id="speak-btn" disabled class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm shadow-lg shadow-blue-500/25 flex items-center gap-2 transition active:scale-[0.98]">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            Tạo Giọng Đọc (Client WASM)
+            Tạo Giọng Đọc (Offline WASM)
           </button>
         </div>
       </div>
 
-      <!-- Audio Output Card -->
+      <!-- Audio Output -->
       <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-          <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12 0c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
-          Trình Phát Âm Thanh
-        </h2>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">Kết Quả Trình Phát Âm</h2>
         <audio id="audio-player" controls class="w-full rounded-lg bg-dark-950 p-2"></audio>
       </div>
 
-      <!-- Console Logs -->
+      <!-- Console Log -->
       <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
         <div class="flex items-center justify-between mb-3">
-          <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            Nhật Ký Thực Thi (Console Logs)
-          </h2>
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Nhật Ký Thực Thi (Console Logs)</h2>
           <button id="btn-clear-log" class="text-[11px] text-slate-500 hover:text-slate-300">Xóa log</button>
         </div>
         <div id="log-container" class="bg-dark-950 border border-slate-800/80 rounded-xl p-3 font-mono text-[11px] text-emerald-400/90 h-36 overflow-y-auto leading-relaxed space-y-1">
-          <div>> Đang khởi tạo bộ chuyển đổi eSpeak WASM...</div>
+          <div>> Đang tải piper-phonemize WebAssembly module...</div>
         </div>
       </div>
 
     </div>
   </main>
 
-  <!-- LƯU Ý: type="module" để hỗ trợ ES Module Import -->
   <script type="module" src="app.js"></script>
 </body>
 </html>
