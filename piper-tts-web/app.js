@@ -1,21 +1,46 @@
 let session = null;
 let modelConfig = null;
+let currentModelPath = null;
 
-// Danh sách các tên file cấu hình JSON phổ biến để hệ thống tự động thử dò trong thư mục ./model/
+// 1. Danh sách tất cả các file cấu hình quét được từ thư mục ./model/ của bạn
 const POSSIBLE_JSON_PATHS = [
+  './model/banmai.onnx.json',
+  './model/calmwoman3688.onnx.json',
+  './model/chieuthanh.onnx.json',
+  './model/cuc.onnx.json',
+  './model/deepman3909.onnx.json',
+  './model/duyoryx3175.onnx.json',
+  './model/lacphi.onnx.json',
+  './model/maiphuong.onnx.json',
+  './model/manhdung.onnx.json',
+  './model/minhkhang.onnx.json',
+  './model/minhquang.onnx.json',
+  './model/mytam.onnx.json',
+  './model/ngochuyen.onnx.json',
+  './model/ngochuyennew.onnx.json',
+  './model/ngocngan.onnx.json',
+  './model/phuongtrang.onnx.json',
+  './model/taian.onnx.json',
+  './model/thanhphuongviettel.onnx.json',
+  './model/thientam.onnx.json',
+  './model/tranthanh.onnx.json',
+  './model/vi_VN-vais1000-medium.onnx.json',
+  './model/vietthao.onnx.json',
+  // Tên dự phòng mặc định
   './model/voice.onnx.json',
   './model/model.onnx.json',
-  './model/config.json',
-  './model/vi_VN.onnx.json'
+  './model/config.json'
 ];
 
-// DOM Elements
+// UI Elements
 const statusBadge = document.getElementById('status-badge');
 const statusDot = document.getElementById('status-dot');
 const statusText = document.getElementById('status-text');
 
+const modelSelect = document.getElementById('model-select');
 const speakerSelect = document.getElementById('speaker-select');
 const speakerInfo = document.getElementById('speaker-info');
+
 const lengthScaleSlider = document.getElementById('length-scale-slider');
 const lengthScaleVal = document.getElementById('length-scale-val');
 const noiseScaleSlider = document.getElementById('noise-scale-slider');
@@ -27,7 +52,7 @@ const speakBtn = document.getElementById('speak-btn');
 const audioPlayer = document.getElementById('audio-player');
 const logContainer = document.getElementById('log-container');
 
-// Log Helper
+// Hàm xuất log ra terminal console trên giao diện
 function log(msg, type = 'info') {
   const time = new Date().toLocaleTimeString();
   let colorClass = 'text-emerald-400';
@@ -38,112 +63,155 @@ function log(msg, type = 'info') {
   logContainer.scrollTop = logContainer.scrollHeight;
 }
 
-// 1. Tự động Dò tìm và Nạp Model từ Thư Mục ./model/
-async function autoDetectAndInit() {
-  log("Đang quét tìm file cấu hình .json trong thư mục ./model/...");
-  
-  let detectedJsonPath = null;
+// Cập nhật thẻ trạng thái hệ thống
+function setStatus(state, text) {
+  statusText.innerText = text;
+  if (state === 'success') {
+    statusBadge.className = "px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-2";
+    if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-emerald-400";
+  } else if (state === 'warning') {
+    statusBadge.className = "px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-2";
+    if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+  } else if (state === 'error') {
+    statusBadge.className = "px-3 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20 flex items-center gap-2";
+    if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-red-400";
+  }
+}
+
+// 2. Tự động Quét tất cả các Mô hình có sẵn trong thư mục ./model/
+async function scanAndInitModels() {
+  log("Đang quét các file mô hình trong thư mục ./model/...");
+  setStatus('warning', 'Đang quét mô hình...');
+
+  const foundModels = [];
 
   for (const path of POSSIBLE_JSON_PATHS) {
     try {
       const res = await fetch(path, { method: 'HEAD' });
       if (res.ok) {
-        detectedJsonPath = path;
-        log(`Đã tìm thấy file cấu hình: ${path}`);
-        break;
+        // Lấy tên mô hình từ tên file (Ví dụ: ./model/tranthanh.onnx.json -> tranthanh)
+        const fileName = path.split('/').pop().replace('.onnx.json', '');
+        foundModels.push({ name: fileName, path: path });
       }
     } catch (e) {
-      // Tiếp tục thử tên tiếp theo
+      // Bỏ qua nếu file không tồn tại
     }
   }
 
-  if (!detectedJsonPath) {
-    log("Không tìm thấy file JSON mặc định trong thư mục ./model/. Bạn hãy dùng khung 'Nạp File Thủ Công' để chọn file từ máy.", "warn");
-    setStatus('warning', 'Chờ nạp file mô hình...');
+  if (foundModels.length === 0) {
+    log("Không tìm thấy mô hình mặc định trong ./model/. Hãy nạp thủ công bằng khung bên dưới.", "warn");
+    setStatus('warning', 'Chờ nạp mô hình...');
     return;
   }
 
+  log(`Đã quét thấy ${foundModels.length} mô hình giọng nói!`);
+
+  // Cập nhật danh sách vào Dropdown Chọn Model (nếu thẻ #model-select tồn tại)
+  if (modelSelect) {
+    modelSelect.innerHTML = '';
+    foundModels.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m.path;
+      opt.innerText = `Mô hình: ${m.name}`;
+      modelSelect.appendChild(opt);
+    });
+    modelSelect.disabled = false;
+  }
+
+  // Tự động nạp mô hình đầu tiên tìm được
+  await loadModelFromPath(foundModels[0].path);
+}
+
+// 3. Nạp Mô hình cụ thể từ Đường dẫn URL/Thư mục
+async function loadModelFromPath(jsonPath) {
   try {
-    const configRes = await fetch(detectedJsonPath);
+    speakBtn.disabled = true;
+    setStatus('warning', 'Đang nạp ONNX Model...');
+    log(`Bắt đầu nạp cấu hình: ${jsonPath}...`);
+
+    const configRes = await fetch(jsonPath);
+    if (!configRes.ok) throw new Error(`Không tải được file ${jsonPath}`);
     modelConfig = await configRes.json();
+
     updateMetadataUI(modelConfig);
     setupSpeakerSelect(modelConfig);
 
-    // Tự suy ra đường dẫn file ONNX (Ví dụ: voice.onnx.json -> voice.onnx)
-    const onnxPath = detectedJsonPath.replace('.json', '');
-    log(`Đang nạp file ONNX: ${onnxPath} (Vui lòng chờ trong giây lát)...`);
+    // Suy ra file ONNX tương ứng (ví dụ: ./model/mytam.onnx.json -> ./model/mytam.onnx)
+    const onnxPath = jsonPath.replace('.json', '');
+    log(`Đang nạp file trọng số ONNX: ${onnxPath} (Có thể mất vài giây)...`);
+
+    // Giải phóng bộ nhớ session cũ nếu có
+    if (session) {
+      try { await session.release(); } catch(e) {}
+    }
 
     session = await ort.InferenceSession.create(onnxPath);
-    log("Nạp mô hình ONNX thành công!");
-
-    setStatus('success', 'Sẵn sàng hoạt động');
+    currentModelPath = jsonPath;
+    
+    log(`Đã nạp thành công mô hình [${jsonPath.split('/').pop().replace('.onnx.json', '')}]!`);
+    setStatus('success', 'Sẵn sàng phát âm');
     speakBtn.disabled = false;
   } catch (err) {
-    log(`Lỗi khi nạp từ thư mục ./model/: ${err.message}`, "error");
+    log(`Lỗi khi nạp mô hình từ ${jsonPath}: ${err.message}`, "error");
     setStatus('error', 'Lỗi nạp mô hình');
   }
 }
 
-// 2. Nạp Mô Hình Trực Tiếp Từ File Chọn Trên Máy
+// 4. Nạp Mô hình Trực tiếp từ File chọn từ Máy tính
 async function loadModelFromFiles(onnxFile, jsonFile) {
   try {
-    log(`Bắt đầu đọc file JSON: ${jsonFile.name}...`);
-    
-    // Sử dụng readAsText chuẩn mã JS (Tránh lỗi reader.readText is not a function)
+    speakBtn.disabled = true;
+    setStatus('warning', 'Đang đọc file từ máy...');
+    log(`Đang đọc file JSON từ máy: ${jsonFile.name}...`);
+
     const jsonText = await jsonFile.text();
     modelConfig = JSON.parse(jsonText);
-    
+
     updateMetadataUI(modelConfig);
     setupSpeakerSelect(modelConfig);
 
     log(`Đang nạp file ONNX binary: ${onnxFile.name}...`);
     const onnxArrayBuffer = await onnxFile.arrayBuffer();
-    
+
+    if (session) {
+      try { await session.release(); } catch(e) {}
+    }
+
     session = await ort.InferenceSession.create(onnxArrayBuffer);
-    log("Đã nạp xong mô hình thủ công từ máy tính!");
+    log("Đã nạp thành công mô hình thủ công từ máy tính!");
 
     setStatus('success', 'Sẵn sàng (Model từ máy)');
     speakBtn.disabled = false;
   } catch (err) {
-    log(`Lỗi đọc file từ máy: ${err.message}`, "error");
-    setStatus('error', 'Lỗi file chọn từ máy');
-  }
-}
-
-// Cập nhật giao diện Trạng thái
-function setStatus(state, text) {
-  statusText.innerText = text;
-  if (state === 'success') {
-    statusBadge.className = "px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-2";
-    statusDot.className = "w-2 h-2 rounded-full bg-emerald-400";
-  } else if (state === 'warning') {
-    statusBadge.className = "px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-2";
-    statusDot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
-  } else if (state === 'error') {
-    statusBadge.className = "px-3 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20 flex items-center gap-2";
-    statusDot.className = "w-2 h-2 rounded-full bg-red-400";
+    log(`Lỗi nạp file từ máy: ${err.message}`, "error");
+    setStatus('error', 'Lỗi file từ máy');
   }
 }
 
 // Cập nhật Thông số Metadata
 function updateMetadataUI(config) {
-  if (config.audio?.sample_rate) {
-    document.getElementById('meta-samplerate').innerText = `${config.audio.sample_rate.toLocaleString()} Hz`;
+  const sampleRateEl = document.getElementById('meta-samplerate');
+  const phonemesEl = document.getElementById('meta-phonemes');
+
+  if (sampleRateEl && config.audio?.sample_rate) {
+    sampleRateEl.innerText = `${config.audio.sample_rate.toLocaleString()} Hz`;
   }
-  if (config.phoneme_id_map) {
-    document.getElementById('meta-phonemes').innerText = `${Object.keys(config.phoneme_id_map).length} tokens`;
+  if (phonemesEl && config.phoneme_id_map) {
+    phonemesEl.innerText = `${Object.keys(config.phoneme_id_map).length} tokens`;
   }
 }
 
-// 3. Xử lý Multi-Speaker Dropdown
+// 5. Cấu hình Dropdown Chọn Giọng Đọc (Multi-Speaker Support)
 function setupSpeakerSelect(config) {
+  if (!speakerSelect) return;
+
   speakerSelect.innerHTML = '';
   const numSpeakers = config.num_speakers || 1;
   const speakerMap = config.speaker_id_map || {};
 
   if (numSpeakers > 1) {
     speakerSelect.disabled = false;
-    speakerInfo.innerText = `Mô hình chứa ${numSpeakers} giọng đọc.`;
+    if (speakerInfo) speakerInfo.innerText = `Mô hình này hỗ trợ ${numSpeakers} giọng đọc khác nhau.`;
 
     if (Object.keys(speakerMap).length > 0) {
       for (const [name, id] of Object.entries(speakerMap)) {
@@ -156,7 +224,7 @@ function setupSpeakerSelect(config) {
       for (let i = 0; i < numSpeakers; i++) {
         const opt = document.createElement('option');
         opt.value = i;
-        opt.innerText = `Giọng số ${i + 1} (Speaker ID: ${i})`;
+        opt.innerText = `Giọng đọc số ${i + 1} (Speaker ID: ${i})`;
         speakerSelect.appendChild(opt);
       }
     }
@@ -166,11 +234,11 @@ function setupSpeakerSelect(config) {
     opt.innerText = "Giọng mặc định (Single Speaker)";
     speakerSelect.appendChild(opt);
     speakerSelect.disabled = true;
-    speakerInfo.innerText = "Mô hình đơn giọng.";
+    if (speakerInfo) speakerInfo.innerText = "Mô hình đơn giọng.";
   }
 }
 
-// 4. Ánh xạ Văn bản Tiếng Việt sang mảng Phoneme IDs
+// 6. Ánh xạ Chuỗi Tiếng Việt sang Mảng Phoneme IDs
 function textToPhonemeIds(text, config) {
   const idMap = config.phoneme_id_map;
   if (!idMap) return [];
@@ -178,7 +246,7 @@ function textToPhonemeIds(text, config) {
   const ids = [];
   const normalizedText = text.normalize('NFC').toLowerCase();
 
-  // Token bắt đầu câu (BOS)
+  // Token bắt đầu (BOS - Beginning of Sentence)
   if (idMap["^"]) ids.push(...idMap["^"]);
 
   for (const char of normalizedText) {
@@ -190,13 +258,13 @@ function textToPhonemeIds(text, config) {
     }
   }
 
-  // Token kết thúc câu (EOS)
+  // Token kết thúc (EOS - End of Sentence)
   if (idMap["$"]) ids.push(...idMap["$"]);
 
   return ids;
 }
 
-// 5. Chuyển PCM Float32 sang File WAV Audio Blob
+// 7. Chuyển PCM Float32 sang File WAV Blob
 function pcmToWav(pcmData, sampleRate = 22050) {
   const buffer = new ArrayBuffer(44 + pcmData.length * 2);
   const view = new DataView(buffer);
@@ -231,97 +299,130 @@ function pcmToWav(pcmData, sampleRate = 22050) {
 }
 
 // Event Listeners UI
-lengthScaleSlider.addEventListener('input', (e) => {
-  lengthScaleVal.innerText = `${e.target.value}x`;
-});
+if (modelSelect) {
+  modelSelect.addEventListener('change', async (e) => {
+    const selectedPath = e.target.value;
+    if (selectedPath && selectedPath !== currentModelPath) {
+      await loadModelFromPath(selectedPath);
+    }
+  });
+}
 
-noiseScaleSlider.addEventListener('input', (e) => {
-  noiseScaleVal.innerText = e.target.value;
-});
+if (lengthScaleSlider) {
+  lengthScaleSlider.addEventListener('input', (e) => {
+    if (lengthScaleVal) lengthScaleVal.innerText = `${e.target.value}x`;
+  });
+}
 
-textInput.addEventListener('input', () => {
-  const val = textInput.value;
-  const words = val.trim() ? val.trim().split(/\s+/).length : 0;
-  charCount.innerText = `${val.length} ký tự | ${words} từ`;
-});
+if (noiseScaleSlider) {
+  noiseScaleSlider.addEventListener('input', (e) => {
+    if (noiseScaleVal) noiseScaleVal.innerText = e.target.value;
+  });
+}
 
-document.getElementById('btn-clear').addEventListener('click', () => {
-  textInput.value = '';
-  charCount.innerText = '0 ký tự | 0 từ';
-});
+if (textInput) {
+  textInput.addEventListener('input', () => {
+    const val = textInput.value;
+    const words = val.trim() ? val.trim().split(/\s+/).length : 0;
+    if (charCount) charCount.innerText = `${val.length} ký tự | ${words} từ`;
+  });
+}
 
-document.getElementById('btn-sample').addEventListener('click', () => {
-  textInput.value = "Xin chào, đây là ứng dụng Piper TTS chạy trực tiếp trên GitHub Pages.";
-  textInput.dispatchEvent(new Event('input'));
-});
+const btnClear = document.getElementById('btn-clear');
+if (btnClear) {
+  btnClear.addEventListener('click', () => {
+    if (textInput) textInput.value = '';
+    if (charCount) charCount.innerText = '0 ký tự | 0 từ';
+  });
+}
 
-document.getElementById('btn-clear-log').addEventListener('click', () => {
-  logContainer.innerHTML = '';
-});
+const btnSample = document.getElementById('btn-sample');
+if (btnSample) {
+  btnSample.addEventListener('click', () => {
+    if (textInput) {
+      textInput.value = "Xin chào, đây là ứng dụng Piper TTS chạy trực tiếp trên GitHub Pages với nhiều giọng đọc Tiếng Việt.";
+      textInput.dispatchEvent(new Event('input'));
+    }
+  });
+}
 
-document.getElementById('btn-load-custom').addEventListener('click', () => {
-  const jsonFile = document.getElementById('input-json').files[0];
-  const onnxFile = document.getElementById('input-onnx').files[0];
+const btnClearLog = document.getElementById('btn-clear-log');
+if (btnClearLog) {
+  btnClearLog.addEventListener('click', () => {
+    if (logContainer) logContainer.innerHTML = '';
+  });
+}
 
-  if (!jsonFile || !onnxFile) {
-    alert("Vui lòng chọn đầy đủ cả 2 file (.json và .onnx)!");
-    return;
-  }
+const btnLoadCustom = document.getElementById('btn-load-custom');
+if (btnLoadCustom) {
+  btnLoadCustom.addEventListener('click', () => {
+    const jsonFile = document.getElementById('input-json')?.files[0];
+    const onnxFile = document.getElementById('input-onnx')?.files[0];
 
-  loadModelFromFiles(onnxFile, jsonFile);
-});
-
-// 6. Thực thi Tạo Giọng Đọc
-speakBtn.addEventListener('click', async () => {
-  const text = textInput.value.trim();
-  if (!text || !session || !modelConfig) return;
-
-  try {
-    speakBtn.disabled = true;
-    log(`Đang tổng hợp: "${text}"`);
-
-    const phonemeIds = textToPhonemeIds(text, modelConfig);
-    if (phonemeIds.length === 0) {
-      throw new Error("Không thể tạo ID âm tiết từ văn bản nhập vào!");
+    if (!jsonFile || !onnxFile) {
+      alert("Vui lòng chọn đầy đủ cả 2 file (.json và .onnx)!");
+      return;
     }
 
-    const inputSequence = new BigInt64Array(phonemeIds.map(id => BigInt(id)));
-    const tensorInput = new ort.Tensor('int64', inputSequence, [1, inputSequence.length]);
+    loadModelFromFiles(onnxFile, jsonFile);
+  });
+}
 
-    const lengthScale = parseFloat(lengthScaleSlider.value);
-    const noiseScale = parseFloat(noiseScaleSlider.value);
+// 8. Thực thi Tổng Hợp & Tạo Giọng Đọc
+if (speakBtn) {
+  speakBtn.addEventListener('click', async () => {
+    const text = textInput ? textInput.value.trim() : '';
+    if (!text || !session || !modelConfig) return;
 
-    const feeds = {
-      input: tensorInput,
-      input_lengths: new ort.Tensor('int64', BigInt64Array.from([BigInt(inputSequence.length)]), [1]),
-      scales: new ort.Tensor('float32', Float32Array.from([noiseScale, lengthScale, 0.8]), [3])
-    };
+    try {
+      speakBtn.disabled = true;
+      log(`Đang xử lý đọc câu: "${text}"`);
 
-    // Truyền Tensor sid nếu mô hình là Multi-Speaker
-    if (modelConfig.num_speakers && modelConfig.num_speakers > 1) {
-      const selectedSpeakerId = parseInt(speakerSelect.value) || 0;
-      feeds.sid = new ort.Tensor('int64', BigInt64Array.from([BigInt(selectedSpeakerId)]), [1]);
-      log(`Chọn Speaker ID: ${selectedSpeakerId}`);
+      const phonemeIds = textToPhonemeIds(text, modelConfig);
+      if (phonemeIds.length === 0) {
+        throw new Error("Không thể tạo ID âm tiết từ văn bản nhập vào!");
+      }
+
+      const inputSequence = new BigInt64Array(phonemeIds.map(id => BigInt(id)));
+      const tensorInput = new ort.Tensor('int64', inputSequence, [1, inputSequence.length]);
+
+      const lengthScale = lengthScaleSlider ? parseFloat(lengthScaleSlider.value) : 1.0;
+      const noiseScale = noiseScaleSlider ? parseFloat(noiseScaleSlider.value) : 0.667;
+
+      const feeds = {
+        input: tensorInput,
+        input_lengths: new ort.Tensor('int64', BigInt64Array.from([BigInt(inputSequence.length)]), [1]),
+        scales: new ort.Tensor('float32', Float32Array.from([noiseScale, lengthScale, 0.8]), [3])
+      };
+
+      // Nếu mô hình là Multi-Speaker -> Truyền Tensor sid
+      if (modelConfig.num_speakers && modelConfig.num_speakers > 1 && speakerSelect) {
+        const selectedSpeakerId = parseInt(speakerSelect.value) || 0;
+        feeds.sid = new ort.Tensor('int64', BigInt64Array.from([BigInt(selectedSpeakerId)]), [1]);
+        log(`Sử dụng Speaker ID: ${selectedSpeakerId}`);
+      }
+
+      const startTime = performance.now();
+      const results = await session.run(feeds);
+      const duration = (performance.now() - startTime).toFixed(0);
+
+      log(`Suy luận ONNX hoàn tất trong ${duration}ms`);
+
+      const audioData = results.output.data;
+      const sampleRate = modelConfig.audio?.sample_rate || 22050;
+      const wavBlob = pcmToWav(audioData, sampleRate);
+
+      if (audioPlayer) {
+        audioPlayer.src = URL.createObjectURL(wavBlob);
+        audioPlayer.play();
+      }
+    } catch (err) {
+      log(`LỖI TỔNG HỢP: ${err.message}`, 'error');
+    } finally {
+      speakBtn.disabled = false;
     }
+  });
+}
 
-    const startTime = performance.now();
-    const results = await session.run(feeds);
-    const duration = (performance.now() - startTime).toFixed(0);
-
-    log(`Suy luận ONNX hoàn tất trong ${duration}ms`);
-
-    const audioData = results.output.data;
-    const sampleRate = modelConfig.audio?.sample_rate || 22050;
-    const wavBlob = pcmToWav(audioData, sampleRate);
-
-    audioPlayer.src = URL.createObjectURL(wavBlob);
-    audioPlayer.play();
-  } catch (err) {
-    log(`LỖI TỔNG HỢP: ${err.message}`, 'error');
-  } finally {
-    speakBtn.disabled = false;
-  }
-});
-
-// Chạy tự động khi trang tải xong
-window.addEventListener('DOMContentLoaded', autoDetectAndInit);
+// Khởi chạy tự động khi ứng dụng tải xong
+window.addEventListener('DOMContentLoaded', scanAndInitModels);
