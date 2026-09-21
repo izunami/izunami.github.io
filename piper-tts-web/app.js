@@ -7,13 +7,13 @@ let currentModelPath = null;
 let phonemizerInstance = null;
 let isPhonemizerReady = false;
 
-// Danh sách mô hình quét trong thư mục ./model/
+// Danh sách mô hình trong ./model/
 const MODEL_LIST = [
   { name: 'Trấn Thành (tranthanh)', path: './model/tranthanh.onnx.json' },
   { name: 'Mỹ Tâm (mytam)', path: './model/mytam.onnx.json' },
   { name: 'Ngọc Ngạn (ngocngan)', path: './model/ngocngan.onnx.json' },
   { name: 'Việt Thảo (vietthao)', path: './model/vietthao.onnx.json' },
-  { name: 'Ban Mai (banmai)', path: './model/banmai.onnx.json' },
+  { name: 'Bàn Mai (banmai)', path: './model/banmai.onnx.json' },
   { name: 'Mai Phương (maiphuong)', path: './model/maiphuong.onnx.json' },
   { name: 'Mạnh Dũng (manhdung)', path: './model/manhdung.onnx.json' },
   { name: 'Minh Khang (minhkhang)', path: './model/minhkhang.onnx.json' },
@@ -81,31 +81,31 @@ function setStatus(state, text) {
   }
 }
 
-// 1. Khởi tạo WASM Phonemizer & Ép Emscripten nạp file piper_phonemize.data (~25MB) từ CDN
+// 1. Khởi tạo WASM Phonemizer với cơ chế Timeout tự động
 async function initWasmPhonemizer() {
-  try {
-    log("Đang tải dữ liệu từ điển eSpeak Tiếng Việt (piper_phonemize.data ~25MB)...");
-    log("Lần đầu tiên nạp sẽ mất khoảng 10-20 giây tùy tốc độ mạng, vui lòng chờ...");
+  log("Đang tải dữ liệu từ điển eSpeak Tiếng Việt (piper_phonemize.data ~25MB)...");
 
-    phonemizerInstance = await createPiperPhonemize({
-      locateFile: (file) => {
-        const cdnUrl = `https://cdn.jsdelivr.net/npm/@gutenye/piper-phonemize-js@0.1.0/dist/${file}`;
-        log(`[WASM CDN] Đang nạp tài nguyên: ${file}`);
-        return cdnUrl;
-      }
+  // Tạo lời hứa Timeout sau 8 giây nếu CDN bị nghẽn
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("Quá thời gian nạp CDN (Timeout 8s)")), 8000)
+  );
+
+  try {
+    const loadPromise = createPiperPhonemize({
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@gutenye/piper-phonemize-js@0.1.0/dist/${file}`
     });
 
+    phonemizerInstance = await Promise.race([loadPromise, timeoutPromise]);
     isPhonemizerReady = true;
-    log("Đã tải xong 100% bộ từ điển eSpeak-NG Tiếng Việt (piper_phonemize.data)!");
-    
-    if (speakBtn && session) speakBtn.disabled = false;
+    log("Đã tải xong 100% bộ từ điển eSpeak-NG Tiếng Việt WASM!");
   } catch (err) {
-    log(`LỖI NẠP TỪ ĐIỂN WASM: ${err.message}`, "error");
+    log(`CẢNH BÁO: ${err.message}. Hệ thống sẽ sử dụng bộ dịch ký tự dự phòng.`, "warn");
     isPhonemizerReady = false;
+  } finally {
+    if (speakBtn && session) speakBtn.disabled = false;
   }
 }
 
-// 2. Nạp danh sách Dropdown
 function populateModelDropdown() {
   if (!modelSelect) return;
   modelSelect.innerHTML = '';
@@ -118,7 +118,6 @@ function populateModelDropdown() {
   modelSelect.disabled = false;
 }
 
-// 3. Nạp Mô hình ONNX từ đường dẫn
 async function loadModelFromPath(jsonPath) {
   try {
     if (speakBtn) speakBtn.disabled = true;
@@ -133,7 +132,7 @@ async function loadModelFromPath(jsonPath) {
     setupSpeakerSelect(modelConfig);
 
     const onnxPath = jsonPath.replace('.json', '');
-    log(`Đang nạp trọng số ONNX: ${onnxPath}...`);
+    log(`Đang nạp mô hình ONNX: ${onnxPath}...`);
 
     if (session) {
       try { await session.release(); } catch(e) {}
@@ -143,47 +142,13 @@ async function loadModelFromPath(jsonPath) {
     currentModelPath = jsonPath;
     
     log(`Đã nạp xong mô hình [${jsonPath.split('/').pop().replace('.onnx.json', '')}]!`);
+    setStatus('success', 'Client Engine Sẵn Sàng');
     
-    if (isPhonemizerReady) {
-      setStatus('success', '100% Offline Engine Sẵn Sàng');
-      if (speakBtn) speakBtn.disabled = false;
-    } else {
-      setStatus('warning', 'Đang chờ nạp từ điển Tiếng Việt...');
-    }
+    // Luôn mở nút bấm ngay khi ONNX nạp xong
+    if (speakBtn) speakBtn.disabled = false;
   } catch (err) {
     log(`LỖI NẠP MODEL: ${err.message}`, "error");
     setStatus('error', 'Lỗi nạp model');
-  }
-}
-
-// 4. Nạp Mô hình từ File chọn từ Máy tính
-async function loadModelFromFiles(onnxFile, jsonFile) {
-  try {
-    if (speakBtn) speakBtn.disabled = true;
-    setStatus('warning', 'Đang đọc file chọn...');
-    log(`Đang đọc file JSON từ máy: ${jsonFile.name}...`);
-
-    const jsonText = await jsonFile.text();
-    modelConfig = JSON.parse(jsonText);
-
-    updateMetadataUI(modelConfig);
-    setupSpeakerSelect(modelConfig);
-
-    log(`Đang nạp binary ONNX: ${onnxFile.name}...`);
-    const onnxArrayBuffer = await onnxFile.arrayBuffer();
-
-    if (session) {
-      try { await session.release(); } catch(e) {}
-    }
-
-    session = await ort.InferenceSession.create(onnxArrayBuffer);
-    log("Nạp mô hình từ máy tính thành công!");
-
-    setStatus('success', 'Model từ máy (Sẵn sàng)');
-    if (speakBtn && isPhonemizerReady) speakBtn.disabled = false;
-  } catch (err) {
-    log(`Lỗi nạp file: ${err.message}`, "error");
-    setStatus('error', 'Lỗi file');
   }
 }
 
@@ -234,54 +199,48 @@ function setupSpeakerSelect(config) {
   }
 }
 
-// 5. CHUYỂN ĐỔI CHỮ TIẾNG VIỆT SANG PHONEME IDs DÙNG WASM PIPER PHONEMIZE
+// 2. Chuyển đổi chữ Tiếng Việt sang Phoneme IDs (An toàn)
 async function textToPhonemeIds(text, config) {
   const idMap = config.phoneme_id_map;
   if (!idMap) return [];
 
-  if (!isPhonemizerReady || !phonemizerInstance) {
-    throw new Error("Bộ từ điển eSpeak WASM chưa tải xong! Vui lòng chờ vài giây rồi thử lại.");
-  }
-
   let phonemesArray = [];
 
-  try {
-    // Dịch chữ "Xin chào" -> Mảng âm tiết IPA chuẩn eSpeak "vi_VN"
-    const res = phonemizerInstance.phonemize(text, "vi_VN");
-    
-    if (res && res.length > 0) {
-      const phonemesStr = Array.isArray(res[0]) ? res[0].join("") : res[0];
-      // Dùng Array.from để bảo toàn ký tự Unicode IPA ghép (như ː, ʔ, ɓ, ɗ...)
-      phonemesArray = Array.from(phonemesStr);
+  if (isPhonemizerReady && phonemizerInstance) {
+    try {
+      const res = phonemizerInstance.phonemize(text, "vi_VN");
+      if (res && res.length > 0) {
+        const phonemesStr = Array.isArray(res[0]) ? res[0].join("") : res[0];
+        phonemesArray = Array.from(phonemesStr);
+      }
+      log(`Âm tiết IPA thu được: "${phonemesArray.join("")}"`);
+    } catch (e) {
+      log(`Chuyển sang bộ tách ký tự dự phòng...`, "warn");
+      phonemesArray = Array.from(text.normalize('NFC').toLowerCase());
     }
-    
-    log(`Âm tiết IPA thu được: "${phonemesArray.join("")}"`);
-  } catch (e) {
-    throw new Error(`Lỗi phiên âm WASM: ${e.message}`);
+  } else {
+    log("Sử dụng bộ tách ký tự dự phòng...", "warn");
+    phonemesArray = Array.from(text.normalize('NFC').toLowerCase());
   }
 
   const ids = [];
 
-  // Token BOS ^
   if (idMap["^"]) ids.push(...idMap["^"]);
 
-  // Tra từng ký tự IPA vào phoneme_id_map của Piper
   for (const char of phonemesArray) {
     if (idMap[char]) {
       ids.push(...idMap[char]);
-      if (idMap["_"]) ids.push(...idMap["_"]); // Token đệm PAD
+      if (idMap["_"]) ids.push(...idMap["_"]);
     } else if (idMap[" "]) {
       ids.push(...idMap[" "]);
     }
   }
 
-  // Token EOS $
   if (idMap["$"]) ids.push(...idMap["$"]);
 
   return ids;
 }
 
-// 6. PCM Float32 sang WAV Audio Blob
 function pcmToWav(pcmData, sampleRate = 22050) {
   const buffer = new ArrayBuffer(44 + pcmData.length * 2);
   const view = new DataView(buffer);
@@ -315,7 +274,7 @@ function pcmToWav(pcmData, sampleRate = 22050) {
   return new Blob([view], { type: 'audio/wav' });
 }
 
-// Event Listeners
+// Listeners
 if (modelSelect) {
   modelSelect.addEventListener('change', async (e) => {
     const selectedPath = e.target.value;
@@ -370,22 +329,6 @@ if (btnClearLog) {
   });
 }
 
-const btnLoadCustom = document.getElementById('btn-load-custom');
-if (btnLoadCustom) {
-  btnLoadCustom.addEventListener('click', () => {
-    const jsonFile = document.getElementById('input-json')?.files[0];
-    const onnxFile = document.getElementById('input-onnx')?.files[0];
-
-    if (!jsonFile || !onnxFile) {
-      alert("Vui lòng chọn đầy đủ cả 2 file (.json và .onnx)!");
-      return;
-    }
-
-    loadModelFromFiles(onnxFile, jsonFile);
-  });
-}
-
-// 7. Thực thi Tạo Giọng Đọc
 if (speakBtn) {
   speakBtn.addEventListener('click', async () => {
     const text = textInput ? textInput.value.trim() : '';
@@ -441,10 +384,10 @@ if (speakBtn) {
   });
 }
 
-// Khởi tạo khi load trang
+// Khởi tạo
 window.addEventListener('DOMContentLoaded', async () => {
   populateModelDropdown();
-  initWasmPhonemizer(); // Nạp song song từ điển eSpeak WASM
+  initWasmPhonemizer(); // Chạy song song không chặn giao diện
   if (MODEL_LIST.length > 0) {
     await loadModelFromPath(MODEL_LIST[0].path);
   }
