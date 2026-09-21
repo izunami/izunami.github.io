@@ -1,13 +1,10 @@
-// Import piper-phonemize WASM bundle chính thức
-import { createPiperPhonemize } from "https://cdn.jsdelivr.net/npm/@gutenye/piper-phonemize-js@0.1.0/dist/piper-phonemize.mjs";
-
 let session = null;
 let modelConfig = null;
 let currentModelPath = null;
 let phonemizerInstance = null;
 let isPhonemizerReady = false;
 
-// Danh sách mô hình trong ./model/
+// Danh sách mô hình quét trong thư mục ./model/
 const MODEL_LIST = [
   { name: 'Trấn Thành (tranthanh)', path: './model/tranthanh.onnx.json' },
   { name: 'Mỹ Tâm (mytam)', path: './model/mytam.onnx.json' },
@@ -81,28 +78,23 @@ function setStatus(state, text) {
   }
 }
 
-// 1. Khởi tạo WASM Phonemizer với cơ chế Timeout tự động
+// 1. Nạp WASM Phonemizer dạng Nạp Động (Dynamic Import) - Không gây đơ UI
 async function initWasmPhonemizer() {
-  log("Đang tải dữ liệu từ điển eSpeak Tiếng Việt (piper_phonemize.data ~25MB)...");
-
-  // Tạo lời hứa Timeout sau 8 giây nếu CDN bị nghẽn
-  const timeoutPromise = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error("Quá thời gian nạp CDN (Timeout 8s)")), 8000)
-  );
+  log("Đang nạp bộ từ điển eSpeak Tiếng Việt (piper-phonemize)...");
 
   try {
-    const loadPromise = createPiperPhonemize({
+    // Dùng dynamic import để tránh đứng trang nếu CDN bị treo
+    const { createPiperPhonemize } = await import("https://cdn.jsdelivr.net/npm/@gutenye/piper-phonemize-js@0.1.0/dist/piper-phonemize.mjs");
+
+    phonemizerInstance = await createPiperPhonemize({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@gutenye/piper-phonemize-js@0.1.0/dist/${file}`
     });
 
-    phonemizerInstance = await Promise.race([loadPromise, timeoutPromise]);
     isPhonemizerReady = true;
-    log("Đã tải xong 100% bộ từ điển eSpeak-NG Tiếng Việt WASM!");
+    log("Đã nạp thành công bộ từ điển WASM Phonemizer Tiếng Việt!");
   } catch (err) {
-    log(`CẢNH BÁO: ${err.message}. Hệ thống sẽ sử dụng bộ dịch ký tự dự phòng.`, "warn");
+    log(`CẢNH BÁO: CDN nạp từ điển WASM thất bại (${err.message}). Chuyển sang bộ tách ký tự dự phòng.`, "warn");
     isPhonemizerReady = false;
-  } finally {
-    if (speakBtn && session) speakBtn.disabled = false;
   }
 }
 
@@ -118,6 +110,7 @@ function populateModelDropdown() {
   modelSelect.disabled = false;
 }
 
+// 2. Nạp Mô hình ONNX từ Thư Mục
 async function loadModelFromPath(jsonPath) {
   try {
     if (speakBtn) speakBtn.disabled = true;
@@ -132,7 +125,7 @@ async function loadModelFromPath(jsonPath) {
     setupSpeakerSelect(modelConfig);
 
     const onnxPath = jsonPath.replace('.json', '');
-    log(`Đang nạp mô hình ONNX: ${onnxPath}...`);
+    log(`Đang nạp trọng số mô hình ONNX: ${onnxPath}...`);
 
     if (session) {
       try { await session.release(); } catch(e) {}
@@ -144,7 +137,7 @@ async function loadModelFromPath(jsonPath) {
     log(`Đã nạp xong mô hình [${jsonPath.split('/').pop().replace('.onnx.json', '')}]!`);
     setStatus('success', 'Client Engine Sẵn Sàng');
     
-    // Luôn mở nút bấm ngay khi ONNX nạp xong
+    // Luôn mở khóa nút bấm ngay khi ONNX nạp xong
     if (speakBtn) speakBtn.disabled = false;
   } catch (err) {
     log(`LỖI NẠP MODEL: ${err.message}`, "error");
@@ -199,7 +192,7 @@ function setupSpeakerSelect(config) {
   }
 }
 
-// 2. Chuyển đổi chữ Tiếng Việt sang Phoneme IDs (An toàn)
+// 3. Chuyển đổi Tiếng Việt sang Phoneme IDs (An toàn)
 async function textToPhonemeIds(text, config) {
   const idMap = config.phoneme_id_map;
   if (!idMap) return [];
@@ -213,9 +206,9 @@ async function textToPhonemeIds(text, config) {
         const phonemesStr = Array.isArray(res[0]) ? res[0].join("") : res[0];
         phonemesArray = Array.from(phonemesStr);
       }
-      log(`Âm tiết IPA thu được: "${phonemesArray.join("")}"`);
+      log(`Chuỗi IPA thu được: "${phonemesArray.join("")}"`);
     } catch (e) {
-      log(`Chuyển sang bộ tách ký tự dự phòng...`, "warn");
+      log(`Lỗi dịch WASM, dùng bộ dự phòng: ${e.message}`, "warn");
       phonemesArray = Array.from(text.normalize('NFC').toLowerCase());
     }
   } else {
@@ -274,7 +267,7 @@ function pcmToWav(pcmData, sampleRate = 22050) {
   return new Blob([view], { type: 'audio/wav' });
 }
 
-// Listeners
+// Event Listeners
 if (modelSelect) {
   modelSelect.addEventListener('change', async (e) => {
     const selectedPath = e.target.value;
@@ -343,7 +336,7 @@ if (speakBtn) {
         throw new Error("Không thể tạo ID âm tiết từ văn bản nhập vào!");
       }
 
-      log(`Mảng Phoneme IDs chuẩn được tạo (Độ dài: ${phonemeIds.length})`);
+      log(`Mảng Phoneme IDs tạo xong (Độ dài: ${phonemeIds.length})`);
 
       const inputSequence = new BigInt64Array(phonemeIds.map(id => BigInt(id)));
       const tensorInput = new ort.Tensor('int64', inputSequence, [1, inputSequence.length]);
@@ -384,10 +377,10 @@ if (speakBtn) {
   });
 }
 
-// Khởi tạo
+// Khởi tạo chạy song song ngay khi tải trang
 window.addEventListener('DOMContentLoaded', async () => {
   populateModelDropdown();
-  initWasmPhonemizer(); // Chạy song song không chặn giao diện
+  initWasmPhonemizer(); // Chạy song song ngầm, không làm nghẽn UI
   if (MODEL_LIST.length > 0) {
     await loadModelFromPath(MODEL_LIST[0].path);
   }
