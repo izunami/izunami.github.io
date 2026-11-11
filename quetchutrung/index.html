@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OCR Chữ Trung - Gemini AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+  <div class="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
+
+    <!-- Header & API Key Setup -->
+    <header class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <span>🀄 OCR Chữ Trung Quốc</span>
+          <span class="text-xs bg-emerald-100 text-emerald-700 font-semibold px-2 py-0.5 rounded-full">Gemini Flash</span>
+        </h1>
+        <p class="text-xs text-slate-500 mt-0.5">Dán ảnh bất kỳ đâu bằng phím tắt <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded font-mono text-[11px]">Ctrl + V</kbd></p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="relative flex-1 sm:w-64">
+          <input type="password" id="apiKeyInput" placeholder="Nhập Gemini API Key..." 
+            class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <button id="saveKeyBtn" onclick="saveApiKey()" 
+          class="text-xs px-3 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition font-medium">Lưu</button>
+      </div>
+    </header>
+
+    <!-- Paste Zone -->
+    <div id="dropZone" onclick="document.getElementById('fileInput').click()" 
+      class="border-2 border-dashed border-slate-300 hover:border-indigo-500 bg-white hover:bg-indigo-50/30 rounded-xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-2">
+      <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+      <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-xl font-bold">📋</div>
+      <p class="text-sm font-medium text-slate-700">
+        Nhấn <span class="text-indigo-600 font-semibold">Ctrl + V</span> bất kỳ đâu để dán ảnh
+      </p>
+      <p class="text-xs text-slate-400">hoặc nhấp vào đây / kéo thả ảnh từ thiết bị</p>
+    </div>
+
+    <!-- Status / Loading -->
+    <div id="statusBox" class="hidden p-3 rounded-lg text-xs font-medium text-center"></div>
+
+    <!-- Main Output Result -->
+    <div id="resultCard" class="hidden bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+        <h2 class="text-sm font-bold text-slate-900">Kết quả phân tích</h2>
+        <button onclick="copyRawText()" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Sao chép chữ Hán</button>
+      </div>
+
+      <div class="p-5 space-y-4">
+        <!-- Full Text Overview -->
+        <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-100 space-y-1.5">
+          <div class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Đoạn văn gốc:</div>
+          <div id="fullText" class="text-base text-slate-900 font-medium"></div>
+          <div class="text-xs text-slate-500 font-semibold uppercase tracking-wider mt-2">Dịch nghĩa tổng quan:</div>
+          <div id="fullTranslation" class="text-sm text-slate-700"></div>
+        </div>
+
+        <!-- Breakdown Table -->
+        <div>
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Chi tiết từng từ / cụm từ</div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border border-slate-200 rounded-lg overflow-hidden">
+              <thead class="bg-slate-100 text-slate-700 font-semibold">
+                <tr>
+                  <th class="p-2.5 border-b">Chữ Hán</th>
+                  <th class="p-2.5 border-b">Bính âm (Pinyin)</th>
+                  <th class="p-2.5 border-b">Hán Việt</th>
+                  <th class="p-2.5 border-b">Nghĩa tiếng Việt</th>
+                </tr>
+              </thead>
+              <tbody id="breakdownTbody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent 10 Scans History -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-3">
+      <div class="flex justify-between items-center">
+        <h3 class="text-sm font-bold text-slate-900">Lịch sử 10 lần quét gần nhất</h3>
+        <button onclick="clearHistory()" class="text-xs text-rose-600 hover:text-rose-800 font-medium">Xóa lịch sử</button>
+      </div>
+      <div id="historyList" class="space-y-2">
+        <p class="text-xs text-slate-400 italic py-2">Chưa có lịch sử quét nào.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const STORAGE_KEY_API = 'gemini_ocr_api_key';
+    const STORAGE_KEY_HISTORY = 'gemini_ocr_history';
+
+    // Khởi tạo API Key và Lịch sử khi tải trang
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedKey = localStorage.getItem(STORAGE_KEY_API);
+      if (savedKey) document.getElementById('apiKeyInput').value = savedKey;
+      renderHistory();
+    });
+
+    function saveApiKey() {
+      const key = document.getElementById('apiKeyInput').value.trim();
+      if (!key) {
+        showStatus('Vui lòng nhập API Key hợp lệ!', 'error');
+        return;
+      }
+      localStorage.setItem(STORAGE_KEY_API, key);
+      showStatus('Đã lưu API Key thành công!', 'success');
+    }
+
+    // Bắt sự kiện Paste toàn cục (Ctrl + V)
+    window.addEventListener('paste', (event) => {
+      const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+      for (let item of items) {
+        if (item.type.indexOf('image') !== -1) {
+          const file = item.getAsFile();
+          handleImageFile(file);
+          event.preventDefault();
+          return;
+        }
+      }
+    });
+
+    // Kéo thả và Chọn file thủ công
+    const dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('bg-indigo-50/50'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('bg-indigo-50/50'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('bg-indigo-50/50');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        handleImageFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    function handleFileSelect(e) {
+      if (e.target.files && e.target.files[0]) {
+        handleImageFile(e.target.files[0]);
+      }
+    }
+
+    function handleImageFile(file) {
+      const apiKey = localStorage.getItem(STORAGE_KEY_API) || document.getElementById('apiKeyInput').value.trim();
+      if (!apiKey) {
+        showStatus('Vui lòng nhập và lưu Google Gemini API Key trước khi quét.', 'error');
+        document.getElementById('apiKeyInput').focus();
+        return;
+      }
+
+      showStatus('Đang gửi ảnh và phân tích qua Gemini AI...', 'loading');
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64Data = reader.result.split(',')[1];
+        const mimeType = file.type || 'image/png';
+        await analyzeChineseOCR(base64Data, mimeType, apiKey);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function analyzeChineseOCR(base64Data, mimeType, apiKey) {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
+
+      const prompt = `Bạn là trợ lý chuyên sâu về chữ Hán và tiếng Trung. Hãy nhận diện chính xác toàn bộ chữ Hán có trong ảnh và trả về kết quả theo định dạng JSON thuần túy (không bọc trong \`\`\`json):
+{
+  "full_text": "Toàn bộ chuỗi chữ Hán nhận diện được",
+  "full_translation": "Bản dịch toàn bộ đoạn văn sang tiếng Việt tự nhiên",
+  "items": [
+    {
+      "hanzi": "Từ hoặc cụm từ chữ Hán",
+      "pinyin": "Bính âm có kèm thanh điệu chính xác (ví dụ: nǐ hǎo)",
+      "hanviet": "Âm Hán Việt tương ứng",
+      "meaning": "Giải nghĩa tiếng Việt ngắn gọn, dễ hiểu"
+    }
+  ]
+}`;
+
+      const payload = {
+        contents: [{
+          parts: [
+            { inline_data: { mime_type: mimeType, data: base64Data } },
+            { text: prompt }
+          ]
+        }],
+        generationConfig: {
+          response_mime_type: "application/json"
+        }
+      };
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `Lỗi API (${response.status})`);
+        }
+
+        const data = await response.json();
+        const candidate = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!candidate) throw new Error('Không nhận được nội dung phản hồi từ mô hình.');
+
+        const parsed = JSON.parse(candidate);
+        renderResult(parsed);
+        saveHistoryItem(parsed);
+        showStatus('Đã quét xong thành công!', 'success', 2500);
+      } catch (err) {
+        console.error(err);
+        showStatus(`Quét thất bại: ${err.message}`, 'error');
+      }
+    }
+
+    function renderResult(data) {
+      document.getElementById('fullText').textContent = data.full_text || 'Không có văn bản';
+      document.getElementById('fullTranslation').textContent = data.full_translation || 'Không có bản dịch';
+
+      const tbody = document.getElementById('breakdownTbody');
+      tbody.innerHTML = '';
+
+      if (data.items && Array.isArray(data.items)) {
+        data.items.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50 transition';
+          tr.innerHTML = `
+            <td class="p-2.5 font-bold text-slate-900 text-sm font-serif">${item.hanzi || ''}</td>
+            <td class="p-2.5 text-indigo-600 font-mono">${item.pinyin || ''}</td>
+            <td class="p-2.5 text-slate-700 font-medium">${item.hanviet || ''}</td>
+            <td class="p-2.5 text-slate-600">${item.meaning || ''}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      document.getElementById('resultCard').classList.remove('hidden');
+    }
+
+    function copyRawText() {
+      const text = document.getElementById('fullText').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Đã sao chép chữ Hán vào bộ nhớ tạm.');
+      });
+    }
+
+    // Quản lý lịch sử 10 lần quét
+    function saveHistoryItem(itemData) {
+      let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+      const record = {
+        id: Date.now(),
+        time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }),
+        data: itemData
+      };
+
+      history.unshift(record);
+      if (history.length > 10) history = history.slice(0, 10);
+
+      localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+      const container = document.getElementById('historyList');
+
+      if (history.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 italic py-2">Chưa có lịch sử quét nào.</p>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      history.forEach((h) => {
+        const item = document.createElement('div');
+        item.className = 'p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg flex justify-between items-center cursor-pointer transition';
+        item.onclick = () => renderResult(h.data);
+        item.innerHTML = `
+          <div class="truncate max-w-[80%]">
+            <span class="font-bold text-slate-800 text-sm mr-2">${h.data.full_text || 'Chữ Hán'}</span>
+            <span class="text-xs text-slate-500 truncate block sm:inline">${h.data.full_translation || ''}</span>
+          </div>
+          <span class="text-[11px] text-slate-400 font-mono ml-2 shrink-0">${h.time}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function clearHistory() {
+      if (confirm('Xóa toàn bộ 10 lịch sử quét gần nhất?')) {
+        localStorage.removeItem(STORAGE_KEY_HISTORY);
+        renderHistory();
+      }
+    }
+
+    function showStatus(msg, type, autoHideMs = 0) {
+      const box = document.getElementById('statusBox');
+      box.textContent = msg;
+      box.className = 'p-3 rounded-lg text-xs font-medium text-center';
+
+      if (type === 'error') box.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
+      else if (type === 'success') box.classList.add('bg-emerald-50', 'text-emerald-700', 'border', 'border-emerald-200');
+      else box.classList.add('bg-indigo-50', 'text-indigo-700', 'border', 'border-indigo-200');
+
+      box.classList.remove('hidden');
+      if (autoHideMs > 0) {
+        setTimeout(() => box.classList.add('hidden'), autoHideMs);
+      }
+    }
+  </script>
+</body>
+</html>
