@@ -8,11 +8,29 @@
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; }
     .chinese-font { font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", serif; }
-    /* Thanh cuộn gọn gàng cho lịch sử */
+    
+    /* Thanh cuộn lịch sử */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Hiệu ứng tia Laser quét chuyển động trên ảnh */
+    @keyframes scanLineAnimation {
+      0% { top: 2%; opacity: 0.3; }
+      50% { top: 96%; opacity: 1; }
+      100% { top: 2%; opacity: 0.3; }
+    }
+    .scanner-laser {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #818cf8, #4f46e5, #818cf8, transparent);
+      box-shadow: 0 0 15px 3px rgba(99, 102, 241, 0.7);
+      animation: scanLineAnimation 2s ease-in-out infinite;
+      z-index: 25;
+    }
   </style>
 </head>
 <body class="bg-[#f8fafc] text-slate-800 min-h-screen pb-12">
@@ -51,10 +69,10 @@
   <main class="max-w-6xl mx-auto px-4 py-6">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-      <!-- CỘT TRÁI: Khung ảnh đối chiếu + Kết quả phân tích (8 Cột) -->
-      <div class="lg:col-span-8 space-y-5">
+      <!-- CỘT TRÁI: Khung ảnh đối chiếu + Trạng thái lỗi + Kết quả phân tích (8 Cột) -->
+      <div class="lg:col-span-8 space-y-4">
 
-        <!-- Khung ảnh dán (Ảnh giữ nguyên để so sánh chữ) -->
+        <!-- Khung ảnh dán (Có Scanner Laser và Loading Overlay) -->
         <div id="dropZone" onclick="document.getElementById('fileInput').click()" 
           class="relative border-2 border-dashed border-indigo-300 hover:border-indigo-500 bg-white rounded-2xl min-h-[220px] max-h-[360px] flex flex-col items-center justify-center p-3 text-center cursor-pointer transition overflow-hidden group shadow-sm">
           <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
@@ -67,12 +85,40 @@
           </div>
 
           <!-- Ảnh preview lưu lại để đối chiếu nét chữ -->
-          <img id="previewImg" class="hidden max-h-[330px] w-auto max-w-full object-contain rounded-xl shadow-sm" alt="Ảnh đang đối chiếu">
+          <img id="previewImg" class="hidden max-h-[330px] w-auto max-w-full object-contain rounded-xl shadow-sm transition" alt="Ảnh đang đối chiếu">
+
+          <!-- TRẠNG THÁI LOADING QUÉT (Scanner Laser & Spinner Overlay) -->
+          <div id="scanLoadingOverlay" class="hidden absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] flex flex-col items-center justify-center gap-3 text-white z-20 transition-all duration-200">
+            <div class="scanner-laser"></div>
+            <div class="relative w-12 h-12 flex items-center justify-center">
+              <div class="w-12 h-12 rounded-full border-4 border-indigo-200/30 border-t-indigo-400 animate-spin"></div>
+              <span class="text-base font-bold absolute">🀄</span>
+            </div>
+            <div class="text-center space-y-1 px-4">
+              <p id="loadingTitle" class="text-sm font-bold tracking-wide text-white">Đang quét chữ Hán siêu tốc...</p>
+              <p class="text-[11px] text-indigo-200">Gemini AI đang bóc tách Bính âm, Hán Việt và dịch nghĩa</p>
+            </div>
+          </div>
 
           <!-- Lớp phủ gợi ý khi rê chuột -->
-          <div id="reuploadHint" class="hidden absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-medium gap-2">
+          <div id="reuploadHint" class="hidden absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-medium gap-2 z-10">
             <span>📷 Nhấp hoặc dán Ctrl+V để đổi ảnh khác</span>
           </div>
+        </div>
+
+        <!-- KHỐI THÔNG BÁO LỖI KÈM NÚT QUÉT LẠI -->
+        <div id="errorBox" class="hidden bg-rose-50 border border-rose-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-rose-800 shadow-sm animate-fadeIn">
+          <div class="flex items-center gap-3 text-left">
+            <span class="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-lg shrink-0 font-bold">⚠️</span>
+            <div>
+              <p class="text-xs font-bold text-rose-900">Quét thất bại!</p>
+              <p id="errorMessage" class="text-xs text-rose-700 mt-0.5 line-clamp-2">Lỗi kết nối hoặc API Key không hợp lệ.</p>
+            </div>
+          </div>
+          <button onclick="retryScan()" class="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition shrink-0 shadow-sm shadow-rose-200 active:scale-95">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span>Quét lại</span>
+          </button>
         </div>
 
         <!-- Khung kết quả phân tích -->
@@ -161,7 +207,7 @@
       <!-- CỘT PHẢI: Hướng dẫn nhanh & Lịch sử 10 lần quét (4 Cột) -->
       <div class="lg:col-span-4 space-y-5">
         
-        <!-- Thẻ Hướng Dẫn Nhanh Xanh Tím (Đã thêm hướng dẫn API Key) -->
+        <!-- Thẻ Hướng Dẫn Nhanh Xanh Tím -->
         <div class="bg-gradient-to-br from-indigo-600 via-indigo-600 to-violet-700 text-white rounded-2xl p-5 shadow-sm space-y-3.5">
           <div class="flex items-center justify-between font-bold text-sm">
             <div class="flex items-center gap-2">
@@ -228,6 +274,8 @@
     const STORAGE_KEY_HISTORY = 'gemini_ocr_history_v3';
 
     let currentResult = null;
+    let lastImageFile = null;
+    let lastDataUrl = null;
 
     window.addEventListener('DOMContentLoaded', () => {
       const savedKey = localStorage.getItem(STORAGE_KEY_API);
@@ -254,6 +302,25 @@
       }
       localStorage.setItem(STORAGE_KEY_API, key);
       showToast('Đã lưu API Key thành công!', 'success');
+      
+      // Nếu đang có lỗi do thiếu Key, ẩn lỗi đi
+      document.getElementById('errorBox').classList.add('hidden');
+    }
+
+    // Quản lý trạng thái Loading
+    function setLoading(isLoading, text = 'Đang quét chữ Hán siêu tốc...') {
+      const overlay = document.getElementById('scanLoadingOverlay');
+      const title = document.getElementById('loadingTitle');
+      const reuploadHint = document.getElementById('reuploadHint');
+
+      if (isLoading) {
+        title.textContent = text;
+        overlay.classList.remove('hidden');
+        reuploadHint.classList.add('hidden');
+      } else {
+        overlay.classList.add('hidden');
+        reuploadHint.classList.remove('hidden');
+      }
     }
 
     // Bắt phím Ctrl + V toàn trang
@@ -262,7 +329,7 @@
       for (let item of items) {
         if (item.type.indexOf('image') !== -1) {
           const file = item.getAsFile();
-          showToast('⚡ Đã nhận ảnh từ Clipboard! Đang quét...', 'info', 2000);
+          showToast('⚡ Đã nhận ảnh từ Clipboard!', 'info', 1500);
           handleImageFile(file);
           event.preventDefault();
           return;
@@ -289,19 +356,26 @@
       }
     }
 
-    // Hiển thị ảnh ngay lên khung và nén ảnh
+    // Lưu ảnh và xử lý
     function handleImageFile(file) {
+      lastImageFile = file;
       const reader = new FileReader();
       reader.onload = async (e) => {
-        const fullDataUrl = e.target.result;
-
-        // Giữ ảnh hiển thị trên khung quét để đối chiếu
-        displayPreviewImage(fullDataUrl);
-
-        // Nén và gửi API
-        await processAndSendImage(file, fullDataUrl);
+        lastDataUrl = e.target.result;
+        displayPreviewImage(lastDataUrl);
+        await processAndSendImage(file, lastDataUrl);
       };
       reader.readAsDataURL(file);
+    }
+
+    // Hàm gọi khi bấm nút "Quét lại"
+    async function retryScan() {
+      if (!lastImageFile || !lastDataUrl) {
+        showToast('Chưa có ảnh nào để quét lại!', 'error');
+        return;
+      }
+      document.getElementById('errorBox').classList.add('hidden');
+      await processAndSendImage(lastImageFile, lastDataUrl);
     }
 
     function displayPreviewImage(dataUrl) {
@@ -309,10 +383,9 @@
       previewImg.src = dataUrl;
       previewImg.classList.remove('hidden');
       document.getElementById('dropPrompt').classList.add('hidden');
-      document.getElementById('reuploadHint').classList.remove('hidden');
     }
 
-    // Nén ảnh Canvas: siêu tốc + thumbnail nhẹ không lo tràn LocalStorage
+    // Nén ảnh Canvas
     function compressImage(file, maxWidth = 1024, quality = 0.8) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -335,7 +408,7 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, w, h);
 
-            // Thumbnail vuông 64x64 siêu nhẹ (~2KB)
+            // Thumbnail vuông 64x64 siêu nhẹ
             const thumbCanvas = document.createElement('canvas');
             thumbCanvas.width = 64; thumbCanvas.height = 64;
             const thumbCtx = thumbCanvas.getContext('2d');
@@ -359,13 +432,16 @@
       const apiKey = localStorage.getItem(STORAGE_KEY_API) || document.getElementById('apiKeyInput').value.trim();
       const model = localStorage.getItem(STORAGE_KEY_MODEL) || document.getElementById('modelSelect').value;
 
+      // Ẩn bảng lỗi cũ nếu có
+      document.getElementById('errorBox').classList.add('hidden');
+
       if (!apiKey) {
-        showToast('Vui lòng nhập và Lưu Gemini API Key!', 'error');
+        showErrorBox('Vui lòng nhập và bấm "Lưu" Gemini API Key trên thanh Menu trước khi quét!');
         document.getElementById('apiKeyInput').focus();
         return;
       }
 
-      showToast('⚡ Đang quét và bóc tách chữ Hán...', 'info');
+      setLoading(true, 'Đang phân tích chữ Hán...');
 
       try {
         const { base64Data, mimeType, thumbnail } = await compressImage(file);
@@ -377,8 +453,18 @@
         showToast('✅ Đã quét xong thành công!', 'success', 2500);
       } catch (err) {
         console.error(err);
-        showToast(`Quét thất bại: ${err.message}`, 'error', 4000);
+        showErrorBox(err.message || 'Lỗi không xác định khi kết nối mô hình Gemini.');
+        showToast(`Quét thất bại!`, 'error', 3000);
+      } finally {
+        setLoading(false);
       }
+    }
+
+    function showErrorBox(msg) {
+      const errorBox = document.getElementById('errorBox');
+      const errorMsg = document.getElementById('errorMessage');
+      errorMsg.textContent = msg;
+      errorBox.classList.remove('hidden');
     }
 
     async function requestGeminiOCR(base64Data, mimeType, apiKey, model) {
@@ -552,7 +638,11 @@
         card.className = 'group p-2 rounded-xl hover:bg-slate-50 border border-slate-100 hover:border-slate-200 flex items-center justify-between gap-2.5 cursor-pointer transition bg-white';
         card.onclick = () => {
           renderResult(h.data);
-          if (h.originalImg) displayPreviewImage(h.originalImg);
+          if (h.originalImg) {
+            lastDataUrl = h.originalImg;
+            displayPreviewImage(h.originalImg);
+          }
+          document.getElementById('errorBox').classList.add('hidden');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
