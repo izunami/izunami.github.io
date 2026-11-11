@@ -94,7 +94,7 @@
             <div id="fullHanzi" class="chinese-font text-3xl font-bold text-slate-900 leading-snug break-words tracking-wide"></div>
           </div>
 
-          <!-- 2 & 3. PINYIN & HÁN - VIỆT (Chia đôi 2 cột) -->
+          <!-- 2 & 3. PINYIN & HÁN - VIỆT -->
           <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
             <!-- Pinyin -->
             <div class="p-5 space-y-2">
@@ -161,25 +161,40 @@
       <!-- CỘT PHẢI: Hướng dẫn nhanh & Lịch sử 10 lần quét (4 Cột) -->
       <div class="lg:col-span-4 space-y-5">
         
-        <!-- Thẻ Hướng Dẫn Nhanh Xanh Tím -->
+        <!-- Thẻ Hướng Dẫn Nhanh Xanh Tím (Đã thêm hướng dẫn API Key) -->
         <div class="bg-gradient-to-br from-indigo-600 via-indigo-600 to-violet-700 text-white rounded-2xl p-5 shadow-sm space-y-3.5">
-          <div class="flex items-center gap-2 font-bold text-sm">
-            <span class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs">i</span>
-            <span>Hướng dẫn nhanh</span>
+          <div class="flex items-center justify-between font-bold text-sm">
+            <div class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs">i</span>
+              <span>Hướng dẫn nhanh</span>
+            </div>
+            <span class="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-full font-normal">Miễn phí</span>
           </div>
 
           <div class="space-y-3 text-xs text-indigo-100 font-medium">
+            <!-- Bước lấy API Key -->
+            <div class="flex items-start gap-2.5 bg-white/10 p-2.5 rounded-xl border border-white/15">
+              <span class="w-4 h-4 rounded-full bg-amber-400 text-slate-900 flex items-center justify-center text-[10px] shrink-0 font-bold mt-0.5">🔑</span>
+              <div class="space-y-1">
+                <span class="font-bold text-white">Cách lấy Gemini API Key:</span>
+                <p class="text-[11px] text-indigo-100 leading-relaxed">
+                  Truy cập <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-amber-300 underline underline-offset-2 hover:text-white font-bold transition">Google AI Studio ↗</a>, đăng nhập tài khoản Google và bấm <strong>Create API key</strong>. Sau đó dán key vào ô trên thanh Menu và bấm <strong>Lưu</strong>.
+                </p>
+              </div>
+            </div>
+
+            <!-- Các bước quét ảnh -->
             <div class="flex items-start gap-2.5">
               <span class="w-4 h-4 rounded-full bg-white/25 text-white flex items-center justify-center text-[10px] shrink-0 font-bold mt-0.5">1</span>
-              <span>Chụp ảnh đoạn văn bản hoặc menu tiếng Trung.</span>
+              <span>Chụp ảnh đoạn văn bản hoặc menu chữ Hán.</span>
             </div>
             <div class="flex items-start gap-2.5">
               <span class="w-4 h-4 rounded-full bg-white/25 text-white flex items-center justify-center text-[10px] shrink-0 font-bold mt-0.5">2</span>
-              <span>Tải ảnh lên bằng cách chọn file hoặc Dán (Ctrl+V).</span>
+              <span>Dán ảnh trực tiếp bằng phím tắt <kbd class="px-1 py-0.2 bg-white/20 rounded font-mono text-white text-[11px] font-bold">Ctrl + V</kbd> (hoặc kéo thả / chọn file).</span>
             </div>
             <div class="flex items-start gap-2.5">
               <span class="w-4 h-4 rounded-full bg-white/25 text-white flex items-center justify-center text-[10px] shrink-0 font-bold mt-0.5">3</span>
-              <span>Nhận kết quả bao gồm phiên âm, âm Hán Việt và nghĩa.</span>
+              <span>Nhận kết quả đối chiếu bao gồm phiên âm Bính âm, âm Hán Việt, từ loại và nghĩa tiếng Việt.</span>
             </div>
           </div>
         </div>
