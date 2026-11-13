@@ -54,7 +54,7 @@
           <span class="hidden md:inline uppercase tracking-wider text-[11px]">Mô hình:</span>
           <select id="modelSelect" class="bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             <option value="gemini-3.6-flash" selected>Gemini 3.6 Flash (Siêu tốc)</option>
-            <option value="gemini-3.8-flash">Gemini 3.8 Flash (Mới nhất)</option>
+            <option value="hydrogen">Hydrogen (Mới nhất)</option>
           </select>
         </div>
 
@@ -279,11 +279,21 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       const savedKey = localStorage.getItem(STORAGE_KEY_API);
-      const savedModel = localStorage.getItem(STORAGE_KEY_MODEL);
-      if (savedKey) document.getElementById('apiKeyInput').value = savedKey;
-      if (savedModel) document.getElementById('modelSelect').value = savedModel;
+      let savedModel = localStorage.getItem(STORAGE_KEY_MODEL);
+      const modelSelect = document.getElementById('modelSelect');
 
-      document.getElementById('modelSelect').addEventListener('change', (e) => {
+      if (savedKey) document.getElementById('apiKeyInput').value = savedKey;
+      
+      // Tự động chuyển đổi nếu localStorage đang lưu model cũ gemini-3.8-flash
+      if (savedModel === 'gemini-3.8-flash') {
+        savedModel = 'hydrogen';
+        localStorage.setItem(STORAGE_KEY_MODEL, savedModel);
+      }
+      if (savedModel && Array.from(modelSelect.options).some(opt => opt.value === savedModel)) {
+        modelSelect.value = savedModel;
+      }
+
+      modelSelect.addEventListener('change', (e) => {
         localStorage.setItem(STORAGE_KEY_MODEL, e.target.value);
       });
 
@@ -430,7 +440,7 @@
 
     async function processAndSendImage(file, originalDataUrl) {
       const apiKey = localStorage.getItem(STORAGE_KEY_API) || document.getElementById('apiKeyInput').value.trim();
-      const model = localStorage.getItem(STORAGE_KEY_MODEL) || document.getElementById('modelSelect').value;
+      const model = document.getElementById('modelSelect').value;
 
       // Ẩn bảng lỗi cũ nếu có
       document.getElementById('errorBox').classList.add('hidden');
@@ -453,7 +463,7 @@
         showToast('✅ Đã quét xong thành công!', 'success', 2500);
       } catch (err) {
         console.error(err);
-        showErrorBox(err.message || 'Lỗi không xác định khi kết nối mô hình Gemini.');
+        showErrorBox(err.message || 'Lỗi không xác định khi kết nối mô hình AI.');
         showToast(`Quét thất bại!`, 'error', 3000);
       } finally {
         setLoading(false);
@@ -513,7 +523,7 @@
 
       const data = await response.json();
       const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!rawText) throw new Error('Không nhận được văn bản từ Gemini.');
+      if (!rawText) throw new Error('Không nhận được văn bản từ mô hình.');
 
       return JSON.parse(rawText);
     }
