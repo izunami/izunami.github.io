@@ -56,6 +56,7 @@
           </optgroup>
           <optgroup label="OpenRouter (Chuyên chữ Hán)">
             <option value="openrouter:qwen/qwen3.8-27b">Qwen 3.8 27B (Mới nhất - Chuẩn Hán Việt)</option>
+            <option value="openrouter:qwen/qwen3.6-27b">Qwen 3.6 27B (Ổn định - Chuẩn Hán Việt)</option>
             <option value="openrouter:qwen/qwen3.7-plus">Qwen 3.7 Plus (Đa năng)</option>
             <option value="openrouter:qwen/qwen3-vl-8b-instruct">Qwen3-VL 8B Instruct (Nhẹ & Nhanh)</option>
             <option value="openrouter:openrouter/free">OpenRouter Free (Tự động chọn)</option>
@@ -212,7 +213,7 @@
 
             <div class="flex items-start gap-2.5">
               <span class="w-4 h-4 rounded-full bg-white/25 text-white flex items-center justify-center text-[10px] shrink-0 font-bold mt-0.5">1</span>
-              <span>Chọn <strong>Gemini 3.8</strong> hoặc <strong>Qwen 3.8 27B</strong>, dán API Key tương ứng và bấm <strong>Lưu</strong> (có thể bấm <strong>Test Key</strong> để kiểm tra).</span>
+              <span>Chọn <strong>Gemini 3.8</strong> hoặc <strong>Qwen 3.8 / 3.6 27B</strong>, dán API Key tương ứng và bấm <strong>Lưu</strong> (có thể bấm <strong>Test Key</strong> để kiểm tra).</span>
             </div>
             <div class="flex items-start gap-2.5">
               <span class="w-4 h-4 rounded-full bg-white/25 text-white flex items-center justify-center text-[10px] shrink-0 font-bold mt-0.5">2</span>
@@ -241,8 +242,8 @@
   <div id="toastBox" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-full shadow-lg text-xs font-semibold flex items-center gap-2 transition-all duration-300"></div>
 
   <script>
-    const STORAGE_KEY_MODEL = 'hantuscan_model_v7';
-    const STORAGE_KEY_HISTORY = 'hantuscan_history_v7';
+    const STORAGE_KEY_MODEL = 'hantuscan_model_v8';
+    const STORAGE_KEY_HISTORY = 'hantuscan_history_v8';
 
     let currentResult = null;
     let lastImageFile = null;
@@ -294,9 +295,9 @@
       } else {
         input.placeholder = 'sk-or-v1-... (OpenRouter)';
         guideBox.innerHTML = `
-          <span class="font-bold text-white">OpenRouter (Qwen 3.8 27B):</span>
+          <span class="font-bold text-white">OpenRouter (Qwen 3.8 / 3.6 27B):</span>
           <p class="text-[11px] text-indigo-100 leading-relaxed">
-            Lấy key tại <a href="https://openrouter.ai/keys" target="_blank" class="text-amber-300 underline font-bold">OpenRouter Keys ↗</a>. Dùng <strong>Qwen 3.8 27B</strong> để nhận diện chữ Hán & dịch Hán Việt chuẩn xác.
+            Lấy key tại <a href="https://openrouter.ai/keys" target="_blank" class="text-amber-300 underline font-bold">OpenRouter Keys ↗</a>. Dùng <strong>Qwen 3.8 27B</strong> hoặc <strong>Qwen 3.6 27B</strong> để nhận diện chữ Hán & dịch Hán Việt chuẩn xác.
           </p>`;
       }
     }
@@ -598,7 +599,7 @@ Cấu trúc JSON bắt buộc:
       return extractAndParseJSON(rawText);
     }
 
-    // 2. Gọi API OpenRouter (Qwen 3.8 27B / Qwen 3.7 Plus / Qwen3-VL)
+    // 2. Gọi API OpenRouter (Qwen 3.8 27B / Qwen 3.6 27B / Qwen 3.7 Plus / Qwen3-VL)
     async function requestOpenRouterOCR(base64Data, mimeType, apiKey, modelId) {
       const endpoint = 'https://openrouter.ai/api/v1/chat/completions';
 
